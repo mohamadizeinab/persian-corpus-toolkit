@@ -1,0 +1,2325 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="پورتال هوشمند پاسخ‌گویی مؤسسه آموزش عالی علوم معارف اسلامی - سامانه جامع پاسخ‌گویی مبتنی بر منابع علمی">
+<meta name="application-name" content="پورتال هوشمند پاسخ‌گویی">
+<meta name="theme-color" content="#b45309">
+<link rel="canonical" href="https://rag.ai.ismc.ir" />
+<meta property="og:title" content="رگ | پورتال هوشمند پاسخ‌گویی" />
+<meta property="og:description" content="پورتال هوشمند پاسخ‌گویی مؤسسه آموزش عالی علوم معارف اسلامی - سامانه جامع پاسخ‌گویی مبتنی بر منابع علمی" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://rag.ai.ismc.ir" />
+<meta property="og:image" content="https://rag.ai.ismc.ir/assets/images/og-ragportal.svg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="رگ | پورتال هوشمند پاسخ‌گویی" />
+<meta property="og:site_name" content="پورتال هوشمند پاسخ‌گویی" />
+<meta property="og:locale" content="fa_IR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="رگ | پورتال هوشمند پاسخ‌گویی" />
+<meta name="twitter:description" content="پورتال هوشمند پاسخ‌گویی مؤسسه آموزش عالی علوم معارف اسلامی" />
+<meta name="twitter:image" content="https://rag.ai.ismc.ir/assets/images/og-ragportal.svg" />
+<script>
+try{
+  var t=localStorage.getItem("rag_theme")||"system";
+  var d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.setAttribute("data-theme",d?"dark":"light");
+}catch(e){}
+</script>
+<title>رگ | پورتال هوشمند پاسخ‌گویی</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<style>
+:root{
+  --bg:#fffbeb; --bg2:#fff7ed; --card:#ffffff; --card2:#fffdf8;
+  --tx:#1c1917; --tx2:#57534e; --acc:#b45309; --acc2:#d97706;
+  --ok:#047857; --warn:#b45309; --bad:#b91c1c; --line:#e7e5e4;
+  --ring:#d97706;
+  --shadow:0 1px 2px rgba(28,25,23,.05), 0 10px 28px rgba(120,53,15,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--tx);font-family:'Vazirmatn',Tahoma,sans-serif;min-height:100vh;
+  background:
+    radial-gradient(880px 380px at 100% -8%, #fde68a 0%, transparent 58%),
+    var(--bg);
+  text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+::selection{background:#fde68a;color:var(--tx)}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+a{color:var(--acc);text-underline-offset:3px}
+a:hover{color:#92400e}
+header{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;padding:12px 22px;
+  border-bottom:1px solid var(--line);background:rgba(255,251,235,.9);
+  backdrop-filter:blur(10px);position:sticky;top:0;z-index:20}
+.logo{font-size:22px;font-weight:800;color:var(--tx);line-height:1}
+.logo small{color:var(--tx2);font-weight:500;font-size:12px;margin-inline-start:8px}
+nav{display:flex;gap:4px;margin-inline-start:8px;flex:1;min-width:0}
+nav button{background:transparent;border:0;color:var(--tx2);font:inherit;font-size:14.5px;
+  padding:8px 12px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
+nav button:hover{background:#fff7ed;color:var(--tx)}
+nav button.on{background:#fef3c7;color:#92400e;font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:6px 12px;font-size:12.5px;color:var(--tx2);white-space:nowrap}
+.pill b{color:var(--tx)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(4,120,87,.15)}
+.dot.busy{background:var(--warn);box-shadow:0 0 0 3px rgba(180,83,9,.15)}
+button{font-family:inherit;cursor:pointer}
+button.primary{background:var(--acc2);border:0;color:#1c1917;font:inherit;font-weight:700;
+  padding:10px 18px;border-radius:12px;cursor:pointer;transition:background .15s,box-shadow .15s}
+button.primary:hover{background:#f59e0b;box-shadow:0 6px 16px rgba(217,119,6,.25)}
+button.primary:disabled{opacity:.55;cursor:default;box-shadow:none}
+button.ghost{background:var(--card);border:1px solid #d6d3d1;color:var(--tx);font:inherit;
+  padding:9px 14px;border-radius:12px;cursor:pointer;transition:background .15s,border-color .15s}
+button.ghost:hover{background:#fff7ed;border-color:#fdba74}
+button.ghost.on{background:#fef3c7;border-color:#fdba74;color:#92400e;font-weight:700}
+button.small{font-size:12.5px;padding:6px 11px;border-radius:9px}
+button:active{transform:translateY(1px)}
+main{max-width:1040px;margin:0 auto;padding:28px 18px 88px}
+.hero{padding:32px 28px;border-radius:18px;background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--shadow);margin-bottom:18px}
+.hero h1{margin:0 0 8px;font-size:27px;line-height:1.65;font-weight:800}
+.hero p{margin:0;color:var(--tx2);line-height:1.95;font-size:15px;max-width:68ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;
+  margin-bottom:14px;box-shadow:var(--shadow)}
+textarea,input{width:100%;background:#fff;border:1px solid #d6d3d1;color:var(--tx);
+  border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;line-height:1.7;resize:vertical;
+  transition:border-color .15s,box-shadow .15s}
+textarea::placeholder,input::placeholder{color:#78716c}
+textarea:focus,input:focus{outline:none;border-color:var(--acc2);box-shadow:0 0 0 3px rgba(217,119,6,.22)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #d6d3d1;background:#fff;
+  padding:8px 14px;border-radius:999px;cursor:pointer;font-size:14px;user-select:none;
+  transition:background .15s,border-color .15s,color .15s}
+.chip:hover{border-color:#fdba74;background:#fff7ed}
+.chip.on{border-color:var(--acc2);background:#fef3c7;color:#1c1917;font-weight:700}
+.chip .em{font-size:15px}
+.chip.lock{opacity:.75;border-style:dashed;cursor:pointer}
+.chip.lock:hover{background:#fef2f2;border-color:#fca5a5}
+.chip.lock small{color:var(--bad);font-weight:600;font-size:11px}
+.bar{height:10px;background:#f5f5f4;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:8px 0}
+.barfill{height:100%;background:linear-gradient(90deg,#f59e0b,#b45309);border-radius:999px;transition:width .3s}
+.mstone{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;
+  padding:11px 14px;background:var(--card2);margin-bottom:9px}
+.mstone.unlocked{border-color:#a7f3d0;background:#f0fdf4}
+.mstone .ic{font-size:20px;line-height:1}
+.mstone b{font-size:14.5px}
+.mstonehint{color:var(--tx2);font-size:12px;line-height:1.6;margin-top:2px}
+.mstone .need{margin-inline-start:auto;font-size:12.5px;color:var(--tx2);white-space:nowrap}
+.lockbtn{background:#fff;border:1px solid var(--line);color:var(--tx2);border-radius:8px;
+  padding:3px 9px;font:inherit;font-size:12px;cursor:default}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ans{border:1px solid var(--line);border-inline-start:3px solid var(--acc2);border-radius:14px;
+  background:var(--card);padding:14px 16px;margin-top:12px}
+.ans .head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--tx2);margin-bottom:8px}
+.badge{background:#fef3c7;color:#92400e;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+.badge.ok{background:#d1fae5;color:#065f46}
+.ans p{margin:0 0 12px;line-height:2;font-size:15.5px;white-space:pre-wrap}
+.ans p:last-of-type{margin-bottom:0}
+.srcchip{display:inline-flex;align-items:center;gap:5px;background:#fff7ed;border:1px solid #fde68a;
+  color:#92400e;border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:600;
+  white-space:normal;vertical-align:middle;margin-inline-start:6px;line-height:1.7}
+.cites{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.cites summary{cursor:pointer;color:var(--tx2);font-size:13.5px;font-weight:600}
+.cites summary:hover{color:var(--tx)}
+.cites ol{margin:10px 0 0;padding-inline-start:22px}
+.cites li{margin-bottom:10px;line-height:1.9;font-size:14px}
+.cites .ex{color:var(--tx2);font-size:13px;line-height:1.9;border-inline-start:2px solid #fde68a;
+  padding-inline-start:9px;margin-top:3px}
+.stars{display:inline-flex;gap:1px}
+.stars button{background:none;border:0;font-size:20px;line-height:1;cursor:pointer;color:#d6d3d1;padding:2px;
+  transition:color .15s}
+.stars button:hover,.stars button.on{color:var(--acc2)}
+.ldot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--acc2);margin-inline-end:7px;
+  animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.progress{color:var(--tx2);font-size:13.5px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+th{color:var(--tx2);font-weight:600}
+tbody tr:hover td{background:#fff7ed}
+td.num,th.num{text-align:center;white-space:nowrap}
+.tag{font-size:11.5px;border:1px solid #e7e5e4;background:#fff;border-radius:999px;padding:2px 8px;
+  color:var(--tx2);margin-inline-start:5px}
+.muted{color:var(--tx2);font-size:13px;line-height:1.7}
+.post-body{line-height:2.05;font-size:15px;white-space:pre-wrap;border-top:1px solid var(--line);
+  margin-top:12px;padding-top:12px}
+.lv{color:#92400e;font-weight:700}
+.rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
+  border-radius:50%;background:#fef3c7;color:#92400e;font-weight:800;font-size:13px}
+.rank.r1{background:#fbbf24;color:#451a03}
+.rank.r2{background:#fde68a}
+.rank.r3{background:#fed7aa}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid #e7e5e4;border-top-color:var(--acc2);
+  border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px;margin-inline-end:7px}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* V4M-P1: in-place vote feedback (no full re-render) */
+button.ghost.busy{opacity:.55;cursor:default}
+.vote-pop{display:inline-block;animation:vp .4s ease}
+@keyframes vp{0%{transform:scale(1)}45%{transform:scale(1.07)}100%{transform:scale(1)}}
+/* V4M-P2: contextual CTA microinteractions (additive; both themes; reduced-motion opt-out below) */
+button.primary:hover:not(:disabled),button.ghost:hover:not(:disabled){transform:translateY(-1px)}
+button.primary:active:not(:disabled),button.ghost:active:not(:disabled){transform:translateY(1px)}
+button.primary.busy{opacity:.55;cursor:default;box-shadow:none}
+button.small.busy{opacity:.55;cursor:default}
+.cta-done{animation:ctadone .9s ease}
+@keyframes ctadone{0%{box-shadow:0 0 0 0 rgba(4,120,87,.45)}60%{box-shadow:0 0 0 9px rgba(4,120,87,0)}100%{box-shadow:0 0 0 0 rgba(4,120,87,0)}}
+/* P3: QA-bank progressive list — additive, both themes, reduced-motion opt-out below */
+.qa-actions{display:flex;align-items:center;gap:6px;margin-top:12px;flex-wrap:wrap}
+.qa-actions .like,.qa-actions .dislike{font-size:13px;padding:5px 11px}
+.qa-star{background:none;border:0;cursor:pointer;color:#d6d3d1;line-height:1;padding:1px;
+  transition:color .15s,transform .15s;display:inline-block}
+.qa-star:hover,.qa-star.on{color:var(--acc2)}
+/* hierarchical: 5th (max) largest+gold, 1st (min) smallest */
+.qa-star.s1{font-size:13px}
+.qa-star.s2{font-size:15px}
+.qa-star.s3{font-size:17px}
+.qa-star.s4{font-size:19px}
+.qa-star.s5{font-size:23px}
+.qa-star.s5.on{color:#f59e0b}
+.qa-vote-pop{animation:qp .45s ease}
+@keyframes qp{0%{transform:scale(1)}45%{transform:scale(1.14)}100%{transform:scale(1)}}
+.qa-card.fresh{animation:qafade .6s ease}
+@keyframes qafade{0%{opacity:.35;transform:translateY(5px)}100%{opacity:1;transform:none}}
+.qa-sentinel{height:1px}
+.qa-loader{text-align:center;padding:14px;color:var(--tx2);font-size:13px}
+.qa-nudge{margin-top:9px;border:1px dashed var(--line);border-radius:10px;padding:8px 11px;
+  font-size:13px;line-height:1.8;color:var(--tx2);display:none}
+.qa-nudge.on{display:block}
+.qa-nudge textarea{width:100%;box-sizing:border-box;margin-top:6px;border:1px solid var(--line);
+  border-radius:9px;padding:7px 9px;font-size:13px;font-family:inherit;background:var(--card);color:var(--tx)}
+.qa-nudge .nrow{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+/* V4M-P3: floating next-page CTA (additive; both themes; no motion) */
+#floatNext{position:fixed;bottom:18px;inset-inline-start:18px;z-index:30;box-shadow:0 8px 24px rgba(217,119,6,.35)}
+.toast{position:fixed;bottom:18px;inset-inline-end:18px;z-index:99;display:none;background:#1c1917;
+  color:#fffbeb;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;
+  box-shadow:var(--shadow);max-width:min(380px,calc(100vw - 36px))}
+.modal-back{position:fixed;inset:0;background:rgba(28,25,23,.46);z-index:50;display:flex;
+  align-items:center;justify-content:center;padding:18px}
+.modal-card{width:min(400px,100%);margin-bottom:0}
+details summary{cursor:pointer;color:var(--tx2);font-size:13.5px}
+details summary:hover{color:var(--tx)}
+@media(max-width:760px){
+  header{padding:10px 14px}
+  nav{order:5;flex-basis:100%;margin-inline-start:0;overflow-x:auto}
+  nav button{white-space:nowrap}
+  .hero{padding:22px 16px}
+  .hero h1{font-size:22px}
+  main{padding:18px 14px 72px}
+  th,td{padding:8px 6px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ldot,.spin,.vote-pop,.cta-done,.qa-vote-pop,.qa-card.fresh{animation:none}
+  button,.chip,nav button{transition:none}
+  button:active{transform:none}
+  button.primary:hover:not(:disabled),button.ghost:hover:not(:disabled){transform:none}
+  button.primary:active:not(:disabled),button.ghost:active:not(:disabled){transform:none}
+}
+/* V3-9: extra tokens for JS inline styles + dark theme (purely additive; light unchanged) */
+:root{--soft:#fef3c7;--softtx:#92400e;--chipbg:#f1f5f9;--chiptx:#64748b;--info:#e0f2fe;--infotx:#0369a1;--line2:#f1f5f9;--div:#e2e8f0;--mute4:#d6d3d1}
+.pill button{all:unset;cursor:pointer;padding:2px 7px;border-radius:999px;font-size:13px;color:var(--tx2)}
+.pill button.on{background:var(--soft);color:var(--softtx);font-weight:700}
+.pill button:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+html[data-theme="dark"]{--bg:#0f1520;--bg2:#131b29;--card:#16202e;--card2:#1a2534;--tx:#e6ebf2;--tx2:#98a6b8;--acc:#f59e0b;--acc2:#f59e0b;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;--line:#263344;--ring:#f59e0b;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.5);--soft:#3a2c14;--softtx:#fbbf24;--chipbg:#1a2534;--chiptx:#98a6b8;--info:#16324a;--infotx:#7dd3fc;--line2:#223047;--div:#263344;--mute4:#334155}
+html[data-theme="dark"] body{background:radial-gradient(880px 380px at 100% -8%, rgba(245,158,11,.14) 0%, transparent 58%),var(--bg)}
+html[data-theme="dark"] ::selection{background:#92400e;color:#fffbeb}
+html[data-theme="dark"] a{color:var(--acc)}
+html[data-theme="dark"] a:hover{color:#fbbf24}
+html[data-theme="dark"] header{background:rgba(15,21,32,.9);border-bottom-color:var(--line)}
+html[data-theme="dark"] nav button:hover{background:#1a2534;color:var(--tx)}
+html[data-theme="dark"] nav button.on{background:var(--soft);color:var(--softtx)}
+html[data-theme="dark"] button.ghost{background:#16202e;border-color:var(--line);color:var(--tx)}
+html[data-theme="dark"] button.ghost:hover{background:#1a2534;border-color:#f59e0b}
+html[data-theme="dark"] button.ghost.on{background:var(--soft);border-color:#f59e0b;color:var(--softtx)}
+html[data-theme="dark"] button.primary:hover{background:#fbbf24;box-shadow:0 6px 16px rgba(245,158,11,.25)}
+html[data-theme="dark"] textarea,html[data-theme="dark"] input{background:#10192a;border-color:var(--line);color:var(--tx)}
+html[data-theme="dark"] textarea::placeholder,html[data-theme="dark"] input::placeholder{color:#5b6b80}
+html[data-theme="dark"] textarea:focus,html[data-theme="dark"] input:focus{border-color:var(--acc2);box-shadow:0 0 0 3px rgba(245,158,11,.22)}
+html[data-theme="dark"] .chip{background:#1a2534;border-color:var(--line);color:var(--tx)}
+html[data-theme="dark"] .chip:hover{background:#1d3a5c;border-color:#f59e0b}
+html[data-theme="dark"] .chip.on{background:var(--soft);border-color:var(--acc2);color:var(--softtx)}
+html[data-theme="dark"] .chip.lock:hover{background:rgba(248,113,113,.12);border-color:#f87171}
+html[data-theme="dark"] .bar{background:#1a2534}
+html[data-theme="dark"] .mstone.unlocked{border-color:rgba(52,211,153,.35);background:rgba(6,95,70,.25)}
+html[data-theme="dark"] .lockbtn{background:#1a2534;color:var(--tx2)}
+html[data-theme="dark"] .badge{background:var(--soft);color:var(--softtx)}
+html[data-theme="dark"] .badge.ok{background:rgba(6,95,70,.45);color:#a7f3d0}
+html[data-theme="dark"] .srcchip{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#fbbf24}
+html[data-theme="dark"] .cites .ex{border-inline-start-color:rgba(245,158,11,.5)}
+html[data-theme="dark"] .stars button{color:#334155}
+html[data-theme="dark"] tbody tr:hover td{background:rgba(245,158,11,.08)}
+html[data-theme="dark"] .tag{background:#1a2534;border-color:var(--line)}
+html[data-theme="dark"] .lv{color:#fbbf24}
+html[data-theme="dark"] .rank{background:var(--soft);color:var(--softtx)}
+html[data-theme="dark"] .spin{border-color:#334155}
+html[data-theme="dark"] .toast{background:#0f1520;color:#e6ebf2;border:1px solid var(--line)}
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "پورتال هوشمند پاسخ‌گویی",
+  "url": "https://rag.ai.ismc.ir",
+  "description": "پورتال هوشمند پاسخ‌گویی مؤسسه آموزش عالی علوم معارف اسلامی - سامانه جامع پاسخ‌گویی مبتنی بر منابع علمی",
+  "inLanguage": "fa-IR",
+  "publisher": {
+    "@type": "Organization",
+    "name": "مؤسسه آموزش عالی علوم معارف اسلامی",
+    "url": "https://ai.ismc.ir"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="logo">رگ <small>rag.ai.ismc.ir</small></div>
+  <nav id="nav">
+    <button data-v="ask" class="on">پرسش</button>
+    <button data-v="lb">لیدربرد</button>
+    <button data-v="roadmap">نقشهٔ رشد</button>
+    <button data-v="qabank">بانک سؤال</button>
+    <button data-v="blog">بلاگ</button>
+    <button data-v="lab">لابراتوار</button>
+    <button data-v="thinktank">اتاق فکر</button>
+    <button data-v="activity">فعالیت من</button>
+    <button data-v="admin" id="navAdmin" style="display:none">مدیریت</button>
+  </nav>
+  <span class="pill" id="themeSeg" role="group" aria-label="display mode"></span>
+  <span class="pill" id="gpuPill"><span class="dot" id="gpuDot"></span><span id="gpuTxt">GPU: …</span></span>
+  <span class="pill" id="accPill"><b id="accTxt">مهمان</b></span>
+  <button class="ghost small" id="btnAuth">ورود / عضویت</button>
+</header>
+<main id="main"></main>
+<div id="toast" class="toast"></div> 
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+/* V3-9: theme (light/dark/system) — shared via rag_theme; pre-paint script already set data-theme */
+(function(){
+  var KEY="rag_theme", MODES=["light","dark","system"];
+  function stored(){try{var v=localStorage.getItem(KEY);return MODES.indexOf(v)>=0?v:"system";}catch(e){return "system";}}
+  function resolved(c){if(c==="system"){try{return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}catch(e){return "light";}}return c;}
+  function paint(seg,c){seg.innerHTML=MODES.map(function(m){
+    var g=m==="light"?"\u2600":m==="dark"?"\u263E":"\u25D1";
+    return '<button type="button" data-th="'+m+'" aria-pressed="'+(c===m)+'">'+g+'</button>';
+  }).join("");seg.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){apply(b.getAttribute("data-th"));});});}
+  function apply(c,quiet){if(MODES.indexOf(c)<0)c="system";
+    try{localStorage.setItem(KEY,c);}catch(e){}
+    try{document.documentElement.setAttribute("data-theme",resolved(c));}catch(e){}
+    if(!quiet){try{document.dispatchEvent(new CustomEvent("rag-theme-change",{detail:{choice:c}}));}catch(e){}
+      var seg=$("#themeSeg");if(seg)paint(seg,c);}}
+  window.__v39applyTheme=apply;
+  function boot(){
+    var seg=$("#themeSeg");if(!seg)return;
+    var c=stored();
+    try{document.documentElement.setAttribute("data-theme",resolved(c));}catch(e){}
+    paint(seg,c);
+    window.addEventListener("storage",function(e){if(e.key===KEY){c=stored();try{document.documentElement.setAttribute("data-theme",resolved(c));}catch(e2){}paint(seg,c);}});
+    document.addEventListener("rag-theme-change",function(e){c=(e.detail&&e.detail.choice)||stored();apply(c,true);paint(seg,c);});
+    try{var mq=matchMedia("(prefers-color-scheme: dark)");
+      function onMq(){if(c==="system")document.documentElement.setAttribute("data-theme",mq.matches?"dark":"light");}
+      if(mq.addEventListener)mq.addEventListener("change",onMq);else if(mq.addListener)mq.addListener(onMq);}catch(e){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+})();
+let TOKEN=localStorage.getItem("ragportal_token")||"";
+let ME=null, VIEW="ask", CORPORA=[], SESSION=null, POLL=null, PENDING={}, SID_CUR=null, STREAM_LIVE=false, STREAM_TRIED=false, STREAM_ES=null;
+let LB_PERIOD="day", NEXT_PHASE=null;
+let MY_RATING={},COUNTERS={};   /* V4M-P1: per-answer vote state for in-place updates */
+let GOOGLE_ON=false;
+const YA="یا";
+const PBTN="ورود با گوگل";
+const PERR_EMAIL="این ایمیل قبلا با روش دیگری ثبت شده";
+const PERR_GOOGLE="ورود با گوگل انجام نشد";
+const LB_LABELS={day:"امروز","3d":"۳ روز","7d":"۷ روز","1m":"۱ ماه"};
+
+function toast(msg){const t=$("#toast");t.textContent=msg;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>t.style.display="none",3500);}
+async function api(path,opt={}){
+  const h={"Content-Type":"application/json"};
+  if(TOKEN)h.Authorization="Bearer "+TOKEN;
+  const r=await fetch("/api"+path,{...opt,headers:h});
+  if(r.status===401){TOKEN="";localStorage.removeItem("ragportal_token");}
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.detail||("HTTP "+r.status));
+  return d;
+}
+function esc(s){const map={"&":38,"<":60,">":62,'"':34};
+  return String(s==null?"":s).replace(/[&<>"]/g,c=>"&#"+map[c]+";");}
+function faDate(ts){try{return new Date(ts*1000).toLocaleDateString("fa-IR");}catch(e){return "";}}
+
+/* ---------------- T4: inline citations (answer_spans + citations) ---------------- */
+function renderAnswerText(a){
+  const spans=(a.answer_spans||[]);
+  const text=String(a.text||"");
+  if(!spans.length)return `<p>${esc(text)}</p>`;
+  const paras=text.split(/\n{2,}/).map(x=>x.trim()).filter(Boolean);
+  if(!paras.length)return `<p>${esc(text)}</p>`;
+  return paras.map((p,i)=>{
+    const s=spans[i];
+    const chip=s?` <span class="srcchip"><span class="em">📖</span>${esc(s.book_name||"منبع")}${s.page_number!=null&&s.page_number!==""?` — صفحهٔ ${esc(s.page_number)}`:""}`:"";
+    return `<p>${esc(p)}${chip}</p>`;
+  }).join("");
+}
+function citationsBlock(a){
+  const c=(a.citations||[]);
+  if(!c.length)return "";
+  return `<details class="cites"><summary>منابع این پاسخ (${c.length}) — روی «باز کردن» برای دیدن صفحهٔ اصلی بزنید</summary>
+    <ol>${c.map(x=>`<li><b>${esc(x.book_name||"")}</b>${x.page_number!=null&&x.page_number!==""?` — صفحهٔ ${esc(x.page_number)}`:""}
+      ${x.link?` · <a href="${esc(x.link)}" target="_blank" rel="noopener">باز کردن منبع ↗</a>`:""}
+      ${x.excerpt?`<div class="ex">${esc(x.excerpt)}</div>`:""}</li>`).join("")}</ol>
+  </details>`;
+}
+
+/* ---------------- views ---------------- */
+function render(){
+  const v={ask:viewAsk,lb:viewLb,roadmap:viewRoadmap,qabank:viewQa,blog:viewBlog,lab:viewLab,activity:viewActivity,admin:viewAdmin,thinktank:viewThinkTank}[VIEW];
+  $("#main").innerHTML=v();
+  bindView();
+}
+
+function viewAsk(){
+  return `<div class="hero">
+      <h1>یک سؤال بپرس — از هر کدام از منابع بخواه که جواب بدهد</h1>
+      <p>سؤال را بنویسید، بعد انتخاب کنید پاسخ از کدام مجموعه‌ها تولید شود:
+      <b>مصباح</b>، <b>علوم عقلی</b>، <b>تقریرات</b> یا هر مجموعه‌ای که بعدا‌ً اضافه شد.
+      پاسخ اول از صفحهٔ اول نتایج است و مفصل نوشته می‌شود. اگر پشت همان جست‌وجو صفحهٔ دیگری مانده باشد،
+      دکمهٔ «صفحهٔ بعد» همان سؤال را به پنجرهٔ بعدی نتایج می‌فرستد — صفحات بعد از پیش‌تولید شده‌اند
+      و معمولا‌ً بلافاصله (از کش) نمایش داده می‌شوند. هر پاسخ با ذکر دقیق منابع (کتاب و صفحه) می‌آید و
+      به «لابراتوار» و پیش‌نویس «بلاگ» می‌شود.</p>
+    </div>
+    <div class="card">
+      <textarea id="q" rows="3" placeholder="سؤال خود را بنویسید (مثلا‌ً: رابطهٔ عقل و دین در اندیشهٔ اسلامی چیست؟)"></textarea>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" id="btnAsk">سؤال بپرسید</button>
+        <span class="muted" id="askHint"></span>
+      </div>
+      <div id="askArea"></div>
+    </div>`;
+}
+/* V4M-P2: contextual CTA microinteractions — busy state + success pulse (no re-render) */
+function busyOn(btn){if(!btn||btn.__busy)return;btn.__busy=true;btn.__orig=btn.innerHTML;btn.disabled=true;btn.classList.add("busy");}
+function busyOff(btn){if(!btn||!btn.__busy)return;btn.__busy=false;btn.disabled=false;btn.classList.remove("busy");btn.innerHTML=btn.__orig;}
+function donePulse(btn,label,ms){if(!btn)return;btn.classList.remove("cta-done");void btn.offsetWidth;btn.classList.add("cta-done");if(label){const o=btn.innerHTML;btn.innerHTML=label;setTimeout(()=>{if(document.contains(btn))btn.innerHTML=o;},ms||900);}}
+async function submitAsk(){
+  const q=$("#q").value.trim();
+  if(q.length<4){toast("سؤال کوتاه است");return;}
+  NEXT_PHASE=null;
+  $("#floatNext")?.remove();
+  const b=$("#btnAsk");busyOn(b);
+  $("#askArea").innerHTML='<div class="progress"><span class="spin"></span>ثبت سؤال…</div>';
+  try{
+    const d=await api("/ask",{method:"POST",body:JSON.stringify({question:q,corpora:[]})});
+    SESSION=d;
+    $("#askArea").innerHTML='';
+    busyOff(b);donePulse(b,"ثبت شد ✅",1100);
+    const cs=await api("/corpora");
+    $("#askArea").innerHTML=`
+      <div style="margin-top:14px">تمام منابع علمی از همین حالا در اختیار شماست — منبع پاسخ را انتخاب کنید:</div>
+      <div class="chips" id="chips"><span class="chip" data-id="__all" id="chipAll" style="border-color:var(--acc);font-weight:600">✅ انتخاب همه</span>${cs.map(c=>`<span class="chip" data-id="${esc(c.id)}"><span class="em">📚</span>${esc(c.name_fa)}</span>`).join("")}<span class="chip" data-id="__none" id="chipNone" style="opacity:.7">❌ لغو انتخاب</span><button class="primary" id="btnPick" style="margin-inline-start:auto;align-self:center">تولید پاسخ</button></div>`;
+    const realChips=[...document.querySelectorAll("#chips .chip")].filter(c=>c.dataset.id!=="__all"&&c.dataset.id!=="__none");
+    document.querySelectorAll("#chips .chip").forEach(ch=>{
+      if(ch.dataset.id==="__all"){
+        ch.onclick=()=>{realChips.forEach(c=>c.classList.add("on"));};
+      }else if(ch.dataset.id==="__none"){
+        ch.onclick=()=>{realChips.forEach(c=>c.classList.remove("on"));};
+      }else{
+        ch.onclick=()=>ch.classList.toggle("on");
+      }
+    });
+    $("#btnPick").onclick=async()=>{
+      const ids=[...document.querySelectorAll("#chips .chip.on")].map(c=>c.dataset.id).filter(id=>id!=="__all"&&id!=="__none");
+      if(!ids.length){toast("حداقل یک مجموعه انتخاب کنید");return;}
+      const b2=$("#btnPick");busyOn(b2);
+      try{
+        const d2=await api(`/sessions/${SESSION.session_id}/pick`,{method:"POST",body:JSON.stringify({corpora:ids})});
+        pollSession(d2.session_id);
+      }catch(e2){busyOff(b2);toast(e2.message);}
+    };
+  }catch(e){$("#askArea").innerHTML="";busyOff(b);toast(e.message);}
+}
+const LIVE_TAG="پخش زنده…";
+function liveStreamCard(corpus, text){
+  const c=CORPORA.find(x=>x.id===corpus);
+  const name=c?esc(c.name_fa||c.id):esc(corpus);
+  const body=esc(String(text||"").replace(/\[\[src:[^\]]*\]\]/g,""));
+  return `<div class="card" style="margin-top:12px;border:1px dashed #94a3b8">
+    <div class="row"><span class="badge ok">● ${LIVE_TAG}</span><span class="chip">${name}</span></div>
+    <div style="margin-top:8px;font-size:15px;line-height:1.9;white-space:pre-wrap;max-height:280px;overflow-y:auto">${body}</div>
+  </div>`;
+}
+function _answerStatus(a){
+  const text=String(a.text||"");
+  const cits=(a.citations||[]).length;
+  const isError=text.includes("خطا در تولید پاسخ")||text.includes("در هنگام تولید پاسخ خطایی");
+  const isNotFound=text.includes("پیدا نکردم")||text.includes("پیدا نشد")||text.includes("پیدا نکرد");
+  if(isError)return {cls:"err",icon:"⚠️",label:"خطای فنی در جست‌وجو"};
+  if(isNotFound)return {cls:"nf",icon:"📭",label:"پاسخ قابل استنادی پیدا نشد"};
+  if(!cits&&text.length>20)return {cls:"nocit",icon:"⚠️",label:"پاسخ بدون استناد"};
+  return {cls:"ok",icon:"✅",label:`${cits} منبع استنادشده`};
+}
+function renderSession(s){
+      const ans=s.answers.map(a=>ansCard(a)).join("");
+      const more=canNextPage(s);
+      const cacheBadge=(NEXT_PHASE==="done_from_cache")?'<span class="badge ok">⚡ صفحه از پیش‌تولید (کش) — بدون اجرای دوباره</span>':"";
+      /* §6: source transparency header */
+      const totalCorpora=(s.corpora||[]).length;
+      const answeredCorpora=new Set(s.answers.map(a=>a.corpus_id)).size;
+      const totalCits=s.answers.reduce((sum,a)=>sum+(a.citations||[]).length,0);
+      const srcInfo=s.status==="done"
+        ?`<div style="margin:8px 0;padding:8px 12px;background:var(--chipbg);border-radius:8px;font-size:.85em;color:var(--chiptx)">
+            📊 <b>${totalCorpora}</b> منبع انتخاب‌شده · <b>${answeredCorpora}</b> منبع بررسی‌شده · <b>${totalCits}</b> استناد
+          </div>`:"";
+      $("#askArea").innerHTML=`
+        <div class="progress row">${s.status==="done"?"✅ "+esc(s.progress||"تکمیل شد")
+          :s.status==="error"?"⚠️ "+esc(s.progress):'<span class="spin"></span>'+esc(s.progress||"در حال کار…")}
+          ${cacheBadge}</div>
+        ${srcInfo}
+        ${ans}
+        ${more?`<div class="row" style="margin-top:14px"><button class="primary" id="btnNext">صفحهٔ بعد نتایج</button>
+          <span class="muted">همان سؤال، از پنجرهٔ بعدی منابع همین جست‌وجو (پیش‌تولید می‌شود)</span></div>`:""}
+        ${s.status==="done"?'<div class="muted" style="margin-top:10px">+۱۰ امتیاز برای هر پاسخ — می‌توانید در <a href="#" onclick="setView(\'lab\');return false">لابراتوار</a> امتیاز دهید و نظر بنویسید.</div>':""}`;
+      const nb=$("#btnNext");
+      if(nb)nb.onclick=()=>askNextPage(SID_CUR);
+      if(ME)refreshMe();
+      updateFloatNext(s);
+}
+/* V4M-P3: floating next-page CTA + one-time explainer */
+function updateFloatNext(s){
+  const more=(VIEW==="ask"&&s&&canNextPage(s));
+  const f=$("#floatNext");
+  if(!more){if(f)f.remove();return;}
+  if(!f){
+    const b=document.createElement("button");
+    b.id="floatNext";b.className="primary";b.textContent="صفحهٔ بعد نتایج ↓";
+    b.onclick=()=>askNextPage(SID_CUR);
+    document.body.appendChild(b);
+  }
+  nextPageExplain();
+}
+function nextPageExplain(){
+  const key="ragportal_np_seen_"+(ME?ME.id:"guest");
+  try{if(localStorage.getItem(key))return;}catch(e){return;}
+  if(document.querySelector('[data-modal="np"]'))return;
+  const html=`<div data-modal="np" class="modal-back" onclick="if(event.target===this)this.remove()">
+    <div class="card modal-card" style="width:min(440px,100%)">
+      <div class="row" style="justify-content:space-between"><b>📄 صفحهٔ بعدی نتایج</b>
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">×</button></div>
+      <div class="muted" style="margin-top:10px;line-height:2">در این مرحله، سامانه منابع و نتایج تکمیلی را بررسی می‌کند… اگر می‌خواهید عمیق‌تر شوید، با «صفحهٔ بعد نتایج» همان سؤال را از پنجرهٔ بعدی همین جست‌وجو بگیرید (پیش‌تولید می‌شود).</div>
+      <div class="row" style="margin-top:14px;justify-content:flex-end;gap:8px">
+        <button class="ghost small" id="npNoMore">دیگر نمایش نده</button>
+        <button class="primary small" id="npOk">متوجه شدم</button>
+      </div></div></div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  const done=()=>{try{localStorage.setItem(key,"1");}catch(e){}document.querySelector('[data-modal="np"]')?.remove();};
+  $("#npOk").onclick=done;
+  $("#npNoMore").onclick=done;
+}
+function streamSession(sid){
+  if(STREAM_TRIED||STREAM_LIVE)return;
+  STREAM_TRIED=true;
+  try{
+    const es=new EventSource("/api/sessions/"+sid+"/stream");
+    STREAM_ES=es;
+    const buf={};
+    es.onmessage=(ev)=>{
+      let d={};try{d=JSON.parse(ev.data);}catch(e){return;}
+      if(d.type==="progress"||d.type==="session_start"){STREAM_LIVE=true;
+        $("#askArea").innerHTML='<div class="progress row"><span class="ldot"></span><span class="spin"></span>'+esc(d.progress||"")+'</div><div id="liveStream" style="margin-top:10px"></div>';}
+      else if(d.type==="corpus_start"){STREAM_LIVE=true;buf[d.corpus]="";const box=$("#liveStream");if(box)box.innerHTML+=liveStreamCard(d.corpus,"");}
+      else if(d.type==="corpus_token"){STREAM_LIVE=true;buf[d.corpus]=(buf[d.corpus]||"")+(d.text||"");const box=$("#liveStream");if(box)box.innerHTML=Object.keys(buf).map(c=>liveStreamCard(c,buf[c])).join("");const ls=box.querySelector("div[style*=overflow-y]");if(ls)ls.scrollTop=ls.scrollHeight;}
+      else if(d.type==="poll"){if(STREAM_ES){STREAM_ES.close();STREAM_ES=null;}STREAM_LIVE=false;renderSession(d);if(d.status==="done"||d.status==="error")clearInterval(POLL);}
+      else if(d.type==="session_end"){/* final poll snapshot follows */}
+    };
+    es.onerror=()=>{if(STREAM_ES){STREAM_ES.close();STREAM_ES=null;}STREAM_LIVE=false;};
+  }catch(e){STREAM_TRIED=false;}
+}
+function pollSession(sid){
+  clearInterval(POLL);
+  SID_CUR=sid;
+  STREAM_TRIED=false;STREAM_LIVE=false;
+  if(STREAM_ES){try{STREAM_ES.close();}catch(e){}STREAM_ES=null;}
+  $("#askArea").innerHTML='<div class="progress"><span class="ldot"></span><span class="spin"></span>در حال تولید پاسخ…</div>';
+  streamSession(sid);
+  POLL=setInterval(async()=>{
+    if(STREAM_LIVE)return;
+    try{
+      const s=await api(`/sessions/${sid}`);
+      renderSession(s);
+      if(s.status==="done"||s.status==="error")clearInterval(POLL);
+    }catch(e){}
+  },2500);
+}
+
+function canNextPage(s){
+  if(!s||s.status!=="done"||!s.answers||!s.answers.length)return false;
+  const latest={};
+  s.answers.forEach(a=>{latest[a.corpus_id]=a;});
+  const rows=Object.values(latest);
+  const page=rows.reduce((m,a)=>Math.max(m,a.round||1),1);
+  return page<3 && rows.some(a=>a.has_more);
+}
+async function askNextPage(sid){
+  const bs=[...document.querySelectorAll("#btnNext,#floatNext")];
+  bs.forEach(x=>{x.disabled=true;x.classList.add("busy");});
+  const b=$("#btnNext");
+  if(b)b.textContent="در حال گرفتن صفحهٔ بعد…";
+  try{
+    const r=await api(`/sessions/${sid}/next`,{method:"POST",body:"{}"});
+    NEXT_PHASE=(r&&r.phase)||null;
+    pollSession(sid);
+  }catch(e){toast(e.message);NEXT_PHASE=null;bs.forEach(x=>{x.disabled=false;x.classList.remove("busy");});if(b)b.textContent="صفحهٔ بعد نتایج";}
+}
+function ansCard(a){
+  const c=CORPORA.find(x=>x.id===a.corpus_id);
+  const page=a.result_page||a.round;
+  const cached=(a.round||1)>1&&NEXT_PHASE==="done_from_cache";
+  const st=_answerStatus(a);
+  return `<div class="ans">
+    <div class="head"><span class="badge">${esc(c?c.name_fa:a.corpus_id)}</span>
+      <span class="badge" style="${st.cls==="err"?"background:var(--danger);color:#fff":st.cls==="nf"?"background:var(--warning);color:#000":""}">${st.icon} ${st.label}</span>
+      <span class="badge">صفحهٔ ${page}</span>
+      ${a.has_more?'<span class="tag">صفحهٔ بعد هم هست</span>':""}
+      ${cached?'<span class="tag">⚡ از کش</span>':""}
+      ${a.latency_ms?`<span class="tag">${Math.round(a.latency_ms/1000)} ثانیه</span>`:""}</div>
+    ${renderAnswerText(a)}
+    ${citationsBlock(a)}
+  </div>`;
+}
+
+/* ---------------- T8: growth roadmap + lock modal ---------------- */
+function roadmapItems(){
+  if(ME&&ME.roadmap&&ME.roadmap.items&&ME.roadmap.items.length)return ME.roadmap.items;
+  return [
+    {kind:"corpus",id:"mesbah",name_fa:"آثار علامه مصباح",min_points:0,unlocked:true,hint:"همیشه در دسترس"},
+    {kind:"corpus",id:"eiis",name_fa:"کتابخانهٔ علوم عقلی",min_points:0,unlocked:true,hint:"همیشه در دسترس"},
+    {kind:"corpus",id:"taghrir",name_fa:"تقریرات درس خارج",min_points:0,unlocked:true,hint:"همیشه در دسترس"},
+    {kind:"corpus",id:"taghrir-100",name_fa:"تقریرات درس خارج (۱۰۰٪)",min_points:0,unlocked:true,hint:"همیشه در دسترس"},
+    {kind:"action",id:"points-10",name_fa:"⚖️ داوری و امتیاز دادن به پاسخ\u200Cها",min_points:10,unlocked:false,hint:"در لابراتوار به پاسخ\u200Cها امتیاز دهید و داوری کنید."},
+    {kind:"action",id:"points-20",name_fa:"🔖 نشانه\u200Cگذاری و فهرست\u200Cهای پژوهش",min_points:20,unlocked:false,hint:"نتایج را نشانه\u200Cگذاری کنید و فهرست\u200Cهای پژوهش شخصی بسازید."},
+    {kind:"action",id:"points-30",name_fa:"💬 ثبت نظر و دیدگاه",min_points:30,unlocked:false,hint:"در لابراتوار نظر و دیدگاه خود را ثبت کنید."},
+    {kind:"action",id:"points-40",name_fa:"🛡️ پیشنهاد اصلاح و گزارش خطای استناد",min_points:40,unlocked:false,hint:"خطاهای استناد را گزارش کنید و پیشنهاد اصلاح بدهید."},
+    {kind:"action",id:"points-100",name_fa:"📝 ارسال پرسش و پاسخ برای بازبینی",min_points:100,unlocked:false,hint:"پرسش و پاسخ\u200Cهای خود را برای بازبینی علمی ارسال کنید."},
+    {kind:"action",id:"points-300",name_fa:"🛡️ درخواست بازبینی لغو انتشار و صلاحیت نقش کارشناسی",min_points:300,unlocked:false,hint:"درخواست بازبینی لغو انتشار دهید و برای نقش کارشناسی صلاحیت کسب کنید."},
+  ];
+}
+function viewRoadmap(){
+  const items=roadmapItems();
+  const pts=ME?(ME.points||0):0;
+  const lv=ME&&ME.level?ME.level:{level:1,name:"جست\u200Cوجوگر",daily_quota:30};
+  const next=(ME&&ME.roadmap&&ME.roadmap.next)?ME.roadmap.next:(items.find(i=>!i.unlocked)||null);
+  const lvlNames=["جست\u200Cوجوگر","ارزیاب","کاوشگر","مشارکت\u200Cکننده","همیار پژوهش","پژوهشگر","پژوهشگر ارشد"];
+  const nextLvl=lvlNames[+lv.level||1]||null;
+  return `<div class="hero"><h1>نقشهٔ رشد</h1>
+    <p>تمام منابع علمی از همین حالا در اختیار شماست؛ با مشارکت علمی، امکانات و نقش‌های قوی‌تری باز می‌شوند.
+    امتیازها مشارکت شما را پاداش می‌دهند — هرگز دسترسی شما را محدود نمی‌کنند.</p></div>
+    ${ME?`<div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:6px">
+        <b>${esc(ME.name||ME.email)} <span class="lv">— ${esc(lv.name)}</span></b>
+        <span class="pill">امتیاز شما: <b>${pts}</b></span>
+      </div>
+      ${nextLvl?`<div class="muted">سطح بعدی: «${esc(nextLvl)}» — با مشارکت‌های علمی به آن می‌رسید.</div>`:""}
+    </div>`:""}
+    ${ME&&ME.onboarding&&ME.onboarding.show?onbRoadmapCard():""}
+    ${ME?messengerConnectCard():""}
+    ${ME?`<div id="consentCardBox"></div>`:""}
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px">
+        <b>منابع علمی — همیشه در دسترس</b>
+        <span class="pill">برای همه باز</span>
+      </div>
+      ${items.filter(i=>i.kind==="corpus").map(it=>`
+        <div class="mstone unlocked">
+          <span class="ic">📚</span>
+          <div style="flex:1;min-width:0"><b>${esc(it.name_fa)}</b>
+            ${it.hint?`<div class="mstonehint">${esc(it.hint)}</div>`:""}</div>
+          <span class="need">دسترسی باز</span>
+        </div>`).join("")}
+      <div class="row" style="justify-content:space-between;margin:14px 0 10px">
+        <b>امکانات مشارکت علمی</b>
+        <span class="pill">امتیاز شما: <b>${pts}</b></span>
+      </div>
+      ${items.filter(i=>i.kind!=="corpus").map(it=>{
+        const un=!!it.unlocked;
+        const need=+it.min_points||0;
+        const pct=need?Math.min(100,Math.round(pts*100/need)):100;
+        return `<div class="mstone ${un?"unlocked":""}">
+          <span class="ic">${un?"✅":"🔒"}</span>
+          <div style="flex:1;min-width:0"><b>${esc(it.name_fa)}</b>
+            ${it.hint?`<div class="mstonehint">${esc(it.hint)}</div>`:""}
+            ${un?"":`<div class="bar"><div class="barfill" style="width:${pct}%"></div></div>`}</div>
+          <span class="need">${un?"باز شد":need+" امتیاز"}</span>
+        </div>`;}).join("")}
+    </div>
+    ${next?`<div class="card"><b>قدم بعد شما</b>
+      <div class="muted" style="margin-top:8px">+۱۰ هر پاسخ · +۵ امتیاز دادن · +۱۵ امتیاز دادن با علت — بعد از ${Math.max(0,next.min_points-pts)} امتیاز دیگر: ${esc(next.name_fa)}</div>
+      ${ME?"":'<div class="muted" style="margin-top:8px">با <a href="#" onclick="openAuth();return false">عضویت</a> با ۲۰ امتیاز شروع می‌کنید.</div>'}</div>`
+    :'<div class="card muted">همهٔ امکانات مشارکت برای شما باز شده‌اند. 🎉</div>'}`;
+}
+window.openLockModal=(cid,need)=>{
+  toast("همهٔ مجموعه‌ها از همین حالا برای همه باز هستند — از لیست انتخاب کنید.");
+};
+/* ---------------- T3: leaderboard ---------------- */
+function viewLb(){
+  return `<div class="hero"><h1>لیدربرد فعالیت</h1>
+    <p>فعالیت کاملا‌ً ناشناس: هر کاربر فقط با یک کد ۴ حرفه شناخته می‌شود — نه نام، نه ایمیل.
+    امتیاز با پرسش (۱۰)، داوری در لابراتوار (۵ تا ۱۵) و فعالیت‌های روزانه جمع می‌شود.</p></div>
+    <div class="card">
+      <div class="row" id="lbPeriods" style="margin-bottom:12px">
+        ${Object.keys(LB_LABELS).map(p=>`<button class="ghost small ${p===LB_PERIOD?"on":""}" data-p="${p}">${LB_LABELS[p]}</button>`).join("")}
+      </div>
+      <div id="lbBody"><span class="spin"></span>در حال بارگذاری…</div>
+    </div>`;
+}
+function loadLb(){
+  api("/leaderboard?period="+LB_PERIOD).then(d=>{
+    const sm=d.summary||{};
+    const rows=d.rows||[];
+    $("#lbBody").innerHTML=`
+      <div class="row" style="margin-bottom:12px">
+        <span class="pill">کاربر فعال: <b>${sm.active_users??0}</b></span>
+        <span class="pill">سؤال: <b>${sm.questions??0}</b></span>
+        <span class="pill">پاسخ: <b>${sm.answers??0}</b></span>
+        <span class="pill">امتیازدهی: <b>${sm.ratings??0}</b></span>
+      </div>
+      ${rows.length?`<table>
+        <tr><th>ردیف</th><th>کاربر</th><th>سطح</th><th class="num">امتیاز</th>
+            <th class="num">سؤال</th><th class="num">پاسخ</th><th class="num">امتیازدهی</th></tr>
+        ${rows.map((r,i)=>`<tr>
+          <td><span class="rank ${i<3?"r"+(i+1):""}">${i+1}</span></td>
+          <td><code>${esc(r.alias)}</code></td>
+          <td>${esc(r.level||"—")}</td>
+          <td class="num"><b>${r.points}</b></td>
+          <td class="num">${r.questions}</td>
+          <td class="num">${r.answers}</td>
+          <td class="num">${r.ratings}</td>
+        </tr>`).join("")}</table>`
+      :'<div class="muted">در این بازه هنوز فعالیتی ثبت نشده است.</div>'}
+      ${d.levels&&d.levels.length?`<div class="muted" style="margin-top:12px">سطوح:
+        ${d.levels.map(l=>`<span class="tag">${esc(l.name)} — از ${l.min_points} امتیاز</span>`).join(" ")}</div>`:""}`;
+  }).catch(e=>{$("#lbBody").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+}
+
+/* ---------------- T7/P3: QA bank (progressive 20-per-page, cursor) ------- */
+let QA={cursor:null,hasMore:true,loading:false,obs:null,shown:0,total:0};
+function viewQa(){
+  return `<div class="hero"><h1>بانک پرسش و پاسخ</h1>
+    <p>پاسخ‌هایی که دستگاه خودش در ساعات خلوت شبانه (۱۴:۰۰ تا ۰۸:۰۰، با توجه به پایداری GPU)
+    از سؤالی‌های بی‌پاسخ ساخته است — پیش‌نویس برای بازبینی؛ چیزی به‌صورت خودکار منتشر نمی‌شود.
+    با اسکرول به پایین، موارد بیشتر به‌تدریج بارگذاری می‌شوند (۲۰ تا در هر بار).</p></div>
+    <div id="qaList"></div>
+    <div id="qaLoader" class="qa-loader" style="display:none"></div>
+    <div id="qaMoreWrap" style="display:none;text-align:center;margin-top:14px">
+      <button class="ghost" id="qaMoreBtn">بارگذاری موارد بیشتر</button></div>
+    <div id="qaSentinel" class="qa-sentinel"></div>`;
+}
+function qaCard(q){
+  const c=CORPORA.find(x=>x.id===q.corpus_id);
+  const body=String(q.answer||"");
+  const short=body.length>420?body.slice(0,420).trim()+" […]":body;
+  const aid=q.answer_id;
+  const stars=[1,2,3,4,5].map(n=>`<button class="qa-star s${n}" data-qstar="${aid}" data-n="${n}" title="${n} ستاره">★</button>`).join("");
+  const nudgePrompt=`دلیلش رو دوست داشتی یه‌جمله بنویس… (اختیاری — برای امتیاز بیشتر)`;
+  return `<div class="ans qa-card" data-qa="${aid}" style="margin-top:12px">
+    <div class="head"><span class="badge">${esc(c?c.name_fa:q.corpus_id)}</span>
+      <span class="muted">${faDate(q.created_at)}</span>
+      <span class="muted" id="qacnt${aid}" style="margin-inline-start:auto"></span></div>
+    <b style="font-size:14.5px">${esc(q.topic)}</b>
+    <p class="qa-short" style="margin-top:8px;color:var(--tx2)">${esc(short)}</p>
+    ${body.length>420?`<p class="qa-full" style="margin-top:8px;color:var(--tx2);display:none">${esc(body)}</p>
+    <button class="ghost small qa-toggle">نمایش کامل</button>`:""}
+    <div class="qa-actions">
+      <span class="stars" style="gap:0">${stars}</span>
+      <span style="flex:1"></span>
+      <button class="ghost small qa-like" data-qaact="like" data-qaid="${aid}">👍 لایک</button>
+      <button class="ghost small qa-dislike" data-qaact="dislike" data-qaid="${aid}">👎 دیس‌لایک</button>
+    </div>
+    <div class="qa-nudge" id="qan${aid}">
+      <div>${nudgePrompt}</div>
+      <textarea id="qatx${aid}" rows="2" placeholder="علت موافقت یا مخالفتت را بنویس…"></textarea>
+      <div class="nrow"><button class="primary small" data-qasub="${aid}">ثبت نظر</button>
+        <button class="ghost small" data-qacancel="${aid}">لغو</button></div>
+    </div>
+  </div>`;
+}
+function qaBindCard(card){
+  const aid=card.dataset.qa;
+  const stars=[...card.querySelectorAll(".qa-star")];
+  stars.forEach(b=>b.onclick=()=>{
+    const n=+b.dataset.n;
+    PENDING[aid]=(PENDING[aid]===n)?0:n;
+    const cur=PENDING[aid]||0;
+    stars.forEach(x=>x.classList.toggle("on",+x.dataset.n<=cur));
+  });
+  const toggle=card.querySelector(".qa-toggle");
+  if(toggle)toggle.onclick=()=>{
+    const full=card.querySelector(".qa-full"), sh=card.querySelector(".qa-short");
+    const open=full.style.display==="none";
+    full.style.display=open?"":"none"; sh.style.display=open?"none":"";
+    toggle.textContent=open?"جمع کردن":"نمایش کامل";
+  };
+  card.querySelectorAll("[data-qaact]").forEach(b=>b.onclick=()=>{
+    const verdict=b.dataset.qaact;
+    const getStars=()=>PENDING[aid]||3;
+    const cm=card.querySelector("textarea");
+    rateAnswer(aid,verdict,getStars(),cm?cm.value.trim():null);
+  });
+  card.querySelector("[data-qasub]").onclick=()=>{
+    const cm=card.querySelector("textarea");
+    const getStars=()=>PENDING[aid]||3;
+    const reason=cm?cm.value.trim():null;
+    if(!reason){toast("برای ثبت نظر با علت، اول دلیلت را بنویس.");return;}
+    const cur=PENDING[aid]||3;
+    rateAnswer(aid,cur>=3?"like":"dislike",cur,reason);
+  };
+  card.querySelector("[data-qacancel]").onclick=()=>{
+    const n=card.querySelector(".qa-nudge"); n.classList.remove("on");
+    const cm=card.querySelector("textarea"); if(cm)cm.value="";
+  };
+}
+function qaShowMore(card){
+  const n=card.querySelector(".qa-nudge"); if(!n)return;
+  const cm=card.querySelector("textarea"); if(cm)cm.value="";
+  n.classList.add("on");
+  try{cm&&cm.focus();}catch(e){}
+}
+function qaApply(d,opts){
+  const list=$("#qaList");
+  (d.items||[]).forEach((q,i)=>{
+    const wrap=document.createElement("div");
+    wrap.innerHTML=qaCard(q);
+    const card=wrap.firstElementChild;
+    if(opts&&opts.fresh)card.classList.add("fresh");
+    COUNTERS[q.answer_id]={likes:0,dislikes:0,avg:0};
+    list.appendChild(card);
+    qaBindCard(card);
+    QA.shown++;
+  });
+  QA.cursor=d.next_cursor; QA.hasMore=!!d.has_more; QA.total=d.total||0;
+  const sentinel=$("#qaSentinel"), loader=$("#qaLoader");
+  if(sentinel)sentinel.style.display=QA.hasMore?"":"none";
+  if(loader)loader.style.display="none";
+}
+function loadQa(){
+  QA={cursor:null,hasMore:true,loading:false,obs:null,shown:0,total:0};
+  const list=$("#qaList"); if(!list)return;
+  list.innerHTML='<div class="card"><span class="spin"></span>در حال بارگذاری…</div>';
+  const sentinel=$("#qaSentinel");
+  if(QA.obs){try{QA.obs.disconnect();}catch(e){} QA.obs=null;}
+  if(sentinel)sentinel.style.display="none";
+  api("/qa-bank/v2?limit=20").then(d=>{
+    list.innerHTML="";
+    if(!(d.items||[]).length){
+      list.innerHTML='<div class="card muted">هنوز موردی در بانک نیست. اولین موارد در اولین پیک کاری (۱۴:00 تا ۰۸:00 تهران) ساخته می‌شوند.</div>';
+      return;
+    }
+    qaApply(d,{fresh:false});
+    setupQaObserver();
+  }).catch(e=>{list.innerHTML=`<div class="card">${esc(e.message)}</div>`;});
+}
+function setupQaObserver(){
+  const sentinel=$("#qaSentinel");
+  if(!sentinel)return;
+  if(QA.obs){try{QA.obs.disconnect();}catch(e){} QA.obs=null;}
+  if(QA.scrollBound){try{window.removeEventListener("scroll",QA.scrollBound);}catch(e){} QA.scrollBound=null;}
+  if(typeof IntersectionObserver!=="undefined"){
+    QA.obs=new IntersectionObserver(entries=>{
+      entries.forEach(en=>{ if(en.isIntersecting) qaLoadNext(); });
+    },{rootMargin:"300px 0px"});
+    QA.obs.observe(sentinel);
+  }
+  /* scroll fallback (robust even where the observer is flaky) */
+  QA.scrollBound=()=>{
+    const r=sentinel.getBoundingClientRect();
+    if(r.top<window.innerHeight+300) qaLoadNext();
+  };
+  window.addEventListener("scroll",QA.scrollBound,{passive:true});
+  window.addEventListener("resize",QA.scrollBound,{passive:true});
+  /* guaranteed manual fallback: a "load more" button (accessible, works everywhere) */
+  const moreWrap=$("#qaMoreWrap"), moreBtn=$("#qaMoreBtn");
+  if(moreBtn && !QA.moreBound){
+    QA.moreBound=true;
+    moreBtn.onclick=()=>{ qaLoadNext(); if(moreBtn.scrollIntoView)moreBtn.scrollIntoView({block:"center"}); };
+  }
+  qaSyncMoreBtn();
+}
+function qaSyncMoreBtn(){
+  const moreWrap=$("#qaMoreWrap");
+  if(moreWrap)moreWrap.style.display=QA.hasMore?"":"none";
+}
+function qaLoadNext(){
+  if(!QA.hasMore||QA.loading)return;
+  QA.loading=true;
+  const loader=$("#qaLoader"); if(loader){loader.style.display=""; loader.innerHTML='<span class="spin"></span>در حال بارگذاری موارد بیشتر…';}
+  const moreBtn=$("#qaMoreBtn"); if(moreBtn){moreBtn.disabled=true;moreBtn.textContent="در حال بارگذاری…";}
+  const url=QA.cursor?"/qa-bank/v2?limit=20&cursor="+encodeURIComponent(QA.cursor):"/qa-bank/v2?limit=20";
+  api(url).then(d=>{
+    qaApply(d,{fresh:true});
+    setupQaObserver();   /* re-observe + resync "load more" button */
+  }).catch(e=>{
+    if(loader)loader.innerHTML=`<div class="muted">${esc(e.message)}</div>`;
+    if(moreBtn){moreBtn.disabled=false;moreBtn.textContent="بارگذاری موارد بیشتر";}
+  }).finally(()=>{QA.loading=false;});
+}
+
+/* ---------------- blog / lab / admin (unchanged behavior) ---------------- */
+function viewBlog(){
+  return `<div class="hero"><h1>بلاگ</h1><p>مجموعه‌های سؤال و پاسخ‌های تأییدشدهٔ مدیر — هر مطلب از یک جلسهٔ پرسش واقعی ساخته شده است.</p></div>
+    <div id="blogList"><div class="card"><span class="spin"></span>در حال بارگذاری…</div></div>`;
+}
+function viewLab(){
+  return `<div class="hero"><h1>لابراتوار</h1><p>جای بازی و داوری: به پاسخ‌ها ستاره بدهید (۱ تا ۵)، لایک/دیس‌لایک کنید و علت موافقت یا مخالفتتان را بنویسید. برای هر داوریِ جدید یا تغییرشده امتیاز می‌گیرید؛ امتیاز بیشتر یعنی سهمیهٔ سؤال بیشتر در روز. هر پاسخ همراه با منابع دقیق (کتاب و صفحه) است.</p></div>
+    <div id="labList"><div class="card"><span class="spin"></span>در حال بارگذاری…</div></div>`;
+}
+function viewAdmin(){
+  return `<div class="hero"><h1>مدیریت</h1><p>انتشار پیش‌نویس‌های بلاگ و افزودن مجموعه‌های جدید (model = نام مدل در LiteLLM).</p></div>
+    <div class="card"><div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">مطالب بلاگ</h3>
+      <div class="row"><button class="ghost small" id="adDraft">پیش‌نویس‌ها</button>
+      <button class="ghost small" id="adPub">منتشرشده‌ها</button></div></div>
+      <div id="adPosts" style="margin-top:10px"><span class="spin"></span></div></div>
+    <div class="card"><h3 style="margin-top:0">درخواست‌های لغو انتشار</h3>
+      <div class="muted" style="margin-bottom:10px">کاربران با ۳۰۰+ امتیاز می‌توانند بازبینی لغو انتشار یک مطلب را درخواست کنند. تأیید شما مطلب را به پیش‌نویس بازمی‌گرداند.</div>
+      <div class="row" style="margin-bottom:8px"><button class="ghost small on" id="upPending">در انتظار</button>
+      <button class="ghost small" id="upResolved">پاسخ‌داده‌شده</button></div>
+      <div id="upList"><span class="spin"></span></div>
+    </div>
+    <div class="card"><h3 style="margin-top:0">افزودن مجموعهٔ جدید</h3>
+      <div class="row" style="flex-direction:column;align-items:stretch;gap:9px">
+        <input id="cId" placeholder="id لاتین (مثلا‌ً tafsir)" style="max-width:260px">
+        <input id="cName" placeholder="نام فارسی (مثلا‌ً تفسیر)">
+        <input id="cModel" placeholder="model در LiteLLM (مثلا‌ً rag-tafsir)" style="max-width:260px">
+        <div><button class="primary" id="btnCorpus">افزودن</button></div>
+      </div>
+    </div>
+    <div class="card"><div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">📣 کمپین‌ها و پیام‌های مرکزی</h3>
+      <button class="primary small" id="btnCampNew">+ کمپین جدید</button></div>
+      <div class="muted" style="margin-top:8px">پیام‌ها از همین پنل روی هر ۴ سایت مدیریت می‌شوند؛ انتشار و توقف <b>بدون deploy</b> و بلافاصله اعمال می‌شود. حذف ایمن است: کمپینی که تاریخچه دارد به‌جای حذف آرشیو می‌شود و تاریخچهٔ کامل تغییرات (با نام مدیر) همیشه قابل مشاهده است.</div>
+      <div class="row" style="margin-top:10px">
+        <button class="ghost small on" id="cfAll">همه</button>
+        <button class="ghost small" id="cfDraft">پیش‌نویس</button>
+        <button class="ghost small" id="cfPub">منتشرشده</button>
+        <button class="ghost small" id="cfPaused">متوقف</button>
+        <button class="ghost small" id="cfArch">آرشیو</button>
+      </div>
+      <div id="campList" style="margin-top:10px"><span class="spin"></span></div>
+    </div>
+    <div class="card"><div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">📇 مدیریت مخاطبین (مبتنی بر رضایت)</h3></div>
+      <div class="muted" style="margin-top:8px">اطلاعات تماس فقط در صورت رضایت فعال کاربر درج می‌شود؛ هر رضایت قابل لغو است و هر بار خروجی‌گیری/نمایش در لاگ ممایش ثبت می‌شود. شماره‌های تلفن به‌صورت پیش‌فرض ماسک شده‌اند و فقط برای مدیران دارای مجوز خاص کامل نمایش داده می‌شوند.</div>
+      <div id="ctSummary" style="margin-top:10px"><span class="spin"></span></div>
+      <div class="row" style="margin-top:10px">
+        <button class="ghost small" id="ctEmails">📧 خروجی ایمیل‌ها</button>
+        <button class="ghost small" id="ctPhones">📱 شماره‌ها (ماسک)</button>
+        <button class="ghost small" id="ctExports">📋 لاگ خروجی</button>
+        <button class="ghost small" id="ctAudit">📜 رویدادهای رضایت</button>
+      </div>
+    </div>
+    <div class="card"><h3 style="margin-top:0">🤖 مدیریت ربات‌های اطلاع‌رسانی</h3>
+      <div class="muted" style="margin-top:8px">توکن ربات (از پنل BotFather تلیگرام یا پنل ربات بل) را وارد کرده و «اعمال و تأیید» بزنید. توکن فقط پس از آنکه در سمت سرور با getMe تأیید شود ذخیره می‌شود؛ فعال‌سازی صرفاً پس از تأیید امکان‌پذیر است. تا تأیید نشود، وضعیت کانال «در انتظار پیکربندی» (PENDING_CONFIGURATION) باقی می‌ماند.</div>
+      <div id="botList" style="margin-top:12px;display:flex;flex-direction:column;gap:12px"><span class="spin"></span></div>
+    </div>`;
+  }
+/* ---------------- V2H (TASK2): unified activity dashboard ---------------- */
+// All the user's Q&A events from the four RAGs + this portal (the backend
+// aggregates them; scope=all is admin-only, enforced server-side).
+const ACT_KINDS={
+  "question.created":"🔵 سؤال ثبت شد",
+  "answer.started":"⏳ شروع پاسخ",
+  "answer.completed":"✅ پاسخ کامل شد",
+  "answer.failed":"❌ پاسخ ناموفق",
+  "answer.recovered":"⚡ پاسخ از کش"
+};
+const ACT_SITES=[["","همهٔ سایت‌ها"],["portal","رگ (درگاه)"],["mesbah","مصباح"],["eiis","علوم عقلی"],["taghrir","تقریرات"]];
+function actRow(r){
+  const site=esc(r.site||"?")+(r.corpus?` · ${esc(r.corpus)}`:"");
+  const meta=[];
+  if(r.lang)meta.push("زبان: "+esc(r.lang));
+  if(r.model)meta.push("مدل: "+esc(r.model));
+  if(r.latency_ms!=null)meta.push(r.latency_ms+" ms");
+  if(r.citation_count!=null)meta.push(r.citation_count+" منبع");
+  if(r.retries)meta.push("تلاش: "+r.retries);
+  const det=(r.question||r.error||r.conv_id)?`<details style="margin-top:6px"><summary class="muted">نمایش سؤال و جزئیات</summary>
+    <div style="margin-top:6px;font-size:13px;line-height:1.8;white-space:pre-wrap">${esc(r.question||"")}</div>
+    ${r.error?`<div class="muted" style="margin-top:4px">خطا: ${esc(r.error)}</div>`:""}
+    ${r.conv_id?`<div class="muted">گفتگو: ${esc(r.conv_id)}${r.request_id?" · درخواست: "+esc(r.request_id):""}</div>`:""}
+    </details>`:"";
+  return `<div class="card" style="padding:10px 14px">
+    <div class="row" style="justify-content:space-between">
+      <div><span class="badge ok">${esc(ACT_KINDS[r.kind]||r.kind)}</span>
+        <span class="chip">${site}</span>
+        ${r.user_id?`<span class="muted">کاربر: ${esc(r.user_id.slice(0,8))}</span>`:`<span class="muted">مهمان</span>`}
+      </div>
+      <span class="muted">${faDate(r.ts)}</span>
+    </div>
+    ${meta.length?`<div class="muted" style="margin-top:6px;font-size:12px">${meta.join(" · ")}</div>`:""}
+    ${det}
+  </div>`;
+}
+function viewActivity(){
+  const isAdmin=!!(ME&&ME.is_admin);
+  return `<div class="hero"><h1>فعالیت من</h1><p>همهٔ سؤال‌ها و پاسخ‌های شما از چهار سایت (رگ، مصباح، علوم عقلی، تقریرات) در یک‌جا. این صفحه فقط فعالیتِ خودتان را نشان می‌دهد؛ نمای کلی همهٔ کاربران فقط برای مدیران است.</p></div>
+    ${!ME?`<div class="card"><div class="muted">برای دیدن تاریخچهٔ فعالیت خودتان، وارد حساب کاربری‌تان شوید.</div>
+      <div class="row" style="margin-top:10px"><button class="primary" onclick="openAuth()">ورود / عضویت</button></div></div>`
+    :`<div class="card">
+      <div class="row" style="flex-wrap:wrap;gap:10px;align-items:center">
+        <select id="actSite">${ACT_SITES.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select>
+        <select id="actDays"><option value="1">۱ روز</option><option value="7">۷ روز</option><option value="30" selected>۳۰ روز</option><option value="90">۹۰ روز</option><option value="365">۱ سال</option></select>
+        ${isAdmin?`<select id="actScope"><option value="own" selected>فقط من</option><option value="all">همهٔ کاربران (نمای مدیر)</option></select>`:""}
+        <button class="ghost small" id="actRefresh">🔄 بروزرسانی</button>
+        <span class="muted" id="actInfo"></span>
+      </div>
+      <div id="actList" style="margin-top:12px;display:flex;flex-direction:column;gap:8px"><div class="card"><span class="spin"></span>در حال بارگذاری…</div></div>
+    </div>`}`;
+}
+async function loadActivity(){
+  const list=$("#actList");
+  if(!list)return;
+  try{
+    const site=$("#actSite")?$("#actSite").value:"";
+    const days=$("#actDays")?$("#actDays").value:"30";
+    const scope=$("#actScope")?$("#actScope").value:"own";
+    const qs=[`days=${days}`,`limit=300`,site?`site=${site}`:""].filter(Boolean).join("&");
+    const d=await api(`/activity?${qs}&scope=${scope}`);
+    const rows=d.rows||[];
+    $("#actInfo").textContent=`${rows.length} رویداد`;
+    list.innerHTML=rows.length?rows.map(actRow).join(""):`<div class="card muted">فعالیتی در این بازهٔ زمانی نیست. اولین سؤال خود را بپرسید!</div>`;
+  }catch(e){list.innerHTML=`<div class="card">${esc(e.message)}</div>`;}
+}
+function bindView(){
+  if(VIEW==="ask"){
+    const b=$("#btnAsk"); if(b)b.onclick=submitAsk;
+    const h=$("#askHint");
+    if(h&&ME)h.textContent=`سطح ${ME.level.name} — سؤال‌های باقی‌ماندهٔ امروز: ${ME.remaining_today}`;
+  }
+  if(VIEW==="lb"){
+    document.querySelectorAll("#lbPeriods [data-p]").forEach(b=>b.onclick=()=>{
+      LB_PERIOD=b.dataset.p;
+      document.querySelectorAll("#lbPeriods [data-p]").forEach(x=>x.classList.toggle("on",x.dataset.p===LB_PERIOD));
+      loadLb();
+    });
+    loadLb();
+  }
+  if(VIEW==="qabank"){ loadQa(); }
+  if(VIEW==="thinktank"){ loadThinkTank(); }
+  if(VIEW==="activity"){
+    loadActivity();
+    const arf=$("#actRefresh"); if(arf)arf.onclick=async()=>{busyOn(arf);try{await loadActivity();}finally{busyOff(arf);}};
+    const ast=$("#actSite"); if(ast)ast.onchange=loadActivity;
+    const ady=$("#actDays"); if(ady)ady.onchange=loadActivity;
+    const asc=$("#actScope"); if(asc)asc.onchange=loadActivity;
+  }
+  if(VIEW==="blog"){
+    api("/blog").then(list=>{
+      $("#blogList").innerHTML=list.length?list.map(p=>`
+        <div class="card"><div class="row" style="justify-content:space-between">
+          <b style="font-size:16px">${esc(p.title)}</b>
+          <span class="muted">${faDate(p.published_at)}</span></div>
+          <div>${(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>
+          <div class="post-body">${esc(p.body)}</div>
+          ${ME&&ME.points>=300?`<div class="row" style="margin-top:10px">
+            <button class="ghost small" data-unpubreq="${p.id}" data-title="${esc(p.title)}">🛡️ درخواست لغو انتشار (بازبینی)</button>
+            <span class="muted">درخواست برای بازبینی مدیر ثبت می‌شود — چیزی به‌صورت خودکار حذف نمی‌شود.</span></div>`:""}
+        </div>`).join("")
+        :'<div class="card muted">هنوز مطلبی منتشر نشده است.</div>';
+      document.querySelectorAll("#blogList [data-unpubreq]").forEach(b=>b.onclick=()=>openUnpubModal(+b.dataset.unpubreq,b.dataset.title));
+    }).catch(e=>$("#blogList").innerHTML=`<div class="card">${esc(e.message)}</div>`);
+  }
+  if(VIEW==="lab"){
+    api("/lab").then(list=>{
+      list.forEach(a=>{MY_RATING[a.id]=a.my_rating||null;COUNTERS[a.id]={likes:a.likes||0,dislikes:a.dislikes||0,avg:a.avg_stars||0};});
+      $("#labList").innerHTML=list.length?list.map(a=>labCard(a)).join("")
+        :'<div class="card muted">هنوز پاسخی در لابراتوار نیست. اول یک سؤال بپرسید!</div>';
+      document.querySelectorAll("#labList .ans").forEach(card=>{
+        const aid=card.dataset.a;
+        const starBtns=[...card.querySelectorAll(".stars button")];
+        starBtns.forEach(b=>b.onclick=()=>{
+          const n=+b.dataset.n;
+          PENDING[aid]=(PENDING[aid]===n)?0:n;
+          const cur=PENDING[aid]||0;
+          starBtns.forEach(x=>x.classList.toggle("on",+x.dataset.n<=cur));
+        });
+        const cm=document.getElementById("cm"+aid);
+        const getStars=()=>PENDING[aid]||3;
+        const getReason=()=>cm?cm.value.trim():null;
+        card.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>rateAnswer(aid,b.dataset.v,getStars(),getReason()));
+        card.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{
+          const st=getStars();
+          rateAnswer(aid,st>=3?"like":"dislike",st,getReason());
+        });
+      });
+    }).catch(e=>$("#labList").innerHTML=`<div class="card">${esc(e.message)}</div>`);
+  }
+  if(VIEW==="admin"){
+    const t1=$("#adDraft"),t2=$("#adPub");
+    if(t1)t1.onclick=()=>{window.adStatus="draft";window.loadAdminPosts();};
+    if(t2)t2.onclick=()=>{window.adStatus="published";window.loadAdminPosts();};
+    window.loadAdminPosts();
+    const up1=$("#upPending"),up2=$("#upResolved");
+    const upGo=st=>{window.upStatus=st;up1.classList.toggle("on",st==="pending");up2.classList.toggle("on",st==="resolved");window.loadUnpubReqs();};
+    if(up1)up1.onclick=()=>upGo("pending");
+    if(up2)up2.onclick=()=>upGo("resolved");
+    window.upStatus="pending";window.loadUnpubReqs();
+    const b=$("#btnCorpus"); if(b)b.onclick=async()=>{
+      try{await api("/admin/corpora",{method:"POST",body:JSON.stringify({
+        id:$("#cId").value.trim(),name_fa:$("#cName").value.trim(),model:$("#cModel").value.trim()})});
+        toast("مجموعه اضافه شد");CORPORA=await api("/corpora");}catch(e){toast(e.message);}
+    };
+    /* V3-6 (TASK2): central campaign CMS wiring */
+    window.campFilter=window.campFilter||"";
+    window.loadCampaigns();
+    const cfIds=["cfAll","cfDraft","cfPub","cfPaused","cfArch"];
+    cfIds.forEach(id=>{const el=$("#"+id);
+      if(el)el.onclick=()=>{const st={cfAll:"",cfDraft:"draft",cfPub:"published",cfPaused:"paused",cfArch:"archived"}[id];
+        window.campFilter=st;cfIds.forEach(x=>{const e2=$("#"+x);if(e2)e2.classList.toggle("on",x===id);});window.loadCampaigns();};});
+    const bcn=$("#btnCampNew"); if(bcn)bcn.onclick=()=>window.openCampEditor(null);
+    /* V3-7 (TASK4): contact management wiring */
+    window.loadContactsSummary();
+    const ctb=(id,fn)=>{const el=$("#"+id);if(el)el.onclick=fn;};
+    ctb("ctEmails",()=>window.openContactModal("emails"));
+    ctb("ctPhones",()=>window.openContactModal("phones"));
+    ctb("ctExports",()=>window.openContactModal("exports"));
+    ctb("ctAudit",()=>window.openContactModal("audit"));
+    /* V4M-P4: notification bots wiring */
+    window.loadBots();
+  }
+}
+function labCard(a){
+  const c=CORPORA.find(x=>x.id===a.corpus_id);
+  return `<div class="ans" data-a="${a.id}">
+    <div class="head"><span class="badge">${esc(c?c.name_fa:a.corpus_id)}</span>
+      <span class="badge">پاسخ ${a.round}</span>
+      <span class="stars" id="st${a.id}">${[1,2,3,4,5].map(n=>`<button data-n="${n}" class="${a.avg_stars&&n<=Math.round(a.avg_stars)?'on':''}">★</button>`).join("")}</span>
+      <span class="muted" id="cnt${a.id}">${a.avg_stars?a.avg_stars+" ★":"بدون امتیاز"} · 👍 ${a.likes} · 👎 ${a.dislikes}</span></div>
+    <b style="font-size:14px">${esc(a.question)}</b>
+    <div style="margin-top:8px">${renderAnswerText(a)}</div>
+    ${citationsBlock(a)}
+    <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--tx2);font-size:13.5px">نظرات (${a.ratings.length})</summary>
+      <div>${a.ratings.map(r=>`<div class="muted" style="margin-top:6px">${"★".repeat(r.stars)} — ${esc(r.comment||r.reason||r.verdict==="like"?"لایک":"دیس‌لایک")}</div>`).join("")||'<div class="muted">هنوز نظری نیست.</div>'}</div>
+    </details>
+    ${(ME&&ME.points>=10)?`<div class="row" style="margin-top:10px">
+      <button class="ghost small${a.my_rating&&a.my_rating.verdict==="like"?" on":""}" id="vb${a.id}_like" data-v="like" data-a="${a.id}">👍 لایک</button>
+      <button class="ghost small${a.my_rating&&a.my_rating.verdict==="dislike"?" on":""}" id="vb${a.id}_dis" data-v="dislike" data-a="${a.id}">👎 دیس‌لایک</button>
+      <input id="cm${a.id}" placeholder="${ME.points>=30?"علت موافقت/مخالفت (اختیاری) — برای امتیاز بیشتر بنویسید":"ثبت نظر از ۳۰ امتیاز باز می‌شود"}" style="flex:1;min-width:200px" ${ME.points>=30?"":"disabled"}>
+      <button class="primary small" data-r="${a.id}">ثبت نظر</button></div>`
+    :(ME?`<div class="muted" style="margin-top:10px">🔒 امتیاز دادن از ۱۰ امتیاز باز می‌شود — شما ${ME.points} امتیاز دارید. <a href="#" onclick="setView('roadmap');return false">نقشهٔ رشد</a></div>`
+    :'<div class="muted" style="margin-top:10px">برای امتیاز دادن <a href="#" onclick="openAuth();return false">وارد شوید</a>.</div>')}
+  </div>`;
+}
+function paintCnt(aid,pop){
+  const cnt=document.getElementById("cnt"+aid);
+  if(!cnt)return;
+  const c=COUNTERS[aid]||{likes:0,dislikes:0,avg:0};
+  cnt.textContent=(c.avg?c.avg+" ★":"بدون امتیاز")+" · 👍 "+c.likes+" · 👎 "+c.dislikes;
+  if(pop){cnt.classList.remove("vote-pop");void cnt.offsetWidth;cnt.classList.add("vote-pop");}
+}
+function qaPaintCnt(aid,pop){
+  const cnt=document.getElementById("qacnt"+aid);
+  if(!cnt)return;
+  const c=COUNTERS[aid]||{likes:0,dislikes:0,avg:0};
+  cnt.textContent=(c.avg?c.avg+" ★":"—")+" · 👍 "+c.likes+" · 👎 "+c.dislikes;
+  if(pop){cnt.classList.remove("qa-vote-pop");void cnt.offsetWidth;cnt.classList.add("qa-vote-pop");}
+}
+async function rateAnswer(aid,verdict,stars,reason){
+  if(window.__ratingInflight&&window.__ratingInflight[aid])return;  /* V4M-P1: dedupe — one vote request per answer */
+  window.__ratingInflight=window.__ratingInflight||{};
+  window.__ratingInflight[aid]=true;
+  /* P3: QA-bank cards use a different DOM (data-qa + data-qaid) — handle in place. */
+  const qcard=document.querySelector('.ans[data-qa="'+aid+'"]');
+  if(qcard){
+    const qLike=qcard.querySelector('[data-qact="like"]');
+    const qDis=qcard.querySelector('[data-qact="dislike"]');
+    const qSub=qcard.querySelector('[data-qasub]');
+    [qLike,qDis,qSub].forEach(b=>{if(b){b.disabled=true;b.classList.add("busy");}});
+    const snap=JSON.parse(JSON.stringify(COUNTERS[aid]||{likes:0,dislikes:0,avg:0}));
+    try{
+      const mr=MY_RATING[aid]||null;
+      const c=Object.assign({},snap);
+      if(!(mr&&mr.verdict===verdict)){
+        if(mr)c[mr.verdict==="like"?"likes":"dislikes"]--;
+        c[verdict==="like"?"likes":"dislikes"]++;
+      }
+      COUNTERS[aid]=c;qaPaintCnt(aid,false);
+      const d=await api(`/answers/${aid}/rate`,{method:"POST",body:JSON.stringify({stars,verdict,reason})});
+      COUNTERS[aid]={likes:d.likes||0,dislikes:d.dislikes||0,avg:d.avg_stars||0};
+      MY_RATING[aid]=d.my_rating||null;
+      qaPaintCnt(aid,true);
+      const m2=d.my_rating||null;
+      if(qLike)qLike.classList.toggle("on",!!m2&&m2.verdict==="like");
+      if(qDis)qDis.classList.toggle("on",!!m2&&m2.verdict==="dislike");
+      if(reason){const nx=qcard.querySelector(".qa-nudge");if(nx)nx.classList.remove("on");}
+      await refreshMe();
+      toast(d.changed?("نظر ثبت شد ✅ (+"+d.points_earned+" امتیاز)"):"نظر شما ثبت شده — چون تغییری ندادید، امتیازی اضافه نشد.");
+    }catch(e){
+      COUNTERS[aid]=snap;qaPaintCnt(aid,false);
+      toast(e.message);
+    }finally{
+      delete window.__ratingInflight[aid];
+      [qLike,qDis,qSub].forEach(b=>{if(b){b.disabled=false;b.classList.remove("busy");}});
+    }
+    return;
+  }
+  const card=document.querySelector('.ans[data-a="'+aid+'"]');
+  const likeB=document.getElementById("vb"+aid+"_like");
+  const disB=document.getElementById("vb"+aid+"_dis");
+  const subB=card?card.querySelector('[data-r]'):null;
+  const snap=JSON.parse(JSON.stringify(COUNTERS[aid]||{likes:0,dislikes:0,avg:0}));
+  if(likeB){likeB.disabled=true;likeB.classList.add("busy");}
+  if(disB){disB.disabled=true;disB.classList.add("busy");}
+  if(subB)subB.disabled=true;
+  /* optimistic in-place update (reconciled by the server response below) */
+  try{
+    const mr=MY_RATING[aid]||null;
+    const c=Object.assign({},snap);
+    if(!(mr&&mr.verdict===verdict)){
+      if(mr)c[mr.verdict==="like"?"likes":"dislikes"]--;
+      c[verdict==="like"?"likes":"dislikes"]++;
+    }
+    COUNTERS[aid]=c;paintCnt(aid,false);
+    const d=await api(`/answers/${aid}/rate`,{method:"POST",body:JSON.stringify({stars,verdict,reason})});
+    /* authoritative in-place update — NO full re-render: scroll, <details>,
+       input values and page state are preserved */
+    COUNTERS[aid]={likes:d.likes||0,dislikes:d.dislikes||0,avg:d.avg_stars||0};
+    MY_RATING[aid]=d.my_rating||null;
+    paintCnt(aid,true);
+    const m2=d.my_rating||null;
+    if(likeB)likeB.classList.toggle("on",!!m2&&m2.verdict==="like");
+    if(disB)disB.classList.toggle("on",!!m2&&m2.verdict==="dislike");
+    await refreshMe();
+    toast(d.changed?("نظر ثبت شد ✅ (+"+d.points_earned+" امتیاز)"):"نظر شما ثبت شده — چون تغییری ندادید، امتیازی اضافه نشد.");
+  }catch(e){
+    COUNTERS[aid]=snap;paintCnt(aid,false);   /* rollback on failure */
+    toast(e.message);
+  }finally{
+    delete window.__ratingInflight[aid];
+    if(likeB){likeB.disabled=false;likeB.classList.remove("busy");}
+    if(disB){disB.disabled=false;disB.classList.remove("busy");}
+    if(subB)subB.disabled=false;
+  }
+}
+window.adStatus="draft";
+window.loadAdminPosts=()=>{
+  const st=window.adStatus;
+  api("/admin/posts?status="+st).then(list=>{
+    $("#adPosts").innerHTML=list.length?`<table><tr><th>عنوان</th><th>تاریخ</th><th></th></tr>
+      ${list.map(p=>`<tr><td>${esc(p.title)} ${p.tags?`<span class="muted">(${esc(p.tags.replace(/[\[\]"]/g,""))})</span>`:""}</td>
+      <td class="muted">${faDate(p.created_at)}</td>
+      <td>${st==="draft"
+        ?`<button class="ghost small" data-pub="${p.id}">انتشار</button>`
+        :`<button class="ghost small" data-unpub="${p.id}">لغو انتشار</button>`}</td></tr>`).join("")}</table>`
+      :`<div class="muted">مطلبی با این وضعیت نیست.</div>`;
+    document.querySelectorAll("#adPosts [data-pub]").forEach(b=>b.onclick=async()=>{
+      try{await api(`/admin/posts/${b.dataset.pub}/publish`,{method:"POST"});toast("منتشر شد ✅");refreshView();}catch(e){toast(e.message);}
+    });
+    document.querySelectorAll("#adPosts [data-unpub]").forEach(b=>b.onclick=async()=>{
+      try{await api(`/admin/posts/${b.dataset.unpub}/unpublish`,{method:"POST"});toast("لغو انتشار شد");refreshView();}catch(e){toast(e.message);}
+    });
+  }).catch(e=>{$("#adPosts").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+};
+window.loadUnpubReqs=()=>{
+  const st=window.upStatus||"pending";
+  api("/admin/unpublish-requests?status="+st).then(list=>{
+    $("#upList").innerHTML=list.length?list.map(r=>`<div class="mstone" style="margin-bottom:8px">
+      <span class="ic">📄</span>
+      <div style="flex:1;min-width:0"><b>${esc(r.title)}</b>
+        <div class="muted">کاربر <code>${esc(r.alias)}</code> · ${faDate(r.created_at)}${r.decision?` · تصمیم: ${r.decision==="approve"?"تأیید":"رد"}`:""}</div>
+        ${r.reason?`<div class="muted">دلیل: ${esc(r.reason)}</div>`:""}</div>
+      ${st==="pending"?`<button class="primary small" data-upok="${r.id}">تأیید و لغو انتشار</button>
+        <button class="ghost small" data-upno="${r.id}">رد</button>`:'<span class="tag">پاسخ داده شد</span>'}
+    </div>`).join("")
+    :'<div class="muted">درخواستی در این وضعیت نیست.</div>';
+    document.querySelectorAll("#upList [data-upok]").forEach(b=>b.onclick=async()=>{
+      try{await api(`/admin/unpublish-requests/${b.dataset.upok}/resolve`,{method:"POST",body:JSON.stringify({decision:"approve"})});
+        toast("تأیید شد و مطلب به پیش‌نویس برگشت ✅");window.loadUnpubReqs();window.loadAdminPosts();}catch(e){toast(e.message);}
+    });
+    document.querySelectorAll("#upList [data-upno]").forEach(b=>b.onclick=async()=>{
+      try{await api(`/admin/unpublish-requests/${b.dataset.upno}/resolve`,{method:"POST",body:JSON.stringify({decision:"deny"})});
+        toast("درخواست رد شد");window.loadUnpubReqs();}catch(e){toast(e.message);}
+    });
+  }).catch(e=>{$("#upList").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+};
+/* ---------------- V3-6 (TASK2): central campaign CMS (4 sites, 3 langs, no deploy) ---------------- */
+const CAMP_SITES=[["all","همهٔ سایت‌ها"],["portal","پورتال"],["mesbah","مصباح"],["eiis","علوم عقلی"],["taghrir","تقریرات"]];
+const CAMP_STATUS={draft:"پیش‌نویس",published:"منتشرشده",paused:"متوقف",archived:"آرشیو"};
+function campStatusBadge(st){return `<span class="badge ${st==="published"?"ok":""}">${st==="published"?"✓ ":""}${CAMP_STATUS[st]||st}</span>`;}
+function campSitesLabel(s){const f=CAMP_SITES.find(x=>x[0]===s);return f?f[1]:s;}
+function faTs(ts){try{return new Date(ts*1000).toLocaleString("fa-IR",{dateStyle:"medium",timeStyle:"short"});}catch(e){return "";}}
+function localIso(ts){if(!ts)return "";const d=new Date(ts*1000);if(isNaN(d))return "";
+  const p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());}
+function toUtcIso(v){if(!v)return null;const d=new Date(v);if(isNaN(d))return null;return d.toISOString().replace(/\.\d{3}Z$/,"Z");}
+function campRow(c){
+  const st=c.status||"draft";
+  const ct=c.content||{};
+  const acts=[
+    `<button class="ghost small" data-edit="${c.id}">ویرایش</button>`,
+    `<button class="ghost small" data-hist="${c.id}">📜 تاریخچه</button>`];
+  if(st!=="published")acts.push(`<button class="primary small" data-act="published" data-cid="${c.id}">${st==="paused"?"▶ فعال‌سازی":"🚀 انتشار"}</button>`);
+  if(st==="published")acts.push(`<button class="ghost small" data-act="paused" data-cid="${c.id}">⏸ توقف</button>`);
+  if(st!=="archived")acts.push(`<button class="ghost small" data-act="archived" data-cid="${c.id}">📦 آرشیو</button>`);
+  acts.push(`<button class="ghost small" data-del="${c.id}" style="color:var(--bad)">حذف</button>`);
+  return `<div class="mstone" style="align-items:flex-start">
+    <span class="ic">📣</span>
+    <div style="flex:1;min-width:0">
+      <div class="row" style="flex-wrap:wrap"><b>${esc(c.name)}</b>${campStatusBadge(st)}
+        <span class="badge">${esc(campSitesLabel(c.sites))}</span>
+        <span class="tag">اولویت ${c.priority||0}</span><span class="tag">👁 ${c.views||0}</span></div>
+      <div class="muted" style="margin-top:4px">${esc(ct.title_fa||ct.title_en||ct.title_ar||c.title||"")}</div>
+      <div class="muted">ساخته: ${esc(c.created_by||"؟")} · ${faTs(c.created_at)}${c.updated_by?` — آخرین ویرایش: ${esc(c.updated_by)} · ${faTs(c.updated_at)}`:""}</div>
+      ${c.start_at?`<div class="muted">شروع: ${faTs(c.start_at)}${c.end_at?` · پایان: ${faTs(c.end_at)}`:""}</div>`:""}
+    </div>
+    <div class="row" style="flex-direction:column;align-items:flex-end;gap:6px">${acts.join("")}</div>
+  </div>`;
+}
+window.campFilter="";
+window.loadCampaigns=()=>{
+  const q=window.campFilter?("?status="+window.campFilter):"";
+  api("/admin/campaigns"+q).then(d=>{
+    const list=d.campaigns||[];
+    window._camps=list;
+    $("#campList").innerHTML=list.length?list.map(campRow).join(""):'<div class="muted">کمپینی با این وضعیت نیست.</div>';
+    document.querySelectorAll("#campList [data-edit]").forEach(b=>b.onclick=()=>window.openCampEditor(+b.dataset.edit));
+    document.querySelectorAll("#campList [data-hist]").forEach(b=>b.onclick=()=>window.openCampHistory(+b.dataset.hist));
+    document.querySelectorAll("#campList [data-act]").forEach(b=>b.onclick=async()=>{
+      try{await api(`/admin/campaigns/${b.dataset.cid}/status`,{method:"POST",body:JSON.stringify({status:b.dataset.act})});
+        toast(b.dataset.act==="published"?"منتشر شد ✅ — بلافاصله روی سایت‌های هدف":"وضعیت: "+(CAMP_STATUS[b.dataset.act]||b.dataset.act));
+        window.loadCampaigns();}catch(e){toast(e.message);}
+    });
+    document.querySelectorAll("#campList [data-del]").forEach(b=>b.onclick=async()=>{
+      if(!confirm("حذف ایمن: اگر این کمپین تاریخچه دارد، به‌جای حذف آرشیو می‌شود. ادامه می‌دهید؟"))return;
+      try{const r=await api(`/admin/campaigns/${b.dataset.cid}`,{method:"DELETE"});
+        toast(r.archived?"آرشیو شد — تاریخچه حفظ شد ✅":"حذف شد ✅");window.loadCampaigns();}catch(e){toast(e.message);}
+    });
+  }).catch(e=>{$("#campList").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+};
+function campCollect(){
+  const g=id=>($(id)?$(id).value.trim():"");
+  const content={};
+  ["fa","en","ar"].forEach(L=>{
+    const t=g("#cpT"+L),b=g("#cpB"+L),c2=g("#cpC"+L);
+    if(t)content["title_"+L]=t; if(b)content["body_"+L]=b; if(c2)content["cta_"+L]=c2;});
+  const link=g("#cpLink"); if(link)content.link=link;
+  const img=g("#cpImg"); if(img)content.image=img;
+  const siteEl=document.querySelector("#cpSites .chip.on");
+  const pri=parseInt(g("#cpPri")||"0",10);
+  const mv=parseInt(g("#cpMaxv"),10);
+  return {name:g("#cpName"),content,
+    sites:siteEl?siteEl.dataset.site:"all",
+    color:g("#cpColor")||null,
+    priority:isNaN(pri)?0:pri,
+    kind:g("#cpKind")||"notice",
+    start_at:toUtcIso(g("#cpStart")),end_at:toUtcIso(g("#cpEnd")),
+    max_views:isNaN(mv)||mv<1?null:mv};
+}
+function campPreview(){
+  const p=$("#cpPrev"); if(!p)return;
+  const t=$("#cpTfa").value.trim()||$("#cpTen").value.trim()||$("#cpTar").value.trim();
+  const b=$("#cpBfa").value.trim()||$("#cpBen").value.trim()||$("#cpBar").value.trim();
+  const c2=$("#cpCfa").value.trim()||$("#cpCen").value.trim()||$("#cpCar").value.trim();
+  const col=$("#cpColor").value||"";
+  p.innerHTML=t
+    ?`<div class="mstone" style="margin:0;border-inline-start:4px solid ${esc(col||"var(--mute4)")}"><div style="flex:1;min-width:0"><b>${esc(t)}</b>${b?`<div class="muted">${esc(b)}</div>`:""}${c2?`<div class="muted" style="margin-top:4px">▸ ${esc(c2)}</div>`:""}</div></div>`
+    :'<div class="muted">پیش‌نمایش: اولین عنوان/متن/CTAِ پرشده (با ترجیح فارسی) نمایش داده می‌شود…</div>';
+}
+window.openCampEditor=cid=>{
+  const existing=cid?(window._camps||[]).find(x=>x.id===cid):null;
+  if(cid&&!existing){toast("دادهٔ کمپین پیدا نشد — صفحه را دوباره بارگیری کنید");return;}
+  const c=existing||{name:"",content:{},sites:"all",color:null,priority:0,kind:"notice",start_at:null,end_at:null,max_views:null};
+  const ct=c.content||{};
+  const LNAME={fa:"فارسی",en:"English",ar:"العربية"};
+  const html=`<div data-modal="1" class="modal-back" onclick="if(event.target===this)this.remove()">
+    <div class="card modal-card" style="width:min(680px,100%);max-height:92vh;overflow:auto">
+      <div class="row" style="justify-content:space-between"><b>${existing?"ویرایش کمپین #"+c.id:"کمپین جدید"}</b>
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">×</button></div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+        <input id="cpName" value="${esc(c.name)}" placeholder="نام داخلی کمپین (مثلاً: جشنوارهٔ هفتگی پاسخ‌ها)">
+        ${["fa","en","ar"].map(L=>`<div style="border:1px solid var(--line);border-radius:12px;padding:12px">
+          <div class="muted" style="margin-bottom:8px;font-weight:700">${LNAME[L]}</div>
+          <input id="cpT${L}" dir="auto" placeholder="عنوان (title)" value="${esc(ct["title_"+L]||"")}" style="margin-bottom:8px">
+          <textarea id="cpB${L}" dir="auto" rows="2" placeholder="متن (body)" style="margin-bottom:8px">${esc(ct["body_"+L]||"")}</textarea>
+          <input id="cpC${L}" dir="auto" placeholder="برچسب دکمهٔ CTA (اختیاری)" value="${esc(ct["cta_"+L]||"")}">
+        </div>`).join("")}
+        <div id="cpPrev"></div>
+        <div><div class="muted" style="margin-bottom:6px">سایت‌های هدف</div>
+          <div class="row" id="cpSites">${CAMP_SITES.map(s=>`<span class="chip ${c.sites===s[0]?"on":""}" data-site="${s[0]}">${s[1]}</span>`).join("")}</div></div>
+        <div class="row" style="align-items:flex-start;gap:14px">
+          <div><div class="muted" style="margin-bottom:6px">نوع</div>
+            <select id="cpKind" style="min-width:150px"><option value="notice" ${c.kind==="notice"?"selected":""}>اطلاعیه</option><option value="news" ${c.kind==="news"?"selected":""}>اخبار</option><option value="event" ${c.kind==="event"?"selected":""}>رویداد</option><option value="offer" ${c.kind==="offer"?"selected":""}>پیشنهاد ویژه</option></select></div>
+          <div><div class="muted" style="margin-bottom:6px">اولویت (بزرگتر = بالاتر)</div>
+            <input id="cpPri" type="number" value="${c.priority||0}" style="width:90px"></div>
+          <div><div class="muted" style="margin-bottom:6px">رنگ</div>
+            <input id="cpColor" type="color" value="${c.color&&/^#[0-9a-fA-F]{6}$/.test(c.color)?c.color:"#d97706"}" style="width:52px;padding:4px"></div>
+        </div>
+        <div class="row" style="align-items:flex-start;gap:14px">
+          <div style="flex:1"><div class="muted" style="margin-bottom:6px">لینک (اختیاری)</div>
+            <input id="cpLink" dir="ltr" placeholder="https://…" value="${esc(ct.link||"")}"></div>
+          <div style="flex:1"><div class="muted" style="margin-bottom:6px">تصویر (اختیاری)</div>
+            <input id="cpImg" dir="ltr" placeholder="https://…" value="${esc(ct.image||"")}"></div>
+        </div>
+        <div class="row" style="align-items:flex-start;gap:14px">
+          <div style="flex:1"><div class="muted" style="margin-bottom:6px">شروع نمایش (اختیاری)</div>
+            <input id="cpStart" type="datetime-local" dir="ltr" value="${localIso(c.start_at)}"></div>
+          <div style="flex:1"><div class="muted" style="margin-bottom:6px">پایان نمایش (اختیاری)</div>
+            <input id="cpEnd" type="datetime-local" dir="ltr" value="${localIso(c.end_at)}"></div>
+          <div><div class="muted" style="margin-bottom:6px">بیشینهٔ نمایش به ازای هر کاربر (اختیاری)</div>
+            <input id="cpMaxv" type="number" min="1" style="width:110px" value="${c.max_views||""}"></div>
+        </div>
+        <div class="row" style="margin-top:2px">
+          <button class="ghost small" onclick="this.closest('[data-modal]').remove()">انصراف</button>
+          <span style="flex:1"></span>
+          <button class="ghost" id="cpSaveDraft">ذخیره (پیش‌نویس)</button>
+          <button class="primary" id="cpSavePub">ذخیره و انتشار 🚀</button>
+        </div>
+      </div>
+    </div></div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  document.querySelectorAll("#cpSites .chip").forEach(ch=>ch.onclick=()=>{
+    document.querySelectorAll("#cpSites .chip").forEach(x=>x.classList.toggle("on",x===ch));});
+  ["#cpTfa","#cpTen","#cpTar","#cpBfa","#cpBen","#cpBar","#cpCfa","#cpCen","#cpCar","#cpColor"].forEach(id=>{
+    const el=$(id); if(el)el.oninput=campPreview;});
+  campPreview();
+  async function save(pub){
+    const body=campCollect();
+    if(!body.name){toast("نام کمپین را بنویسید");return;}
+    if(!body.content.title_fa&&!body.content.title_en&&!body.content.title_ar){toast("حداقل یک عنوان (فارسی، انگلیسی یا عربی) لازم است");return;}
+    const d1=$("#cpSaveDraft"),d2=$("#cpSavePub");d1.disabled=true;d2.disabled=true;
+    d1.classList.add("busy");d2.classList.add("busy");
+    try{
+      let d;
+      if(existing)d=await api(`/admin/campaigns/${existing.id}`,{method:"PUT",body:JSON.stringify(body)});
+      else d=await api("/admin/campaigns",{method:"POST",body:JSON.stringify(body)});
+      if(pub){
+        const cid2=(d.campaign&&d.campaign.id)||d.id;
+        await api(`/admin/campaigns/${cid2}/status`,{method:"POST",body:JSON.stringify({status:"published"})});
+        toast("منتشر شد ✅ — بلافاصله روی سایت‌های هدف");
+      }else toast("ذخیره شد (پیش‌نویس) ✅");
+      document.querySelector('[data-modal]')?.remove();
+      window.loadCampaigns();
+    }catch(e){toast(e.message);d1.disabled=false;d2.disabled=false;d1.classList.remove("busy");d2.classList.remove("busy");}
+  }
+  $("#cpSaveDraft").onclick=()=>save(false);
+  $("#cpSavePub").onclick=()=>save(true);
+};
+window.openCampHistory=cid=>{
+  const html=`<div data-modal="1" class="modal-back" onclick="if(event.target===this)this.remove()">
+    <div class="card modal-card" style="width:min(640px,100%);max-height:88vh;overflow:auto">
+      <div class="row" style="justify-content:space-between"><b>📜 تاریخچهٔ تغییرات — کمپین #${cid}</b>
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">×</button></div>
+      <div id="campHist" style="margin-top:10px"><span class="spin"></span>در حال بارگذاری…</div>
+    </div></div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  api(`/admin/campaigns/${cid}/revisions`).then(d=>{
+    const list=d.revisions||[];
+    $("#campHist").innerHTML=list.length?`<table><tr><th>عمل</th><th>مدیر</th><th>زمان</th><th>حالت در آن لحظه</th></tr>
+      ${list.map(r=>{const s=r.snapshot||{};
+        return `<tr><td><b>${esc(r.action)}</b></td><td>${esc(r.changed_by||"؟")}</td>
+          <td class="muted">${faTs(r.created_at)}</td>
+          <td class="muted">${esc(s.name||"")}${s.sites?` · ${s.sites}`:""}${s.status?` · ${s.status}`:""}${s.priority!=null?` · اولویت ${s.priority}`:""}</td></tr>`;}).join("")}</table>`
+      :'<div class="muted">تغییری ثبت نشده است.</div>';
+  }).catch(e=>{$("#campHist").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+};
+/* ---------------- V4M-P4: notification bots (token verified before activation) ---------------- */
+const BOT_LABELS={bale:"بل (Bale)",telegram:"تلیگرام (Telegram)"};
+window.loadBots=()=>{
+  api("/admin/bots").then(d=>{
+    const bots=d.bots||[];
+    $("#botList").innerHTML=bots.map(b=>{
+      const st={active:"<span class='badge ok'>فعال</span>",verified:"<span class='badge'>تأییدشده</span>",deactivated:"<span class='badge'>غیرفعال</span>",pending_configuration:"<span class='badge'>در انتظار پیکربندی</span>"}[b.status]||("<span class='badge'>"+esc(b.status)+"</span>");
+      const info=b.bot_username?` · نام کاربری: <b dir="ltr">@${esc(b.bot_username)}</b>`:"";
+      const verified=b.last_verified_at?` · آخرین تأیید: ${faTs(b.last_verified_at)}`:"";
+      const by=b.updated_by?` · توسط: ${esc(b.updated_by)}`:"";
+      const err=b.last_error?`<div style="margin-top:6px"><span style="color:#b91c1c">⚠️ ${esc(b.last_error)}</span></div>`:"";
+      return `<div style="border:1px solid var(--soft);border-radius:10px;padding:12px 14px">
+        <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <b>${BOT_LABELS[b.channel]||esc(b.channel)}</b>
+          <span>${st}${b.has_token?` · توکن: <span dir="ltr">${esc(b.token_masked)}</span>`:""}</span>
+        </div>
+        <div class="muted" style="margin-top:6px;font-size:12.5px">${info}${verified}${by}</div>
+        ${err}
+        <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:8px;align-items:center">
+          <input id="btTok_${b.channel}" type="password" placeholder="توکن ربات (جدید یا جایگزین فعلی)" style="flex:1;min-width:220px;direction:ltr;text-align:left" autocomplete="off">
+          <button class="primary small" id="btVer_${b.channel}">اعمال و تأیید</button>
+          ${b.status==="verified"?`<button class="primary small" id="btAct_${b.channel}">فعال‌سازی</button>`:""}
+          ${b.status==="active"?`<button class="ghost small" id="btDeact_${b.channel}">غیرفعال‌سازی</button>`:""}
+        </div></div>`;
+    }).join("")||'<div class="muted">هنوز کانالی پیکربندی نشده است.</div>';
+    bots.forEach(b=>{
+      const vb=$("#btVer_"+b.channel);
+      if(vb)vb.onclick=async()=>{
+        busyOn(vb);
+        try{
+          const r=await api(`/admin/bots/${b.channel}/verify`,{method:"POST",body:JSON.stringify({token:$("#btTok_"+b.channel).value.trim()})});
+          toast("تأیید شد ✅ — @"+r.username+" (وضعیت: تأییدشده)");
+          window.loadBots();
+        }catch(e){busyOff(vb);toast(e.message);}
+      };
+      const ab=$("#btAct_"+b.channel);
+      if(ab)ab.onclick=async()=>{
+        busyOn(ab);
+        try{await api(`/admin/bots/${b.channel}/activate`,{method:"POST"});
+          toast("ربات فعال شد ✅");window.loadBots();}
+        catch(e){busyOff(ab);toast(e.message);}
+      };
+      const db2=$("#btDeact_"+b.channel);
+      if(db2)db2.onclick=async()=>{
+        busyOn(db2);
+        try{await api(`/admin/bots/${b.channel}/deactivate`,{method:"POST"});
+          toast("ربات غیرفعال شد");window.loadBots();}
+        catch(e){busyOff(db2);toast(e.message);}
+      };
+    });
+  }).catch(e=>{$("#botList").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+};
+/* ---------------- V3-7 (TASK4): contact management & export (consent-based, audited) ---------------- */
+window.loadContactsSummary=()=>{
+  api("/admin/contacts/summary").then(d=>{
+    const src=(d.by_source||[]).map(x=>esc(x.source||"?")+" × "+x.count).join(" · ")||"–";
+    $("#ctSummary").innerHTML=`
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <span class="chip">📧 ${d.emails} ایمیل با رضایت</span>
+        <span class="chip">📱 ${d.phones} تلفن با رضایت</span>
+        <span class="chip">🤖 ${d.bale} بل</span>
+        <span class="chip">↩ ${d.revoked||0} لغوشده</span>
+      </div>
+      <div class="muted" style="margin-top:8px">آخرین رضایت: ${d.last_consent?faTs(d.last_consent)+" ("+esc(d.last_consent_source||"")+")":"هنوز ثبت نشده"} · منابع: ${src}</div>`;
+  }).catch(e=>{$("#ctSummary").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+};
+function ctPager(offset,count,tab){
+  const nb=(o,lab,dis)=>`<button class="ghost small" data-cgto="${o}" ${dis?"disabled":""}>${lab}</button>`;
+  return `<div class="row" style="margin-top:10px">${nb(Math.max(0,offset-100),"◀ قبلی",offset<=0)}
+    <span class="muted">از ${offset} · ${count} مورد در این بار</span>${nb(offset+100,"بعدی ▶",count<100)}</div>`;
+}
+function ctPagerBind(sel,tab){
+  document.querySelectorAll(sel+" [data-cgto]").forEach(b=>b.onclick=()=>window.openContactModal(tab,+b.dataset.cgto));
+}
+window.openContactModal=(tab,offset=0,search="")=>{
+  const old=document.querySelector("[data-ctmodal]"); if(old)old.remove();
+  const TITLES={emails:"📧 خروجی ایمیل‌ها (فقط رضایت فعال)",phones:"📱 شماره‌های تلفن (ماسک‌شده)",exports:"📋 لاگ خروجی / نمایش",audit:"📜 رویدادهای رضایت"};
+  const html=`<div data-ctmodal="1" data-modal="1" class="modal-back" onclick="if(event.target===this)this.remove()">
+    <div class="card modal-card" style="width:min(780px,100%);max-height:92vh;overflow:auto">
+      <div class="row" style="justify-content:space-between"><b>${TITLES[tab]}</b>
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">×</button></div>
+      <div id="ctBody" style="margin-top:10px"><span class="spin"></span>در حال بارگذاری…</div>
+    </div></div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  const body=$("#ctBody");
+  if(tab==="emails"){
+    body.innerHTML=`
+      <div class="row" style="margin-bottom:10px">
+        <input id="ctEmailSearch" dir="ltr" placeholder="search emails…" value="${esc(search)}" style="flex:1">
+        <button class="ghost small" id="ctEmailGo">جستجو</button>
+      </div>
+      <div class="muted" style="margin-bottom:8px">⚠️ فقط کاربران با رضایت ایمیلیِ <b>فعال</b> درج می‌شوند و کسانی که رضایت را لغو کرده‌اند خارج‌اند؛ هر بارگیریِ هر ۱۰۰ مورد در لاگ ممیزی ثبت می‌شود.</div>
+      <div id="ctEmailBox"><span class="spin"></span></div>`;
+    $("#ctEmailGo").onclick=()=>window.openContactModal("emails",0,$("#ctEmailSearch").value.trim());
+    api(`/admin/contacts/emails?limit=100&offset=${offset}${search?"&search="+encodeURIComponent(search):""}`).then(d=>{
+      $("#ctEmailBox").innerHTML=`
+        <button class="ghost small" id="ctCsv" style="margin-bottom:8px">⬇ دانلود CSV این بار (${d.count} مورد)</button>
+        ${d.items.length?`<table><tr><th>ایمیل</th><th>منبع</th><th>زمان رضایت</th><th>عضویت</th></tr>
+          ${d.items.map(r=>`<tr><td dir="ltr">${esc(r.email)}</td><td class="muted">${esc(r.source||"")}</td>
+            <td class="muted">${faTs(r.granted_at)}</td><td class="muted">${r.signup_at?faTs(r.signup_at):"–"}</td></tr>`).join("")}</table>`
+          :'<div class="muted">در این بار ایمیلی نیست.</div>'}
+        ${ctPager(offset,d.count,"emails")}
+        ${search?`<div class="muted" style="margin-top:6px">جستجو: "${esc(search)}"</div>`:""}`;
+      ctPagerBind("#ctEmailBox","emails");
+      $("#ctCsv").onclick=()=>{
+        const rows=[["email","source","granted_at","signup_at"]].concat(d.items.map(r=>[
+          r.email,r.source||"",
+          r.granted_at?new Date(r.granted_at*1000).toISOString():"",
+          r.signup_at?new Date(r.signup_at*1000).toISOString():""]));
+        const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}));
+        a.download="contacts-emails-offset"+offset+".csv";
+        a.click();
+      };
+    }).catch(e=>{$("#ctEmailBox").innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+  } else if(tab==="phones"){
+    api(`/admin/contacts/phones?limit=100&offset=${offset}`).then(d=>{
+      body.innerHTML=`
+        <div class="muted" style="margin-bottom:8px">${d.masked
+          ?"🔒 شماره‌ها ماسک شده‌اند. اعداد کامل فقط برای مدیران دارای مجوز خاص نمایش داده می‌شود — هر نمایش در لاگ ثبت می‌شود."
+          :"🔓 شما مدیر دارای مجوز خاص هستید — اعداد کامل نمایش داده می‌شود (ثبت در لاگ)."}</div>
+        ${d.items.length?`<table><tr><th>شماره</th><th>ایمیل</th><th>منبع</th><th>زمان رضایت</th></tr>
+          ${d.items.map(r=>`<tr><td dir="ltr">${esc(r.phone)}</td><td dir="ltr" class="muted">${esc(r.email||"")}</td>
+            <td class="muted">${esc(r.source||"")}</td><td class="muted">${faTs(r.granted_at)}</td></tr>`).join("")}</table>`
+          :'<div class="muted">شمارهٔ تلفنی با رضایت فعال SMS در این بار نیست.</div>'}
+        ${ctPager(offset,d.count,"phones")}`;
+      ctPagerBind("#ctBody","phones");
+    }).catch(e=>{body.innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+  } else if(tab==="exports"){
+    api("/admin/contacts/exports?limit=200").then(d=>{
+      body.innerHTML=d.exports.length?`<table><tr><th>زمان</th><th>مدیر</th><th>نوع</th><th>کانال</th><th>تعداد</th><th>جزئیات</th></tr>
+        ${d.exports.map(r=>`<tr><td class="muted">${faTs(r.created_at)}</td><td dir="ltr">${esc(r.admin_email)}</td>
+          <td>${esc(r.kind)}</td><td>${esc(r.channel||"")}</td><td>${r.count}</td><td class="muted" dir="ltr">${esc(r.detail||"")}</td></tr>`).join("")}</table>`
+        :'<div class="muted">هنوز خروجی‌ای ثبت نشده است.</div>';
+    }).catch(e=>{body.innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+  } else {
+    api("/admin/consent-audit?limit=200").then(d=>{
+      body.innerHTML=d.audit.length?`<table><tr><th>زمان</th><th>کاربر</th><th>کانال</th><th>عمل</th><th>منبع</th></tr>
+        ${d.audit.map(r=>`<tr><td class="muted">${faTs(r.created_at)}</td><td dir="ltr" class="muted">${esc(String(r.user_id||"").slice(0,8))}…</td>
+          <td>${esc(r.channel)}</td><td><b>${esc(r.action)}</b></td><td class="muted">${esc(r.source||"")}</td></tr>`).join("")}</table>`
+        :'<div class="muted">هنوز تغییری در رضایت‌ها ثبت نشده است.</div>';
+    }).catch(e=>{body.innerHTML=`<div class="muted">${esc(e.message)}</div>`;});
+  }
+};
+window.openUnpubModal=(pid,title)=>{
+  const html=`<div data-modal="1" class="modal-back" onclick="if(event.target===this)this.remove()">
+    <div class="card modal-card" style="width:min(440px,100%)">
+      <div class="row" style="justify-content:space-between"><b>درخواست لغو انتشار</b>
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">×</button></div>
+      <div class="muted" style="margin-top:10px">مطلب: <b>${esc(title)}</b></div>
+      <div style="margin-top:10px"><textarea id="unpReason" rows="3" placeholder="دلیل درخواست (اختیاری)"></textarea></div>
+      <div class="muted" style="margin-top:8px">درخواست فقط برای بازبینی مدیر ثبت می‌شود؛ مطلب تا تأیید مدیر منتشر می‌ماند.</div>
+      <div class="row" style="margin-top:12px">
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">انصراف</button>
+        <button class="primary small" id="unpSend">ثبت درخواست</button>
+      </div></div></div>`;
+  if(document.querySelector("[data-modal]"))document.querySelector("[data-modal]").remove();
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("#unpSend").onclick=async()=>{
+    const b=$("#unpSend");busyOn(b);
+    try{const d=await api("/unpublish-request",{method:"POST",body:JSON.stringify({post_id:pid,reason:$("#unpReason").value.trim()||null})});
+      document.querySelector("[data-modal]")?.remove();toast(d.message||"درخواست ثبت شد ✅");}
+    catch(e){busyOff(b);toast(e.message);}
+  };
+};
+window.setView=v=>{VIEW=v;NEXT_PHASE=(v==="ask")?NEXT_PHASE:null;if(v!=="ask")$("#floatNext")?.remove();document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));refreshView();};
+/* PHASE5: shareable deep-link (#ttsl=<slug>) — independent of async init so it
+   reliably opens the think-tank question page even if init's await chain stalls. */
+(function(){
+  var _sl=(location.hash.match(/#ttsl=([A-Za-z0-9_-]+)/)||[])[1];
+  if(!_sl) return;
+  function _open(){
+    try{
+      setView("thinktank");
+      // openThinkTank is defined later; call once available
+      var _tries=0;
+      var _t=setInterval(function(){
+        _tries++;
+        if(typeof openThinkTank==="function"){
+          clearInterval(_t);
+          fetch("/api/think-tank/slug/"+_sl,{headers:{Authorization:"Bearer "+(localStorage.getItem("ragportal_token")||"")}})
+            .then(function(r){return r.ok?r.json():null;})
+            .then(function(j){ if(j&&j.id){ openThinkTank(j.id); } })
+            .catch(function(){});
+        } else if(_tries>20){ clearInterval(_t); }
+      },100);
+    }catch(e){}
+  }
+  if(document.readyState==="complete"){ _open(); }
+  else { window.addEventListener("load",_open); }
+})();
+function refreshView(){render();if(VIEW==="roadmap"){fillConsentCard();refreshMsgStatus();}maybeShowConsent();}
+window.openAuth=()=>{$("#btnAuth").click();};
+
+/* ---------------- auth ---------------- */
+function authModal(){
+  return `<div data-modal="1" class="modal-back">
+    <div class="card modal-card">
+      <div class="row" style="justify-content:space-between"><b>ورود / عضویت در رگ</b>
+        <button class="ghost small" onclick="this.closest('[data-modal]').remove()">×</button></div>
+      <div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">
+        <input id="aEmail" type="email" placeholder="ایمیل">
+        <input id="aPass" type="password" placeholder="رمز عبور (حداقل ۶)">
+        <input id="aName" placeholder="نام (اختیاری)">
+        <div class="row"><button class="primary" id="aReg" style="flex:1" onclick="doAuth(true)">عضویت</button>
+        <button class="ghost" id="aLog" style="flex:1" onclick="doAuth(false)">ورود</button></div>
+        ${GOOGLE_ON?`
+        <div class="row" style="align-items:center;gap:8px"><span style="flex:1;height:1px;background:var(--div)"></span><span class="muted" style="font-size:12px">${YA}</span><span style="flex:1;height:1px;background:var(--div)"></span></div>
+        <button class="ghost" id="btnGoogle" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="googleGo()">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          ${PBTN}</button>`:""}
+      </div>
+    </div></div>`;
+}
+$("#btnAuth").onclick=()=>{
+  if(ME){TOKEN="";localStorage.removeItem("ragportal_token");ME=null;refreshHeader();render();toast("خارج شدید");}
+  else{
+    if(document.querySelector("[data-modal]"))return;
+    document.body.insertAdjacentHTML("beforeend",authModal());
+  }
+};
+window.doAuth=async(register)=>{
+  const br=$("#aReg"),bl=$("#aLog");busyOn(br);busyOn(bl);
+  try{
+    const d=await api(register?"/auth/register":"/auth/login",{method:"POST",body:JSON.stringify({
+      email:$("#aEmail").value.trim(),password:$("#aPass").value,full_name:$("#aName").value||null})});
+    TOKEN=d.token;localStorage.setItem("ragportal_token",TOKEN);
+    await refreshMe();toast(register?"عضویت شد ✅":"خوش آمدید ✅");
+    document.querySelector("[data-modal]")?.remove();render();maybeShowOnboarding();
+  }catch(e){busyOff(br);busyOff(bl);toast(e.message);}
+};
+
+window.googleGo=()=>{location.href="/api/auth/google?redirect_url="+encodeURIComponent(location.origin);};
+
+/* ---------------- Phase 5d.2/5d.3: messenger connect cards (Bale + Telegram) ---- */
+/* 5d.2: connection state is read from the BACKEND (/api/bale/link-status), never
+   from localStorage. Each card is independent (Bale + Telegram). Minting a code is
+   single-use; a second click while loading is ignored. The code is shown ONLY after a
+   successful API response.
+   5d.3 fix: the minted code now lives in window.MSG_STATE[plat].code (not just the DOM),
+   and status refreshes PATCH the badge + code area in place instead of innerHTML-replacing
+   the whole card. That was the root cause of the code vanishing (a status refresh after
+   mint wiped the freshly-rendered code). The code now persists across re-renders, tab
+   switches and refreshes until it is consumed/expired or a new code is minted.
+   The code is held in in-memory state only — it is never written to localStorage or logs. */
+const MSG_BOT={
+  telegram:{username:"ismc_rag_bot",linkBase:"https://t.me/ismc_rag_bot"},
+  bale:{username:"ismc_rag_bot",linkBase:"https://ble.ir/ismc_rag_bot"}
+};
+const MSG_META={
+  bale:{ic:"🤖",name:"پیامرسان بله",hint:"کد را به ربات بله بفرستید: /start <کد>"},
+  telegram:{ic:"✈️",name:"تلگرام",hint:"کد را به ربات تلگرام بفرستید: /start <کد>"}
+};
+window.MSG_STATE={bale:null,telegram:null};
+let _msgBusy={bale:false,telegram:false};
+function _msgCodeOf(plat){const s=window.MSG_STATE[plat];return (s&&s.code)||"";}
+function _msgExpired(plat){const s=window.MSG_STATE[plat];return !!(s&&s.expiresAt&&Date.now()>=s.expiresAt);}
+// Official deep link: <linkBase>?start=<code>. Both platforms use the standard
+// /start deep-link parameter (Telegram Bot API; Bale "پیوندهای بازو" / ble.ir).
+function _msgDeepLink(plat){
+  const b=MSG_BOT[plat];
+  const c=_msgCodeOf(plat);
+  if(!b)return "";
+  return c?b.linkBase+"?start="+encodeURIComponent(c):b.linkBase;
+}
+// Client-side expiry countdown (display-only; real expiry is enforced server-side).
+function _msgCountdown(plat){
+  const s=window.MSG_STATE[plat];
+  if(!s||!s.expiresAt)return "";
+  let r=Math.max(0,Math.floor((s.expiresAt-Date.now())/1000));
+  const m=Math.floor(r/60);r=r%60;
+  return `${m}:${String(r).padStart(2,"0")}`;
+}
+
+function messengerConnectCard(){
+  return `<div class="card" id="msgConnectCard">
+    <div class="row" style="justify-content:space-between;margin-bottom:4px">
+      <b>📲 اتصال پیام‌رسان‌ها</b>
+      <span class="pill">اتصال حساب به ربات</span>
+    </div>
+    <div class="muted" style="font-size:12px;margin-bottom:10px">
+      برای پرسش از ربات، کد اتصال را بگیرید و در همان پیام‌رسان به‌صورت /start &lt;کد&gt; بفرستید
+      (یا دکمهٔ «باز کردن ربات» را بزنید). وضعیت اتصال مستقیماً از سرور خوانده می‌شود.</div>
+    <div id="msgBaleBox">${msgPlatBox("bale")}</div>
+    <div id="msgTgBox" style="margin-top:10px">${msgPlatBox("telegram")}</div>
+  </div>`;
+}
+function msgPlatBox(plat){
+  const m=MSG_META[plat];
+  const st=window.MSG_STATE[plat];
+  if(st){
+    if(st.bot_enabled===false)return `<div class="row" style="gap:10px;align-items:center">
+      <span style="font-size:18px">${m.ic}</span>
+      <div style="flex:1"><b style="font-size:14px">${m.name}</b>
+        <div class="muted" style="font-size:12px;margin-top:2px">فعلاً در دسترس نیست.</div></div>
+      <span class="badge" style="background:var(--chipbg);color:var(--chiptx)">غیرفعال</span></div>`;
+    const done=!!st.connected;
+    const pend=!!st.pending&&!done;
+    const badge=done?`<span class="badge ok">✅ متصل شد</span>`
+      :(pend?`<span class="badge" style="background:var(--info);color:var(--infotx)">در انتظار اتصال</span>`
+      :`<span class="badge" style="background:var(--chipbg);color:var(--chiptx)">متصل نشده</span>`);
+    return `<div class="row" style="gap:10px;align-items:flex-start;flex-wrap:wrap">
+      <span style="font-size:18px">${m.ic}</span>
+      <div style="flex:1;min-width:200px">
+        <div style="display:flex;align-items:center;gap:8px"><b style="font-size:14px">${m.name}</b><span id="msgBadge_${plat}">${badge}</span></div>
+        <div id="msgBody_${plat}" style="margin-top:2px">${msgBodyHtml(plat)}</div>
+      </div>
+    </div>`;
+  }
+  // loading placeholder (status not yet fetched)
+  return `<div class="row" style="gap:10px;align-items:center"><span style="font-size:18px">${m.ic}</span>
+    <div style="flex:1"><b style="font-size:14px">${m.name}</b>
+      <div class="muted" style="font-size:12px;margin-top:2px"><span class="spin"></span>در حال بارگذاری وضعیت…</div></div></div>`;
+}
+function msgBodyHtml(plat){
+  const m=MSG_META[plat];
+  const st=window.MSG_STATE[plat];
+  if(st&&st.connected)
+    return `<div class="muted" style="font-size:12px;margin-top:2px">این پیام‌رسان به حساب شما متصل است.</div>`;
+  const code=_msgCodeOf(plat);
+  if(code)
+    return `<div class="muted" style="font-size:12px;margin-top:2px">${esc(m.hint)}</div>
+      <div id="msgCodeBox_${plat}" style="margin-top:8px">${msgCodeBlockHtml(plat)}</div>
+      <div class="row" style="margin-top:8px;gap:8px;flex-wrap:wrap">
+        <button class="ghost small" id="msgNewBtn_${plat}">🔁 دریافت کد جدید</button>
+        <span class="muted" style="font-size:11px;align-self:center">کد قبلی با کد جدید جایگزین می‌شود.</span>
+      </div>`;
+  const errLine=(st&&st.err)?`<div class="muted" style="color:#c0392b;font-size:12px;margin-top:6px">${esc(st.err)}</div>`:"";
+  return `<div class="muted" style="font-size:12px;margin-top:2px">${esc(m.hint)}</div>
+    <div class="row" style="margin-top:8px;gap:8px;flex-wrap:wrap">
+      <button class="primary small" id="msgBtn_${plat}">🔗 دریافت کد اتصال</button>
+    </div>
+    ${errLine}
+    <div id="msgCodeBox_${plat}" style="display:none;margin-top:8px"></div>`;
+}
+function msgCodeBlockHtml(plat){
+  const st=window.MSG_STATE[plat];
+  const code=_msgCodeOf(plat);
+  if(st&&st.err)
+    return `<div class="muted" style="color:#c0392b;font-size:12px">${esc(st.err)}</div>`;
+  if(!code)return "";
+  if(_msgExpired(plat))
+    return `<div class="muted" style="color:#c0392b;font-size:12px;margin-top:2px">⏰ کد منقضی شده است.</div>
+      <div class="row" style="margin-top:6px;gap:8px"><button class="primary small" id="msgBtn_${plat}">🔁 دریافت کد جدید</button></div>`;
+  const link=_msgDeepLink(plat);
+  return `<div class="row" style="gap:8px;align-items:center;flex-wrap:wrap">
+      <code id="msgCodeVal" style="font-size:18px;letter-spacing:2px;direction:ltr;background:var(--chipbg);padding:4px 10px;border-radius:8px">${esc(code)}</code>
+      <button class="ghost small" id="msgCopy_${plat}">📋 کپی کد</button>
+      ${link?`<a class="primary small" style="text-decoration:none;display:inline-block" id="msgOpen_${plat}" href="${esc(link)}" target="_blank" rel="noopener">🚀 باز کردن ربات و اتصال</a>`:""}
+    </div>
+    <div class="muted" style="font-size:11px;margin-top:6px;direction:rtl">
+      با کلیک روی «باز کردن ربات»، ربات «${esc(MSG_META[plat].name)}» باز می‌شود و کد به‌صورت خودکار به‌عنوان <b style="direction:ltr"><code>/start</code></b> ارسال می‌شود.
+    </div>
+    <div class="muted" style="font-size:11px;margin-top:4px">⏳ انقضا: <b id="msgExp_${plat}" style="direction:ltr">${_msgCountdown(plat)}</b> &nbsp;·&nbsp; کد یک‌بار مصرف است.</div>`;
+}
+function _renderMsgPlat(plat){
+  const box=$("#msg"+(plat==="bale"?"Bale":"Tg")+"Box");
+  if(!box)return;
+  box.innerHTML=msgPlatBox(plat);      // renders from state (incl. any active code)
+  wireMsgPlat(plat);
+}
+function _showMsgError(plat,msg){
+  const s=window.MSG_STATE[plat];
+  if(s){s.err=msg;s.code=null;window.MSG_STATE[plat]=s;}
+  const body=$("#msgBody_"+plat);
+  if(body)body.innerHTML=msgBodyHtml(plat);
+  wireMsgPlat(plat);
+}
+function wireMsgPlat(plat){
+  const mint=plat=>{
+    if(_msgBusy[plat])return;          // no over-minting on multi-click
+    _msgBusy[plat]=true;
+    const s=window.MSG_STATE[plat]||{};
+    s.err=null;s.busy=true;window.MSG_STATE[plat]=s;
+    const body=$("#msgBody_"+plat);
+    if(body)body.innerHTML=`<div class="muted" style="font-size:12px;margin-top:2px"><span class="spin"></span>در حال دریافت کد…</div>`;
+    api("/bale/connect-code?platform="+plat,{method:"POST"}).then(d=>{
+      const code=d&&d.code;
+      if(!code)throw new Error("کدی دریافت نشد");
+      const st=window.MSG_STATE[plat]||{};
+      st.code=code;st.err=null;st.busy=false;
+      st.expiresAt=Date.now()+((d.expires_in||600)*1000);
+      st.pending=true;st.connected=false;
+      window.MSG_STATE[plat]=st;
+      const b2=$("#msgBody_"+plat);
+      if(b2)b2.innerHTML=msgBodyHtml(plat);   // in-place: code stays, no full-card wipe
+      wireMsgPlat(plat);
+      _startMsgCountdown(plat);
+      toast("کد اتصال دریافت شد ✅");
+    }).catch(e=>{
+      const s2=window.MSG_STATE[plat]||{};
+      s2.err=_msgErrText(e);s2.busy=false;window.MSG_STATE[plat]=s2;
+      const b3=$("#msgBody_"+plat);
+      if(b3)b3.innerHTML=msgBodyHtml(plat);
+      wireMsgPlat(plat);
+    });
+  };
+  const b=$("#msgBtn_"+plat);   if(b)b.onclick=()=>mint(plat);
+  const nb=$("#msgNewBtn_"+plat); if(nb)nb.onclick=()=>mint(plat);
+  const cp=$("#msgCopy_"+plat);
+  if(cp)cp.onclick=async()=>{
+    const c=_msgCodeOf(plat); if(!c)return;
+    try{await navigator.clipboard.writeText(c);toast("کد کپی شد ✅");}
+    catch(e){ /* fallback */ const ta=document.createElement("textarea");ta.value=c;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("کد کپی شد ✅");}catch(_){toast("کپی نشد؛ کد را دستی انتخاب کنید.");}finally{ta.remove();} }
+  };
+}
+function _startMsgCountdown(plat){
+  const el=$("#msgExp_"+plat);
+  if(!el)return;
+  clearInterval(el._cd);
+  el._cd=setInterval(()=>{
+    const s=window.MSG_STATE[plat];
+    if(!s||!s.code){clearInterval(el._cd);return;}
+    if(Date.now()>=s.expiresAt){clearInterval(el._cd);el.textContent="منقضی";_showMsgError(plat,"کد منقضی شده است؛ کد جدید بگیرید.");return;}
+    el.textContent=_msgCountdown(plat);
+  },1000);
+}
+function _msgErrText(e){
+  const msg=(e&&e.message)||"";
+  if(/401|auth/i.test(msg))return "نشست شما منقضی شده؛ دوباره وارد شوید.";
+  if(/403|forbidden/i.test(msg))return "دسترسی شما برای این عملیات محدود است.";
+  if(/503|unavailable|not available/i.test(msg))return "اتصال ربات فعلا‌ً در دسترس نیست. کمی بعد دوباره تلاش کنید.";
+  if(/fetch|network|failed to fetch|timeout/i.test(msg))return "خطای شبکه؛ اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.";
+  return msg||"خطای ناشناخته در دریافت کد اتصال.";
+}
+async function refreshMsgStatus(plat){
+  if(!ME)return;
+  try{
+    const d=await api("/bale/link-status");
+    const plats=d.platforms||{};
+    const merge=(p)=>{
+      const old=window.MSG_STATE[p]||{code:null,expiresAt:null,err:null};
+      const fresh=plats[p]||{connected:false,pending:false,bot_enabled:false};
+      const next={...old,...fresh};
+      // Keep the client-side code only if still active and not yet consumed;
+      // if the server says connected, drop the code (it was used).
+      if(fresh.connected){next.code=null;next.expiresAt=null;clearInterval($("#msgExp_"+p)&&$("#msgExp_"+p)._cd);}
+      else if(next.code){ next.pending=true; }  // still holding an unconsumed code
+      window.MSG_STATE[p]=next;
+    };
+    if(plat){merge(plat);}
+    else{merge("bale");merge("telegram");}
+    // PATCH in place (badge + body) so an active code is never wiped by a status refresh.
+    if(plat){_patchMsgPlat(plat);}
+    else{_patchMsgPlat("bale");_patchMsgPlat("telegram");}
+  }catch(e){ /* keep current; do not fake a status */ }
+}
+function _patchMsgPlat(plat){
+  const st=window.MSG_STATE[plat];
+  if(!st)return;
+  const badge=$("#msgBadge_"+plat);
+  if(!badge){
+    // Box is still in the loading placeholder (no badge/body yet) — rebuild it from state.
+    _renderMsgPlat(plat);
+    return;
+  }
+  const done=!!st.connected,pend=!!st.pending&&!done;
+  badge.innerHTML=done?`<span class="badge ok">✅ متصل شد</span>`
+    :(pend?`<span class="badge" style="background:var(--info);color:var(--infotx)">در انتظار اتصال</span>`
+    :`<span class="badge" style="background:var(--chipbg);color:var(--chiptx)">متصل نشده</span>`);
+  const body=$("#msgBody_"+plat);
+  if(body){body.innerHTML=msgBodyHtml(plat);wireMsgPlat(plat);
+    if(_msgCodeOf(plat))_startMsgCountdown(plat);}
+}
+/* V3B TASK1: onboarding meta (E6.1 E-7.4: the const was dropped during the
+   msg-connect refactor; obRow() below reads it, so its absence threw
+   "OB_META is not defined" on the onboarding screen). Restored from the
+   pre-msgconnect backup. */
+const OB_META={
+  google_connect:{ic:"🌐",name:"اتصال حساب گوگل",desc:"با حساب گوگل وارد شوید؛ اتصال یک‌بار برای همیشه است و امتیاز خودکار می‌شود."},
+  phone_verify:{ic:"📱",name:"تأیید شماره تلفن",desc:"شمارهٔ خود را با کد تأیید کنید تا بعداً اعلان از این راه ممکن شود."},
+  bale_start:{ic:"🤖",name:"شروع دستیار بل",desc:"با دستیار بل آشنا شوید و امتیازش را بگیرید."}
+};
+function obRow(s){
+  const m=OB_META[s.id]||{ic:"✳️",name:s.id,desc:""};
+  const pts="+"+s.points+" امتیاز";
+  let right;
+  if(s.done)right=`<span class="badge ok">✅ انجام شد</span>`;
+  else if(!s.available)right=`<span class="badge" style="background:var(--chipbg);color:var(--chiptx)">${esc(s.note||"به‌زودی")}</span>`;
+  else if(s.id==="google_connect")right=`<button class="primary small" onclick="googleGo()">اتصال</button>`;
+  else right=`<span class="muted" style="font-size:12px">به‌زودی</span>`;
+  return `<div class="row" style="align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2)">
+    <span style="font-size:18px">${m.ic}</span>
+    <div style="flex:1;min-width:0"><b style="font-size:14px">${esc(m.name)} <span class="lv">${pts}</span></b>
+      <div class="muted" style="font-size:12px;margin-top:2px">${esc(m.desc)}</div></div>
+    <div style="flex-shrink:0">${right}</div>
+  </div>`;
+}
+function onbRoadmapCard(){
+  const ob=ME.onboarding;
+  const items=[
+    ["🌐","اتصال حساب گوگل",ob.google],
+    ["📱","تأیید شماره تلفن",ob.phone],
+    ["🤖","شروع دستیار بل",ob.bale]
+  ];
+  const earned=items.reduce((a,[, ,x])=>a+((x&&x.reward&&x.reward.granted)?(x.reward.points||0):0),0);
+  return `<div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:6px">
+      <b>🚀 مراحل شروع</b>
+      <span class="pill">امتیاز گرفته‌شده: <b>+${earned}</b></span>
+    </div>
+    ${items.map(([ic,name,x],i)=>{
+      const done=!!(x&&x.reward&&x.reward.granted);
+      const avail=i===0?GOOGLE_ON:!!(x&&x.enabled);
+      const st=done?`<span class="badge ok">✅ انجام شد</span>`
+        :(avail?`<span class="badge" style="background:var(--info);color:var(--infotx)">باز است</span>`
+        :`<span class="badge" style="background:var(--chipbg);color:var(--chiptx)">به‌زودی</span>`);
+      return `<div class="row" style="align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line2)">
+        <span style="font-size:16px">${ic}</span><div style="flex:1"><b style="font-size:14px">${name}</b></div>${st}</div>`;
+    }).join("")}
+    <div class="row" style="margin-top:10px"><button class="ghost small" onclick="window.openOnboarding()">دیدن مراحل</button>
+    <span class="muted" style="font-size:12px">هر مرحله یک‌بار و فقط با انجام واقعی.</span></div>
+  </div>`;
+}
+async function onboardingPanel(){
+  let ob;
+  try{ob=await api("/onboarding");}catch(e){return;}
+  if(!ob||!ob.enabled||!ME)return;
+  const steps=ob.steps||[];
+  const allDone=!steps.some(s=>!s.done&&s.available&&s.enabled);
+  const html=`<div data-modal="1" class="modal-back">
+    <div class="card modal-card" style="width:min(560px,100%)">
+      <div class="row" style="justify-content:space-between">
+        <b>👋 بیا شروع کنیم</b>
+        <button class="ghost small" id="obX">×</button></div>
+      <div class="muted" style="margin-top:6px">این مراحل را یک‌بار انجام بده تا امتیاز اضافه بگیری. هر مرحله فقط یک‌بار امتیاز می‌دهد.</div>
+      <div style="margin-top:8px">${steps.map(obRow).join("")}</div>
+      <div class="row" style="justify-content:space-between;margin-top:14px">
+        <span class="pill">امتیاز گرفته‌شده: <b>${ob.earned_points||0}</b></span>
+        <div class="row" style="gap:8px">
+          ${allDone?"":`<button class="ghost small" id="obSkip">همین الان رد می‌کنم</button>`}
+          <button class="primary small" id="obClose">باشه</button>
+        </div>
+      </div>
+    </div></div>`;
+  if(document.querySelector("[data-modal]"))document.querySelector("[data-modal]").remove();
+  document.body.insertAdjacentHTML("beforeend",html);
+  const close=()=>finishOnboarding();
+  const cb=$("#obClose");if(cb)cb.onclick=close;
+  const sk=$("#obSkip");if(sk)sk.onclick=close;
+  const xx=$("#obX");if(xx)xx.onclick=close;
+}
+async function finishOnboarding(){
+  document.querySelector("[data-modal]")?.remove();
+  try{localStorage.setItem("ragportal_ob_"+ME.id,"1");}catch(e){}
+  await refreshMe();
+  render();
+  maybeShowConsent();
+}
+window.openOnboarding=()=>{if(ME)onboardingPanel();else openAuth();};
+async function maybeShowOnboarding(){
+  if(!ME)return;
+  const ob=ME.onboarding;
+  if(!ob||!ob.show||ob.asked)return;
+  try{if(localStorage.getItem("ragportal_ob_"+ME.id))return;}catch(e){}
+  await onboardingPanel();
+}
+
+/* ---------------- V3B TASK3: consent & notification preferences ---------------- */
+const CN_META={email:{ic:"📧",name:"ایمیل"},sms:{ic:"💬",name:"پیامک"},bale:{ic:"🤖",name:"بل"}};
+const CN_ORDER=["email","sms","bale"];
+function cnModalRemove(){document.querySelector('[data-modal="cn"]')?.remove();}
+async function fillConsentCard(){
+  const box=$("#consentCardBox");if(!box||!ME)return;
+  let d;try{d=await api("/consent");}catch(e){box.innerHTML="";return;}
+  const ch=d.channels||{},cons=d.consents||{};
+  const row=chx=>{
+    const m=CN_META[chx],c=cons[chx]||{};
+    const granted=c.status==="granted";
+    const btn=granted
+      ?`<button class="ghost small" onclick="window.toggleConsent('${chx}','revoke',this)">لغو رضایت</button>`
+      :`<button class="primary small" onclick="window.toggleConsent('${chx}','grant',this)">فعال‌سازی</button>`;
+    let note="";
+    if(chx==="sms"){if(!ch.sms||!ch.sms.available)note="به‌زودی";else if(!ch.sms.verified_phone)note="ابتدا شمارهٔ تلفن را در «مراحل شروع» تأیید کنید.";}
+    if(chx==="bale"&&(!ch.bale||!ch.bale.available))note="به‌زودی";
+    return `<div class="row" style="align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2)">
+      <span style="font-size:16px">${m.ic}</span>
+      <div style="flex:1;min-width:0"><b style="font-size:14px">${m.name}</b>
+        ${note?`<div class="muted" style="font-size:11.5px;margin-top:1px">${esc(note)}</div>`:""}</div>
+      <span class="badge ${granted?"ok":""}">${granted?"روشن":"خاموش"}</span>
+      ${btn}</div>`;
+  };
+  box.innerHTML=`<div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:6px">
+      <b>🔔 اعلان‌ها و رضایت</b>
+      <span class="pill">روشن‌شده: <b>${CN_ORDER.filter(x=>cons[x]&&cons[x].status==="granted").length}</b> از ${CN_ORDER.length}</span>
+    </div>
+    ${CN_ORDER.map(row).join("")}
+    <div class="muted" style="font-size:11.5px;margin-top:10px">اطلاعات تماس شما فقط برای ارسال اعلان استفاده می‌شود؛ رضایت هر زمان قابل لغو است و لغو اشتراک ایمیل بلافاصله اعمال می‌شود.</div>
+  </div>`;
+}
+window.toggleConsent=async(chx,action,el)=>{
+  busyOn(el);
+  try{
+    await api("/consent",{method:"POST",body:JSON.stringify({channel:chx,action,source:"profile"})});
+    toast(action==="grant"?"رضایت ثبت شد ✅":"رضایت لغو شد");
+    await refreshMe();
+    if(VIEW==="roadmap")fillConsentCard();
+  }catch(e){
+    busyOff(el);
+    if(e.message&&e.message.indexOf("verified")>=0)toast("ابتدا شمارهٔ تلفن را تأیید کنید");
+    else toast(e.message||"خطا در ثبت رضایت");
+  }
+};
+async function consentQuestion(){
+  if(document.querySelector(".modal-back"))return;
+  let d;try{d=await api("/consent");}catch(e){return;}
+  if(d.asked||!ME)return;
+  if(document.querySelector(".modal-back"))return;
+  const html=`<div data-modal="cn" class="modal-back">
+    <div class="card modal-card" style="width:min(480px,100%)">
+      <div class="row" style="justify-content:space-between">
+        <b>🔔 اعلان‌ها را دریافت کنید؟</b>
+        <button class="ghost small" id="cnQx">×</button></div>
+      <div class="muted" style="margin-top:8px;line-height:1.9">از طریق ایمیل، پیامک یا بل می‌توانیم شما را دربارهٔ پاسخ‌های جدید و رویدادهای مهم مطلع کنیم.
+      اطلاعات تماس شما فقط برای ارسال اعلان استفاده می‌شود و رضایت شما را در هر لحظه می‌توانید تغییر دهید.</div>
+      <div class="row" style="justify-content:flex-start;gap:10px;margin-top:16px">
+        <button class="primary small" id="cnYes">بله، انتخاب می‌کنم</button>
+        <button class="ghost small" id="cnNo">نه، ممنون</button>
+      </div>
+    </div></div>`;
+  cnModalRemove();
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("#cnQx").onclick=()=>consentDecline();
+  $("#cnNo").onclick=()=>consentDecline();
+  $("#cnYes").onclick=()=>consentChannelPanel(d);
+}
+async function consentDecline(){
+  try{await api("/onboarding/skip",{method:"POST"});}catch(e){}
+  cnModalRemove();
+  await refreshMe();
+}
+function consentChannelPanel(d){
+  const ch=d.channels||{};
+  const row=chx=>{
+    const m=CN_META[chx];
+    let dis=false,hint="";
+    if(chx==="sms"){if(!ch.sms||!ch.sms.available){dis=true;hint="(به‌زودی)";}else if(!ch.sms.verified_phone){dis=true;hint="(شمارهٔ تلفن تأیید نشده)";}}
+    else if(chx==="bale"){if(!ch.bale||!ch.bale.available){dis=true;hint="(به‌زودی)";}}
+    const checked=chx==="email"&&!dis;
+    return `<label class="chip ${checked&&!dis?"on":""}" style="cursor:${dis?"not-allowed":"pointer"}" ${dis?"":"data-ch"}>
+      <input type="checkbox" value="${chx}" ${checked&&!dis?"checked":""} ${dis?"disabled":""} style="margin:0">
+      <span class="em">${m.ic}</span>${m.name}${hint?`<small style="color:var(--bad)">${hint}</small>`:""}</label>`;
+  };
+  const html=`<div data-modal="cn" class="modal-back">
+    <div class="card modal-card" style="width:min(480px,100%)">
+      <div class="row" style="justify-content:space-between">
+        <b>📬 چه راه‌هایی را می‌خواهید؟</b>
+        <button class="ghost small" id="cnCx">×</button></div>
+      <div class="muted" style="margin-top:8px">هر وقت بخواهید می‌توانید هر کدام را جداگانه از بخش «اعلان‌ها و رضایت» در نقشهٔ رشد خاموش کنید.</div>
+      <div class="chips" id="cnChips" style="margin-top:14px">${CN_ORDER.map(row).join("")}</div>
+      <div class="row" style="justify-content:flex-start;gap:10px;margin-top:14px">
+        <button class="primary small" id="cnGrant">ثبت رضایت</button>
+        <button class="ghost small" id="cnCancel">بعدا تصمیم می‌گیرم</button>
+      </div>
+    </div></div>`;
+  cnModalRemove();
+  document.body.insertAdjacentHTML("beforeend",html);
+  const chips=document.querySelectorAll("#cnChips .chip[data-ch]");
+  chips.forEach(cl=>cl.onclick=()=>cl.classList.toggle("on"));
+  $("#cnCx").onclick=()=>consentDecline();
+  $("#cnCancel").onclick=()=>consentDecline();
+  $("#cnGrant").onclick=async()=>{
+    const g=$("#cnGrant");busyOn(g);
+    const sel=[...document.querySelectorAll("#cnChips input:checked")].map(i=>i.value);
+    for(const c of sel){try{await api("/consent",{method:"POST",body:JSON.stringify({channel:c,action:"grant",source:"onboarding"})});}catch(e){}}
+    if(!sel.length)try{await api("/onboarding/skip",{method:"POST"});}catch(e){}
+    cnModalRemove();
+    toast("تنظیمات اعلان ذخیره شد ✅");
+    await refreshMe();
+    if(VIEW==="roadmap")fillConsentCard();
+  };
+}
+function maybeShowConsent(){if(ME)consentQuestion();}
+
+/* ---------------- header / gpu ---------------- */
+async function refreshMe(){
+  try{ME=(await api("/me")).user||null;}catch(e){ME=null;}
+  refreshHeader();
+}
+function refreshHeader(){
+  if(ME){
+    $("#accTxt").innerHTML=`${esc(ME.name||ME.email)} <span class="lv">${ME.level.name}</span> · <b>${ME.points}</b> امتیاز`;
+    $("#btnAuth").textContent="خروج";
+    $("#navAdmin").style.display=ME.is_admin?"":"none";
+  }else{$("#accTxt").textContent="مهمان";$("#btnAuth").textContent="ورود / عضویت";$("#navAdmin").style.display="none";}
+}
+async function pollGpu(){
+  try{
+    const g=await api("/gpu");
+    $("#gpuDot").className="dot"+(g.available&&!g.idle?" busy":"");
+    if(!g.available)$("#gpuTxt").textContent="GPU: —";
+    else{const u=g.gpus.map(x=>x.util+"%").join("، ");
+      $("#gpuTxt").innerHTML=`GPU: <b>${u}</b> ${g.idle?"· آزاد":"· مشغول"}`;}
+  }catch(e){$("#gpuTxt").textContent="GPU: —";}
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>window.setView(b.dataset.v));
+
+/* ---------------- init ---------------- */
+(async function init(){
+  /* PHASE5: capture think-tank deep-link hash BEFORE OAuth replaceState strips it. */
+  window.__TT_SLUG=(location.hash.match(/#ttsl=([A-Za-z0-9_-]+)/)||[])[1]||null;
+  /* V2K-G: Google OAuth callback: capture ?token= / ?auth_error= once. */
+  try{
+    const q=new URLSearchParams(location.search);
+    const gt=q.get("token");
+    const ge=q.get("auth_error");
+    q.delete("token");q.delete("auth_error");
+    const qs=q.toString();
+    history.replaceState(null,"",location.pathname+(qs?"?"+qs:""));
+    if(gt){TOKEN=gt;localStorage.setItem("ragportal_token",gt);}
+    if(ge)toast(ge==="email_in_use"?PERR_EMAIL:PERR_GOOGLE);
+  }catch(e){}
+  GOOGLE_ON=!!(await api("/auth/config").catch(()=>({}))).google;
+  await refreshMe();
+  CORPORA=await api("/corpora").catch(()=>[]);
+  render();pollGpu();setInterval(pollGpu,8000);
+  await maybeShowOnboarding();
+  maybeShowConsent();
+  // PHASE5: deep-link — a shareable #ttsl=<slug> URL auto-opens that question.
+  // Deferred so the nav is fully bound before the view switch.
+  try{
+    if(window.__TT_SLUG){ setTimeout(()=>{try{setView("thinktank");window.__TT_DLG={ok:1,view:VIEW};}catch(e){window.__TT_DLG={err:e.message,stack:e.stack};}},0); }
+  }catch(e){window.__TT_DLG={initErr:e.message};}
+})();
+
+/* ================= PHASE5: Virtual Think-Tank (اتاق فکر مجازی) ================= */
+let TT_CUR=null, TT_DETAIL=null, TT_TAG=null;
+function viewThinkTank(){
+  return `<div class="hero"><h1>اتاق فکر مجازی</h1>
+    <p>صفحهٔ پایدار و به‌اشتراک‌گذاری‌پذیر برای هر پرسش: پاسخ‌ها و استنادها، رشتهٔ دیدگاه‌های
+    عمومی، ابری از برچسب‌ها و لیدربرد مشارکت. هر پرسش یک شناسهٔ پایدار دارد.</p></div>
+    <div class="card" id="ttHome">
+      <div class="row" id="ttTagCloud" style="margin-bottom:12px;flex-wrap:wrap;gap:6px"></div>
+      <div id="ttList"><span class="spin"></span>در حال بارگذاری…</div>
+    </div>
+    <div class="card" id="ttDetail" style="display:none"></div>`;
+}
+function ttCardHTML(q){
+  return `<div class="card" style="margin-bottom:10px;cursor:pointer" data-ttq="${q.id}">
+    <div class="row" style="justify-content:space-between">
+      <b style="font-size:16px">${esc(q.title)}</b>
+      <span class="muted">${q.views||0} بازدید · ${q.upvotes||0} رأی</span>
+    </div>
+    <div style="margin:6px 0;color:var(--fg,#333)">${esc(q.question)}</div>
+    <div style="margin:6px 0">${(q.tags||[]).map(t=>`<span class="tag" data-tttag="${esc(t)}">${esc(t)}</span>`).join(" ")}</div>
+    <div class="muted" style="font-size:13px">${q.answers_count||0} پاسخ · ${q.citations_count||0} استناد
+      ${q.created_at?` · ${faDate(q.created_at)}`:""}</div>
+  </div>`;
+}
+async function loadThinkTank(){
+  TT_DETAIL=null;TT_CUR=null;
+  const home=$("#ttHome"),det=$("#ttDetail");
+  home.style.display="";det.style.display="none";
+  try{
+    const d=await api("/think-tank");
+    // tag cloud
+    const tc=$("#ttTagCloud");
+    tc.innerHTML=(d.tag_cloud||[]).map(t=>
+      `<button class="ghost small ${TT_TAG===t.tag?"on":""}" data-ttcl="${esc(t.tag)}">${esc(t.tag)} <small>${t.n}</small></button>`
+    ).join(" ")+'<button class="ghost small" data-ttcl="">همه</button>';
+    // list
+    const list=d.questions||[];
+    $("#ttList").innerHTML=list.length?list.map(ttCardHTML).join("")
+      :'<div class="muted">هنوز پرسشی در اتاق فکر ثبت نشده است. از تب «پرسش» یک سؤال بپرسید و آن را به اتاق فکر اضافه کنید.</div>';
+    bindTT();
+    // deep-link: #ttsl=<slug> opens that question directly (shareable URL)
+    const m=(window.__TT_SLUG||location.hash.match(/#ttsl=([A-Za-z0-9_-]+)/)||[null,window.__TT_SLUG]);
+    if(m&&(m[1]||window.__TT_SLUG)){
+      m[1]=m[1]||window.__TT_SLUG;
+      try{
+        const r=await api("/think-tank/slug/"+m[1]);
+        openThinkTank(r.id);
+      }catch(e){/* fall back to list */}
+    }
+  }catch(e){
+    $("#ttList").innerHTML=`<div class="card">${esc(e.message)}</div>`;
+  }
+}
+async function openThinkTank(qid){
+  TT_CUR=qid;
+  const home=$("#ttHome"),det=$("#ttDetail");
+  home.style.display="none";det.style.display="";
+  det.innerHTML='<span class="spin"></span>در حال بارگذاری…';
+  try{
+    const q=await api("/think-tank/"+qid);
+    TT_DETAIL=q;
+    renderTTDetail(q);
+    try{history.replaceState(null,"","#ttsl="+q.slug);}catch(e){}
+    det.scrollIntoView({behavior:"smooth",block:"start"});
+  }catch(e){det.innerHTML=`<div class="card">${esc(e.message)}</div>`;}
+}
+function ttCitationHTML(c){
+  const nm=c.book_name||c.book_id||"منبع";
+  const pg=c.page_number?`، صفحهٔ ${c.page_number}`:"";
+  const lnk=c.link?`<a href="${esc(c.link)}" target="_blank" rel="noopener">مشاهده</a>`:"";
+  return `<div style="border-left:3px solid var(--acc,#3b82f6);padding:4px 10px;margin:4px 0;background:rgba(127,127,127,.06);border-radius:6px">
+    <b>${esc(nm)}${pg}</b> ${lnk}
+    ${c.excerpt?`<div class="muted" style="font-size:13px;margin-top:2px">${esc(c.excerpt)}</div>`:""}
+  </div>`;
+}
+function renderTTDetail(q){
+  try{const _cb=document.createElement("button");_cb.className="ghost small";_cb.style.cssText="margin-bottom:8px";_cb.textContent="کپی لینک پایدار";_cb.onclick=()=>{try{navigator.clipboard.writeText(location.origin+"/#ttsl="+q.slug);toast("لینک کپی شد");}catch(e){toast("کپی ناموفق بود");}};const _dt=document.getElementById("ttDetail");if(_dt){_dt.insertBefore(_cb,_dt.firstChild);}}catch(e){}
+  const det=$("#ttDetail");
+  const ans=(q.answers||[]);
+  const citsTotal=ans.reduce((s,a)=>s+(a.citation_count||0),0);
+  det.innerHTML=`
+    <div class="row" style="justify-content:space-between;margin-bottom:8px">
+      <button class="ghost small" id="ttBack">← بازگشت به اتاق فکر</button>
+      ${ME&&ME.points>=10?`<button class="ghost small" id="ttUpvote">👍 رأی مثبت (${q.upvotes||0})</button>`:""}
+    </div>
+    <h2 style="font-size:20px;margin:6px 0">${esc(q.title)}</h2>
+    <div style="margin:6px 0">${(q.tags||[]).map(t=>`<span class="tag" data-tttag="${esc(t)}">${esc(t)}</span>`).join(" ")}</div>
+    <div class="muted" style="font-size:13px">${q.views||0} بازدید · شناسهٔ پایدار: ${esc(q.slug||("q-"+q.id))}
+      ${q.created_at?` · ${faDate(q.created_at)}`:""}</div>
+    <div class="card" style="margin-top:12px">
+      <b>پاسخ‌ها (${ans.length}) · استنادها (${citsTotal})</b>
+      ${ans.length?ans.map(a=>`
+        <div style="margin-top:12px;border-top:1px solid var(--line,rgba(127,127,127,.2));padding-top:10px">
+          <div class="row" style="justify-content:space-between">
+            <span class="tag">${esc(a.corpus_name||a.corpus_id||"corpus")}</span>
+            <span class="muted" style="font-size:13px">${a.citation_count||0} استناد
+              ${a.latency_ms?` · ${(a.latency_ms/1000).toFixed(1)} ثانیه`:""}
+              ${a.result_page?` · صفحهٔ ${a.result_page}${a.has_more?" (ادامه دارد)":""}`:""}</span>
+          </div>
+          <div style="margin-top:6px;line-height:1.9;white-space:pre-wrap">${esc(a.text||"")}</div>
+          ${(a.citations&&a.citations.length)?`<div style="margin-top:8px"><b>استنادها:</b>
+            ${a.citations.map(ttCitationHTML).join("")}</div>`:`<div class="muted" style="font-size:13px;margin-top:6px">بدون استناد</div>`}
+        </div>`).join("")
+      :'<div class="muted" style="margin-top:8px">برای این پرسش پاسخی ثبت نشده است (احتمالا RAG در زمان پرسش در دسترس نبوده).</div>'}
+    </div>
+    <div class="card" style="margin-top:12px">
+      <b>دیدگاه‌های عمومی (${(q.comments||[]).length})</b>
+      <div id="ttComments" style="margin-top:8px">
+        ${(q.comments||[]).length?(q.comments).map(c=>`
+          <div style="border-top:1px solid var(--line,rgba(127,127,127,.2));padding:8px 0">
+            <span class="tag">${esc(c.alias)}</span> <span class="muted" style="font-size:12px">${c.created_at?faDate(c.created_at):""}</span>
+            <div style="margin-top:3px;line-height:1.8">${esc(c.text)}</div>
+          </div>`).join("")
+        :'<div class="muted">هنوز دیدگاهی ثبت نشده است.</div>'}
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <textarea id="ttComment" placeholder="دیدگاه عمومی خود را بنویسید…" rows="2"
+          style="flex:1;padding:8px;border:1px solid var(--line,rgba(127,127,127,.3));border-radius:8px;background:transparent;color:inherit"></textarea>
+        <button class="ghost" id="ttCommentSend">ثبت دیدگاه</button>
+      </div>
+      ${ME&&ME.points<30?`<div class="muted" style="font-size:12px;margin-top:4px">🔒 ثبت دیدگاه عمومی از ۳۰ امتیاز باز می‌شود (شما ${ME.points} دارید).</div>`:""}
+    </div>
+    <div class="card" style="margin-top:12px">
+      <b>🏆 لیدربرد مشارکت</b>
+      <div id="ttLeaderboard" style="margin-top:8px"><span class="spin"></span>در حال بارگذاری…</div>
+    </div>`;
+  // PHASE5: participation leaderboard (top contributors by points, global portal)
+  api("/leaderboard?period=1m").then(d=>{
+    const rows=(d.rows||[]).slice(0,10);
+    const box=$("#ttLeaderboard");
+    if(!box)return;
+    box.innerHTML=rows.length?rows.map((u,i)=>{
+      const rank=["🥇","🥈","🥉"][i]||(i+1);
+      return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--line,rgba(127,127,127,.15));font-size:14px">
+        <span>${rank} ${esc(u.alias||"?")} <span class="muted" style="font-size:12px">${esc(u.level||"")}</span></span>
+        <span class="muted">${u.points||0} امتیاز · ${u.questions||0} پرسش</span>
+      </div>`;
+    }).join(""):'<div class="muted">هنوز مشارکتی ثبت نشده است.</div>';
+  }).catch(()=>{const b=$("#ttLeaderboard");if(b)b.innerHTML='<div class="muted">لیدربرد در دسترس نیست.</div>';});
+  $("#ttBack").onclick=()=>loadThinkTank();
+  const uv=$("#ttUpvote");
+  if(uv)uv.onclick=async()=>{busyOn(uv);try{await api(`/think-tank/${q.id}/upvote`,{method:"POST"});openThinkTank(q.id);}catch(e){toast(e.message);}finally{busyOff(uv);}};
+  const cs=$("#ttCommentSend");
+  if(cs)cs.onclick=async()=>{
+    const ta=$("#ttComment");const text=ta.value.trim();
+    if(!text)return;
+    busyOn(cs);
+    try{await api(`/think-tank/${q.id}/comments`,{method:"POST",body:JSON.stringify({text})});ta.value="";openThinkTank(q.id);}
+    catch(e){toast(e.message);}finally{busyOff(cs);}
+  };
+  bindTT();
+}
+function bindTT(){
+  document.querySelectorAll("[data-ttq]").forEach(el=>el.onclick=()=>openThinkTank(+el.dataset.ttq));
+  document.querySelectorAll("[data-tttag]").forEach(el=>el.onclick=(ev)=>{ev.stopPropagation();TT_TAG=el.dataset.tttag;setView("thinktank");loadThinkTankTTTag();});
+  document.querySelectorAll("[data-ttcl]").forEach(el=>el.onclick=()=>{TT_TAG=el.dataset.ttcl||null;loadThinkTankTTTag();});
+}
+async function loadThinkTankTTTag(){
+  // reload with tag filter by re-calling loadThinkTank then applying tag client-side
+  await loadThinkTank();
+  // after load, if a tag filter is active, narrow the list
+  if(TT_TAG){
+    // refetch with tag param
+    try{
+      const d=await api("/think-tank?tag="+encodeURIComponent(TT_TAG));
+      const list=d.questions||[];
+      $("#ttList").innerHTML=list.length?list.map(ttCardHTML).join("")
+        :'<div class="muted">پرسشی با این برچسب پیدا نشد.</div>';
+      bindTT();
+    }catch(e){/* keep unfiltered list */}
+  }
+}
+</script>
+<script src="/rag-widget.js" data-accent="24 95% 44%"></script>
+<script src="/rag-settings.js" defer></script>
