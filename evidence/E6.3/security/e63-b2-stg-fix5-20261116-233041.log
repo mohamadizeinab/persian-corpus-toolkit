@@ -1,0 +1,49 @@
+=== B2 stg fix5 20261116-233041 (2026-11-16T23:30:41Z)
+=== [1] pre-state: keyfile + any running forwarder
+  /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=123 mtime=2026-11-16 23:28:40.096406299 +0000
+   portal sha256-16=6a170091ab7d54a8
+   radio sha256-16=0713379552befc6b
+(no forwarder running)
+=== [2] relaunch forwarder (absolute --keyfile, log to e63-b2/log/)
+forwarder pid=1159368
+  stderr tail:
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: key file reloaded consumers=portal,radio digests={'portal': '6a170091ab7d54a8', 'radio': '0713379552befc6b'}
+keyfwd: listening 127.0.0.1:18211 consumer=radio
+keyfwd: listening 127.0.0.1:18212 consumer=portal
+keyfwd: up listeners=2 upstream=http://127.0.0.1:18210
+healthz:
+  radio:  {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "0713379552befc6b", "portal": "6a170091ab7d54a8"}, "keyfile_error": null}
+  portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "0713379552befc6b", "portal": "6a170091ab7d54a8"}, "keyfile_error": null}
+  [PASS] digests = new keys
+=== [3] positives through the forwarder (injected NEW keys)
+fwd-radio(new)   : choices=1 citations=5 content_len=34
+fwd-portal(new)  : choices=1 citations=5 content_len=34
+=== [4] radio2 UI smoke (:8045, radio2->litellm->fwd->gateway)
+status: {"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+data: {"content": "بر اساس مستندات موجود پاسخ نمی‌دهم", "type": "delta"}
+data: {"sources": [{"index": 1, "rag_id": "mizan", "source_id": "mizan", "heading": "بخش fiqh", "source_file": "fiqh-synthetic.txt", "page_number": 1, "chunk_id": "fiqh-ch-0001", "work_id": "فقه", "volume_number": "j1", "collection_id": "fiqh", "snippet": "این متن آزمایشی از پیکره‌ی مصنوعی فقه است؛ درباره‌ی ارکان نماز و شرایط آن."}, {"index": 2, "rag_id": "mizan", "source_id": "mizan", "heading": "بخش fiqh", "source_file": "fiqh-synthetic.txt", "page_number": 2, "chunk_id": "fiqh-ch-0002", "work_id": "فقه", "volume_number": "j1", "collection_id": "fiqh", "snippet": "بخش دوم پیکره‌ی مصنوعی فقه: شروط وضو و موارد رفع‌کننده‌ی وضو."}, {"index": 3, "rag_id": "mizan", "source_id": "mizan", "heading": "بخش fiqh", "source_file": "fiqh-synthetic.txt", "page_number": 1, "chunk_id": "fiqh-ch-0003", "work_id": "فقه", "volume_number": "j2", "collection_id": "fiqh", "snippet": "فقه روزه در پیکره‌ی مصنوعی: مواقت، شُروع و انتهای ماه رمضان و مصادیق افطار."}, {"index": 4, "rag_id": "mizan", "source_id": "mizan", "heading": "بخش mizan", "source_file": "mizan-synthetic.txt", "page_number": 1, "chunk_id": "mizan-ch-0001", "work_id": "میزان", "volume_number": "j1", "collection_id": "mizan", "snippet": "این متن آزمایشی از پیکره‌ی مصنوعی تفسیر المیزان است؛ تفسیر آیات سوره‌ی حمد به زبان ساده."}, {"index": 5, "rag_id": "mizan", "source_id": "mizan", "heading": "بخش mizan", "source_file": "mizan-synthetic.txt", "page_number": 2, "chunk_id": "mizan-ch-0002", "work_id": "میزان", "volume_number": "j1", "collection_id": "mizan", "snippet": "در این بند از پیکره‌ی مصنوعی المیزان، مصادیق تقوا و بندگی در آیات نخست سوره‌ی حمد بیان می‌شود."}], "rag": {"consumer_id": "radio", "degraded": false, "degraded_sources": [], "fused_scores": [0.9, 0.85, 0.8, 0.9, 0.85], "fusion": [], "hops": 1, "latency_ms": 7838, "model": "rag-mizan", "policy": "single", "rag_ids": ["mizan"], "request_id": "req-3820d9e98b9842ad", "selection": [{"fallback_priority": 100, "position": 1, "priority": 1, "rag_id": "mizan", "retrieval_weight": 1.0}], "used_sources": ["mizan"]}, "type": "sources"}
+data: {"request_id": "316ed0eb529644d583280b3e24ecfd49", "type": "done"}
+[PASS] UI stream has content/citations
+=== [5] final state
+version: {"ok":true,"providers_enabled":2,"version":"2026-11-16T23:12:38.137Z"}
+secrets: radio=0713379552befc6b portal=6a170091ab7d54a8
+keyfile: uid=1001:1001 mode=600 size=123 mtime=2026-11-16 23:28:40.096406299 +0000
+healthz final:
+  radio:  {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "0713379552befc6b", "portal": "6a170091ab7d54a8"}, "keyfile_error": null}
+  portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "0713379552befc6b", "portal": "6a170091ab7d54a8"}, "keyfile_error": null}
+litellm.yaml rc_ rescan: 0 lines
+containers:
+rag2-staging-core-registry-1	Up 24 minutes (healthy)
+rag2-staging-core-gateway-1	Up About an hour (healthy)
+rag2-staging-core-litellm-1	Up About an hour (healthy)
+rag2-staging-core-synth-provider-1	Up 5 hours (healthy)
+registry log tail:
+127.0.0.1 - - [16/Nov/2026 23:30:48] "GET /api/rag-registry/mizan/prompts HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:30:49] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:30:54] "POST /api/rag-registry/consumers/verify HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:30:54] "GET /api/rag-registry/mizan/prompts HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:30:59] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:31:02] "GET /api/rag-registry/version HTTP/1.1" 200 -
+=== B2 STG FIX5 DONE
+LOG=/home/saber/e63-b2-stg-fix5-20261116-233041.log

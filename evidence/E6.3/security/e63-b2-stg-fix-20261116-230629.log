@@ -1,0 +1,74 @@
+=== B2 stg fix 20261116-230629 (2026-11-16T23:06:29Z)
+=== [1] pre-fix facts (host view)
+/home/saber/saberprojects/rag2-staging-core/data | owner=saber:saber uid=1001:1001 mode=777 mtime=2026-11-16 21:09:35.667064614 +0000
+/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db | owner=UNKNOWN:UNKNOWN uid=10001:10001 mode=644 mtime=2026-11-16 21:06:01.334436048 +0000
+/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-wal | owner=saber:saber uid=1001:1001 mode=644 mtime=2026-11-16 21:09:35.667064614 +0000
+/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-shm | owner=saber:saber uid=1001:1001 mode=644 mtime=2026-11-16 22:47:17.112131321 +0000
+--- registry container user / image:
+uid=10001(drag) gid=10001(drag) groups=10001(drag)
+User=drag Image=rag-registry:0.1.0
+--- container view of /data:
+total 112
+drwxrwxrwx 2 1001 1001  4096 Nov 16 21:09 .
+drwxr-xr-x 1 root root  4096 Nov 16 19:14 ..
+-rw-r--r-- 1 drag drag 73728 Nov 16 21:06 rag-registry.db
+-rw-r--r-- 1 1001 1001 32768 Nov 16 22:47 rag-registry.db-shm
+-rw-r--r-- 1 1001 1001     0 Nov 16 21:09 rag-registry.db-wal
+--- disk:
+/dev/mapper/ubuntu--vg-ubuntu--lv  1.5T  1.1T  292G  80% /
+--- registry log tail (most recent traceback):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/drag/registry/db.py", line 150, in audit
+    cur = conn.execute(
+          ^^^^^^^^^^^^^
+sqlite3.OperationalError: attempt to write a readonly database
+127.0.0.1 - - [16/Nov/2026 23:05:28] "[35m[1mPOST /api/rag-registry/consumers/verify HTTP/1.1[0m" 500 -
+127.0.0.1 - - [16/Nov/2026 23:05:34] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:05:44] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:05:55] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:06:05] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:06:15] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:06:25] "GET /health HTTP/1.1" 200 -
+--- verify probe pre-fix (expect 500):
+verify radio: code=500 body={"detail":"unexpected server error","error":"internal_error","ok":false}
+=== [2] ownership fix
+container uid=10001 gid=10001
+DB backed up: e63-b2/backup/rag-registry.db.pre-fix-20261116-230629 (sha256-16=73551f47356e0065)
+chown: changing ownership of '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db': Operation not permitted
+chown: changing ownership of '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-wal': Operation not permitted
+chown: changing ownership of '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-shm': Operation not permitted
+chown: changing ownership of '/home/saber/saberprojects/rag2-staging-core/data': Operation not permitted
+chmod: changing permissions of '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db': Operation not permitted
+post: /home/saber/saberprojects/rag2-staging-core/data | owner=saber:saber uid=1001:1001 mode=777
+post: /home/saber/saberprojects/rag2-staging-core/data/rag-registry.db | owner=UNKNOWN:UNKNOWN uid=10001:10001 mode=644
+post: /home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-wal | owner=saber:saber uid=1001:1001 mode=664
+post: /home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-shm | owner=saber:saber uid=1001:1001 mode=664
+--- verify post-fix (expect 200):
+verify radio: code=500 body={"detail":"unexpected server error","error":"internal_error","ok":false}
+verify portal: code=500 body={"detail":"unexpected server error","error":"internal_error","ok":false}
+verify still 500 after chown -> force-recreate registry container
+ Container rag2-staging-core-registry-1  Recreate
+ Container rag2-staging-core-registry-1  Recreated
+ Container rag2-staging-core-registry-1  Starting
+ Container rag2-staging-core-registry-1  Started
+--- post-recreate verify:
+verify radio: code=500 body={"detail":"unexpected server error","error":"internal_error","ok":false}
+verify portal: code=500 body={"detail":"unexpected server error","error":"internal_error","ok":false}
+=== [3] end-to-end proof (current keys must work)
+--- direct gateway (svc + radio key):
+direct: code=401 choices=1 citations=0 content_len=0
+--- via forwarder :18211 (svc only; key injected):
+forwarder: code=401 choices=1 citations=0 content_len=0
+=== [4] post-state
+--- /version:
+{"ok":true,"providers_enabled":2,"version":"2026-11-16T19:36:37.963Z"}
+
+--- audit tail (ids should now grow past 96):
+  File "<string>", line 6
+    print(f"  id={r.get(\"id\")} at={r.get(\"at\")} action={r.get(\"action\")} rag={r.get(\"rag_id\")}")
+                         ^
+SyntaxError: unexpected character after line continuation character
+--- forwarder healthz:
+{"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+=== B2 STG FIX DONE
+LOG=/home/saber/e63-b2-stg-fix-20261116-230629.log

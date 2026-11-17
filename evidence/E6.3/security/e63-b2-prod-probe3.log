@@ -1,0 +1,22 @@
+=== B2 PROD PROBE-3 TS=20261117-000423 (read-only, values digested) ===
+GATEWAY_SERVICE_KEY len=51 sha256-16=7205ed208ee8d6ea
+'Bearer <svc>' sha256-16=000abd0d98429e4b
+  portal-rag-fiqh:
+    x-consumer-key len=46 sha256-16=a9a63be6cb1cc007
+  portal-rag-general:
+    x-consumer-key len=46 sha256-16=a9a63be6cb1cc007
+  portal-rag-mizan:
+    x-consumer-key len=46 sha256-16=a9a63be6cb1cc007
+  rag-fiqh:
+    x-consumer-key len=46 sha256-16=a7e7b77a03898afb
+  rag-general:
+    x-consumer-key len=46 sha256-16=a7e7b77a03898afb
+  rag-mizan:
+    x-consumer-key len=46 sha256-16=a7e7b77a03898afb
+
+## litellm_params FULL key set per model (keys only):
+ERROR:  column "k" does not exist
+LINE 1: SELECT model_name, string_agg(k, chr(44) ORDER BY k) FROM "L...
+                                      ^
+=== PROBE-3 DONE ===
+LOG=/home/saber/e63-b2-prod-probe3-20261117-000423.log

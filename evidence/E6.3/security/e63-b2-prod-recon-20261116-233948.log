@@ -1,0 +1,68 @@
+=== B2 PROD RECON TS=20261116-233948 (read-only, digests only) ===
+
+## 1) containers:
+rag-gateway	rag-gateway:0.1.0	Up 3 hours (healthy)
+litellm-personal	ghcr.io/berriai/litellm	Up 3 hours
+rag-registry	rag-registry:0.1.0	Up 2 days (healthy)
+learn-lite-llm-litellm-1	ghcr.io/berriai/litellm	Up 2 days
+llmhub-litellm-public	ghcr.io/berriai/litellm	Up 2 weeks
+litellm-personal-db	postgres:13	Up 2 weeks
+litellm-postgres	postgres:13	Up 2 days (healthy)
+  any keyfwd container (incl. stopped):
+  (none)
+
+## 2) master key + salt (digests only):
+  LITELLM_MASTER_KEY len=67 sha256-16=8aad12d40c26d89a
+  LITELLM_SALT_KEY   len=64 sha256-16=3cb76e7d1d0c0f86
+
+## 3) rag models in DB (model_id, api_base, x-consumer-key digest):
+  9093791d-e1c2-447e-abe0-6d26bb796f1b | name=portal-rag-fiqh | api_base=SdsxI9-yJuG-sB3TJQXI57bKvQ-1k2BLTCyt4P2KGQCqqwTUAYswG-Q33iVAelyhdvsepokjfC5da8zMFXABF3nZcg== | xck len=46 sha256-16=a9a63be6cb1cc007
+  a3c058eb-12d1-4376-8c3d-7f69059680e1 | name=portal-rag-general | api_base=HolQEJYk5iC7_WaYLwBfD0qJjnNLmQo3i6mn48R1vh1sK1i23FPPtNVNGYr-0D5s4uNdSgBD9TiF_zcE8Qd4inwWwQ== | xck len=46 sha256-16=a9a63be6cb1cc007
+  e6f9ac8f-7480-44c5-b11e-f5d1578c32b4 | name=portal-rag-mizan | api_base=CQJ3UNnjjMS6OETQKxKKslnWY1dq9z-asClgfDUCllboW628qG-RT6o_KQHKMr36vUY0MS06RtQLbiqRap6YHcL66g== | xck len=46 sha256-16=a9a63be6cb1cc007
+  1be5d423-2583-4ae8-906c-ffa0a513bdc1 | name=rag-fiqh | api_base=yGzg1Ey9bYw9gImuqnhW8sqlE0OkrMY8Xf0slnhT9QJinnltQ0zYBjOsh_UW-gNbHjonib4pOEj1JqOUB3kmidJiQA== | xck len=46 sha256-16=a7e7b77a03898afb
+  55114adc-08e3-43a0-a4ee-8fc5c022be0c | name=rag-general | api_base=T12Q-N4-YvQDEDv-RjWslHFWjd57FMP4ZCAUHHImUZBxXNNnNVfKn5Th8hGwDfjFVXH-gQdyNtgEDHeNpEIiPPWnxg== | xck len=46 sha256-16=a7e7b77a03898afb
+  486e6444-261d-49fd-990e-aeae6cc30794 | name=rag-mizan | api_base=_cxrS0M372B3sZaMYS_w6qKS4s7_tl9FPO0BxOelmLgrpwPBDWwh1wc56h8JLZ2oooIsIA7a3pAq2Ug0SD0B3WECAw== | xck len=46 sha256-16=a7e7b77a03898afb
+
+## 4) gateway env file (digests only) + container:
+  GATEWAY_SERVICE_KEY len=51 sha256-16=7205ed208ee8d6ea
+  GATEWAY_REGISTRY_URL=http://127.0.0.1:8200
+  GATEWAY_REGISTRY_ADMIN_TOKEN len=43 sha256-16=0a31e5a69338a0a5
+  GATEWAY_LLM_ENDPOINT=http://127.0.0.1:4101/v1/chat/completions
+  GATEWAY_LLM_MODEL=qwen38-hub
+  GATEWAY_LLM_API_KEY len=67 sha256-16=8aad12d40c26d89a
+  GATEWAY_MAX_HOPS=1
+rag-gateway	Up 3 hours (healthy)
+
+## 5) registry consumers + key_hash + version:
+  version: {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:44:19.422Z"}
+  consumer=portal enabled=True archived=None allowed=['mizan', 'fiqh'] key_hash16=
+  consumer=radio enabled=True archived=None allowed=['mizan', 'fiqh'] key_hash16=
+
+## 6) e61_phase5_secrets.txt consumer key lines (digests only):
+  PORTAL_CONSUMER_KEY len=46 sha256-16=a9a63be6cb1cc007
+  verify RADIO key -> code=400
+  verify PORTAL key -> code=200
+
+## 7) forwarder placement options:
+  litellm-personal-net:
+subnet=10.240.17.0/24 gateway=10.240.17.1
+  litellm-personal IP: b9391b947e0a3d50f968ed948fc93e5f1bbd16d8c0b3f30a4a235de637ab70a2:10.240.17.3 
+  python images available:
+python:latest	1.13GB
+python:3.12-slim	119MB
+python:3.13-slim	118MB
+python:3.12-alpine	55.2MB
+  host ports 8211/8212:
+  (free)
+  host python: /usr/bin/python3
+
+## 8) baseline chat smoke (current chain, BEFORE any change):
+  svc len=51 radio-ck len=0 (digests: 7205ed208ee8d6ea / e3b0c44298fc1c14)
+  BASELINE: choices=1 citations=5 content_len=774 err=-
+
+## 9) registry DB host view (ls only — NO sqlite3, WAL rule):
+-rw-r--r-- 1 saber saber 368640 Nov 16 23:39 /home/saber/dedicated-rag-registry/data/registry/rag-registry.db
+  registry container user: 1001:1001
+rag-registry	Up 2 days (healthy)
+=== RECON DONE ===
+LOG=/home/saber/e63-b2-prod-recon-20261116-233948.log

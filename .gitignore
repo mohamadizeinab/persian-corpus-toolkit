@@ -40,3 +40,22 @@ corpus/books/
 # Scratch/probe files از سشن‌های PCM-20.4+ (هرگز track نشود — hygiene PCM-20.6)
 .tmp_*
 _tmp_*
+
+# E6.3+E7.0 execution scratch (scripts/logs/images از سشن — هرگز track نشود)
+_e63_*.sh
+_e63_*.ps1
+_e63_*.py
+_e63_*.cmd
+_e63_*.tgz
+_e63_*.tar
+_e63_logs/
+_e63_images/
+# NOTE: _e63_b2_keyfwd/ DELIBERATELY tracked — it holds the E6.3 B2 forwarder
+# (rag_keyfwd.py + test_keyfwd.py, no secrets) and is the only VCS-tracked
+# copy until dedicated-rag is pushed to GitLab (blocked: C1, no PAT).
+
+# E6.3 evidence tree: ACCEPTANCE LOGS are deliverables — override the global
+# *.log rule above for everything under evidence/ (sanitized, secret-free).
+!evidence/
+!evidence/**/
+!evidence/**/*.log

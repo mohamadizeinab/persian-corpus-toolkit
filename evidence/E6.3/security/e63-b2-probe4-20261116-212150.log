@@ -1,0 +1,38 @@
+=== B2 PROBE4 TS=20261116-212150 (read-only) ===
+
+## 1) bridge->gateway reachability (python urllib inside container):
+  curl: ABSENT (explains probe3 blank)
+   http://172.30.0.133:8210/health -> 200 b'{"ok":true,"service":"rag-gateway","version":"e2"}\n'
+   http://172.20.1.52:8210/health -> ERR: URLError <urlopen error timed out>
+   http://172.30.0.133:8210/v1/models -> ERR: HTTPError HTTP Error 401: UNAUTHORIZED
+
+## 2) litellm container env (key-relevant vars, digested):
+  LITELLM_SALT_KEY = <len=64 sha256-16=3cb76e7d1d0c0f86>
+  LITELLM_MASTER_KEY = <len=67 sha256-16=8aad12d40c26d89a>
+  STORE_MODEL_IN_DB = <len=4 sha256-16=3cbc87c7681f34db>
+  DATABASE_URL = <present, len=102>
+
+## 3) /model/info raw: api_key presence + entry structure:
+  entries: 13 ; 'api_key' occurrences in raw: 0
+  first entry keys: ['litellm_params', 'model_info', 'model_name']
+  first entry litellm_params keys: ['allow_client_keepalive_override', 'api_base', 'merge_reasoning_content_in_choices', 'model', 'use_in_pass_through', 'use_litellm_proxy', 'use_xai_oauth']
+  sample rag-* entry keys: ['litellm_params', 'model_info', 'model_name']
+  sample rag-* litellm_params keys: ['allow_client_keepalive_override', 'api_base', 'extra_headers', 'merge_reasoning_content_in_choices', 'model', 'timeout', 'use_in_pass_through', 'use_litellm_proxy', 'use_xai_oauth']
+
+## 4) model-management endpoint request schemas:
+  POST /model/new -> {"$ref": "#/components/schemas/Deployment"}
+  POST /model/update -> {"$ref": "#/components/schemas/updateDeployment"}
+  PATCH /model/{model_id}/update -> {"$ref": "#/components/schemas/updateDeployment"}
+  POST /model/delete -> {"$ref": "#/components/schemas/ModelInfoDelete"}
+
+## 5) installed litellm source: model_info api_key + update merge behavior:
+--- model_info handler:
+11797:async def model_info(
+14110:async def model_info_lookup(model: str, custom_llm_provider: str | None = None):
+15300:async def model_info_v2(
+--- api_key masking/redaction near model info:
+7939:                self.settings.pop("user_api_key_cache_max_size", None)
+7946:                self.settings.pop("user_api_key_cache_max_size", None)
+--- update_model / model_update param merging:
+
+=== B2 PROBE4 DONE log=/home/saber/e63-b2-probe4-20261116-212150.log ===

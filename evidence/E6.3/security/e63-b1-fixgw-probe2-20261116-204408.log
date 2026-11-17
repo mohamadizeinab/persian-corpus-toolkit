@@ -1,0 +1,70 @@
+=== B1 fixgw probe2 TS=20261116-204408 ===
+
+--- compose.gateway.yml (sk-/rc- values masked):
+# Universal RAG Gateway (E2). OpenAI-compatible front for multi-RAG.
+#
+# network_mode: host is REQUIRED: the gateway talks to the central registry
+# (127.0.0.1:8200) and to the providers (127.0.0.1:8101/8102) on host
+# loopback — the same loopback the providers themselves bind. The gateway
+# also reaches LiteLLM on the host (GATEWAY_LLM_ENDPOINT, port 4101) and the
+# model-only alias it forwards to. Like the registry, keep the gateway
+# behind the host firewall.
+services:
+  rag-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    image: rag-gateway:0.1.0
+    container_name: rag-gateway
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 1G }
+    volumes:
+      - ./openapi:/app/openapi:ro
+    env_file:
+      - ./env/gateway.env
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8210/health',timeout=4).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+--- /home/saber/dedicated-rag-gateway/env/ listing:
+total 12
+drwxrwxr-x 2 saber saber 4096 Nov 13 18:40 .
+drwxrwxr-x 5 saber saber 4096 Nov 13 18:40 ..
+-rw------- 1 saber saber  967 Nov 13 18:47 gateway.env
+
+--- key-bearing lines per env/ file (name / len / digest16):
+== /home/saber/dedicated-rag-gateway/env/gateway.env
+   GATEWAY_LLM_API_KEY len=67 digest16=d6a88a9ce1acbe5b digest64=d6a88a9ce1acbe5bac68f2d54e2e59002436a79eaf286aebe5adcca0478f1eaf
+
+--- litellm-personal container state:
+   Created: 2026-11-16T20:38:40.568120419Z (started)
+   Image:   ghcr.io/berriai/litellm
+   current LITELLM_MASTER_KEY len=67 digest16=8aad12d40c26d89a digest64=8aad12d40c26d89a51815cae91d629d4ddbe700ae29fffccd54519694441d8fa
+
+--- live /v1/models with the container's OWN env key (expect 200 => container accepts its own key):
+   /v1/models with container-own key => 200
+
+--- which key does litellm ACTUALLY accept? probe a couple of known digests via response codes:
+   (new-from-rotate=8aad12d4..., fixgw-read=dd358288...)  -> the container-own probe above is ground truth
+
+--- /home/saber/e61_phase5_secrets.txt: line NAMES only (values masked), look for LITELLM_MASTER_KEY:
+   # E6.1 Phase 5q secrets — 2026-11-14T14:43:25Z len=0 digest16=e3b0c44298fc1c14
+   # supersedes phase5p partial run; old portal key kwGpO... invalidated by rotate len=0 digest16=e3b0c44298fc1c14
+   GATEWAY_SERVICE_KEY len=51 digest16=7205ed208ee8d6ea
+   REGISTRY_ADMIN_TOKEN len=43 digest16=0a31e5a69338a0a5
+   PORTAL_CONSUMER_KEY len=46 digest16=a9a63be6cb1cc007
+   VK_RADIO len=25 digest16=9b31dc7d8c9d86f8
+   VK_PORTAL len=25 digest16=45e30c969406f6df
+
+--- backup dir env file (OLD key) digest, for reference:
+   backup OLD LITELLM_MASTER_KEY len=67 digest16=d6a88a9ce1acbe5b digest64=d6a88a9ce1acbe5bac68f2d54e2e59002436a79eaf286aebe5adcca0478f1eaf
+=== done ===

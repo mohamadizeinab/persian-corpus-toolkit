@@ -1,0 +1,82 @@
+=== B4 PROD 20261116-194336 (2026-11-16T19:43:36Z)
+--- REGISTRY_ADMIN_TOKEN: LOADED (len 43)
+--- GATEWAY_SERVICE_KEY: LOADED (len 51)
+--- GATEWAY_MODEL_ONLY_ALIASES: qwen38-hub
+=== [0] prechecks
+--- gateway health:
+{"ok":true,"service":"rag-gateway","version":"e2"}
+
+--- registry health/version:
+{"enabled":2,"ok":true,"providers":4,"service":"rag-registry","version":"e1"}
+
+{"ok":true,"providers_enabled":2,"version":"2026-11-14T14:42:39.870Z"}
+
+--- prod consumers (masked):
+{"consumers":[{"allowed_rag_ids":["mizan","fiqh"],"citation_format":"standard","consumer_id":"portal","created_at":"2026-11-14T14:29:13.719Z","created_by":"admin","default_rag_id":"mizan","description":"Portal consumer for the multi-RAG platform","display_name":"RAG Portal (rag.ai.ismc.ir)","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-14T14:42:39.870Z"},{"allowed_rag_ids":["mizan","fiqh"],"citation_format":"standard","consumer_id":"radio","created_at":"2026-11-13T18:40:14.929Z","created_by":"admin","default_rag_id":"mizan","description":"","display_name":"radio","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-13T18:55:20.372Z"}],"ok":true}
+
+--- prod providers:
+     mizan enabled= True archived= False allowed_consumers= ['radio', 'portal', 'gateway']
+     fiqh enabled= True archived= False allowed_consumers= ['radio', 'portal', 'gateway']
+--- radio consumer key: LOADED (len 46) via litellm model (verified consumer_id=radio)
+--- portal consumer key: LOADED (len 46) (verified consumer_id=portal)
+--- radio allowed_rag_ids: "allowed_rag_ids":["mizan","fiqh"]
+--- portal allowed_rag_ids: "allowed_rag_ids":["mizan","fiqh"]
+=== [T1] loop guard -> 424
+  [PASS] hops guard -> 424
+    {"error":{"code":"loop_detected","message":"gateway received a request already carrying RAG hops","retryable":false,"type":"gateway_error"}}
+=== [T2] 401 matrix
+  [PASS] no bearer, no ckey -> 401
+  [PASS] wrong bearer -> 401
+  [PASS] bearer ok, no x-consumer-key -> 401
+  [PASS] garbage x-consumer-key -> 401
+  [PASS] GET /v1/models, no keys -> 401
+    {"error":{"code":"unauthorized","message":"invalid or missing service key","retryable":false,"type":"gateway_error"}}
+    {"error":{"code":"consumer_key_required","message":"x-consumer-key header is required","retryable":false,"type":"gateway_error"}}
+    {"error":{"code":"unknown_consumer_key","message":"consumer key is unknown or disabled","retryable":false,"type":"gateway_error"}}
+=== [T3] valid radio key + rag-mizan -> 200 (prod full chain)
+  [PASS] valid radio + rag-mizan (prod) -> 200
+    (chain took 26s)
+    "request_id":"req-1b093d901c6541b7"
+{"choices":[{"finish_reason":"stop","index":0,"logprobs":null,"message":{"content":"\u0645\u0635\u0644\u062d\u062a\u060c ***LONGTOKEN*** \u0627\u0645\u0631\u0650 \u0627\u062c\u062a\u0645\u0627\u0639\u0650 \u0627\u0646\u0633\u0627\u0646 \u0627\u0633\u062a [mizan:3].","role":"assistant"}}],"citations":[{"chunk_id":"ck-7a9286ba2b44b206d0c2","heading":"\u062a\u0641\u0633\u06cc\u0631 \u0627\u0644\u0645\u06cc\u0632\u0627\u0646 \u0627\u0644\u0645\u062c\u0644\u062f 3","rag_id":"mizan","snippet":"\u0648 \u0645\u0646 \u062c\u0645\u0644\u062a\u0647\u0627:\u0623\u0646 \u0627\u0644\u062a\u0641\u0633\u06cc\u0631 \u0628\u06cc\u0627\u0646 \u0627\u0644\u0645\u0639\u0646\u06cc \u0627\u0644\u0645\u0642\u0637\u
+  [PASS] citations present
+=== [T4] /v1/models with radio key -> consumer-scoped
+  [PASS] /v1/models radio (prod) -> 200
+{"data":[{"created":1794858243,"id":"rag-general","object":"model","owned_by":"rag-gateway"},{"created":1794858243,"id":"rag-mizan","object":"model","owned_by":"rag-gateway"},{"created":1794858243,"id":"rag-fiqh","object":"model","owned_by":"rag-gateway"}],"object":"list"}
+
+HTTP=200
+
+=== [T5] model-only alias -> 400
+  [PASS] model-only alias qwen38-hub -> 400
+    {"error":{"code":"model_only_alias_rejected","message":"model 'qwen38-hub' is a model-only alias and cannot route through the RAG gateway","retryable":false,"type":"gateway_error"}}
+=== [T6] cross-consumer 403
+  [INFO] no natural 403 pair among existing consumers — guarded temp-consumer path
+--- BACKUP prod registry DB (online SQLite backup) BEFORE any mutation:
+    registry data dir: /home/saber/dedicated-rag-registry/data/registry
+    backup written (online)
+stat: cannot statx '/home/saber/backups/e63-b4-registry-20261116-194336.db': No such file or directory
+    backup OK: /home/saber/backups/e63-b4-registry-20261116-194336.db ( bytes)
+    e6-b4-prod key: LOADED (len 43)
+  [PASS] e6-b4-prod -> rag-fiqh (not allowed) -> 403
+    {"error":{"code":"forbidden","message":"RAG source is not available for this consumer","retryable":false,"type":"gateway_error"}}
+--- CLEANUP: disable e6-b4-prod
+{"consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-b4-prod","created_at":"2026-11-16T19:44:03.345Z","created_by":"admin","default_rag_id":"","description":"Temporary cross-consumer authz verification. Disabled immediately as cleanup.","display_name":"E6.3 B4 prod
+  cross-consumer 403 proven via: e6-b4-prod/rag-fiqh
+=== [T7] no-leakage (bodies vs secrets + internal endpoints)
+  [PASS] no body leaks keys / internal endpoints
+=== [T8] prod gateway audit ring — recent outcomes
+     {'request_id': None, 'consumer_id': None, 'model': None, 'outcome': 'denied:loop_detected', 'error_code': 'loop_detected'}
+     {'request_id': None, 'consumer_id': None, 'model': None, 'outcome': 'denied:unknown_consumer_key', 'error_code': 'unknown_consumer_key'}
+     {'request_id': None, 'consumer_id': None, 'model': None, 'outcome': 'denied:unauthorized', 'error_code': 'unauthorized'}
+     {'request_id': 'req-267391ced9244313', 'consumer_id': 'radio', 'model': 'rag-mizan', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-7636d19008324e9a', 'consumer_id': 'radio', 'model': 'rag-general', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-ad6fc739546b4d9a', 'consumer_id': 'radio', 'model': 'rag-fiqh', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-2fc1938a12df4a74', 'consumer_id': 'radio', 'model': 'rag-fiqh', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-9c13ecd223de4c48', 'consumer_id': 'radio', 'model': 'rag-fiqh', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-32e78cd933914ffa', 'consumer_id': 'radio', 'model': 'rag-fiqh', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-f89e6953f9ff4653', 'consumer_id': 'radio', 'model': 'rag-mizan', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-d8af598164c0471d', 'consumer_id': 'radio', 'model': 'rag-mizan', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-46830477337642ea', 'consumer_id': 'radio', 'model': 'rag-mizan', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-51deba1a1a9d4d1c', 'consumer_id': 'radio', 'model': 'rag-fiqh', 'outcome': 'ok', 'error_code': None}
+     {'request_id': 'req-c5508512e8a54bd1', 'consumer_id': 'radio', 'model': 'rag-mizan', 'outcome': 'ok', 'error_code': None}
+=== B4 PROD SUMMARY: PASS=12 FAIL=0
+log=/home/saber/e63-b4-authz-prod-20261116-194336.log

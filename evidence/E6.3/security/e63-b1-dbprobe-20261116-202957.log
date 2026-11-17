@@ -1,0 +1,53 @@
+=== B1 DB PROBE TS=20261116-202957 ===
+old key len=67 sha256=d6a88a9ce1acbe5bac68f2d54e2e59002436a79eaf286aebe5adcca0478f1eaf
+salt  len=64 sha256=3cb76e7d1d0c0f86ef1302d029f88e80c3b4102bb046e01107e2a1ec20933016
+
+-- tables (proxy/config/verification):
+LiteLLM_CacheConfig
+LiteLLM_Config
+LiteLLM_ConfigOverrides
+LiteLLM_DeletedVerificationToken
+LiteLLM_DeprecatedVerificationToken
+LiteLLM_ProxyModelTable
+LiteLLM_ProxyWorkerHeartbeat
+LiteLLM_SSOConfig
+LiteLLM_VerificationToken
+LiteLLM_VerificationTokenView
+LiteLLM_VerifiedSubject
+
+-- columns of each:
+  [LiteLLM_CacheConfig]:
+    id, cache_settings, created_at, updated_at
+  [LiteLLM_Config]:
+    param_name, param_value, last_run_at, reload_revision
+  [LiteLLM_ConfigOverrides]:
+    config_type, config_value, created_at, updated_at
+  [LiteLLM_DeletedVerificationToken]:
+    id, token, key_name, key_alias, soft_budget_cooldown, spend, expires, models, aliases, config, user_id, team_id, permissions, max_parallel_requests, metadata, blocked, tpm_limit, rpm_limit, max_budget, budget_duration, budget_reset_at, allowed_cache_controls, allowed_routes, model_spend, model_max_budget, budget_id, organization_id, object_permission_id, created_at, created_by, updated_at, updated_by, rotation_count, auto_rotate, rotation_interval, last_rotation_at, key_rotation_at, deleted_at, deleted_by, deleted_by_api_key, litellm_changed_by, router_settings, policies, access_group_ids, last_active, project_id, agent_id, budget_fallbacks, key_type, settings_updated_at, tpd_limit, total_spend
+  [LiteLLM_DeprecatedVerificationToken]:
+    id, token, active_token_id, revoke_at, created_at
+  [LiteLLM_ProxyModelTable]:
+    model_id, model_name, litellm_params, model_info, created_at, created_by, updated_at, updated_by, blocked
+  [LiteLLM_ProxyWorkerHeartbeat]:
+    worker_id, hostname, started_at, last_heartbeat_at
+  [LiteLLM_SSOConfig]:
+    id, sso_settings, created_at, updated_at
+  [LiteLLM_VerificationToken]:
+    token, key_name, key_alias, soft_budget_cooldown, spend, expires, models, aliases, config, user_id, team_id, permissions, max_parallel_requests, metadata, blocked, tpm_limit, rpm_limit, max_budget, budget_duration, budget_reset_at, allowed_cache_controls, model_spend, model_max_budget, budget_id, organization_id, created_at, created_by, updated_at, updated_by, allowed_routes, object_permission_id, auto_rotate, key_rotation_at, last_rotation_at, rotation_count, rotation_interval, project_id, router_settings, policies, access_group_ids, last_active, agent_id, budget_limits, budget_fallbacks, key_type, settings_updated_at, tpd_limit, total_spend
+  [LiteLLM_VerificationTokenView]:
+    token, key_name, key_alias, soft_budget_cooldown, spend, expires, models, aliases, config, user_id, team_id, permissions, max_parallel_requests, metadata, blocked, tpm_limit, rpm_limit, max_budget, budget_duration, budget_reset_at, allowed_cache_controls, model_spend, model_max_budget, budget_id, organization_id, created_at, created_by, updated_at, updated_by, allowed_routes, object_permission_id, auto_rotate, key_rotation_at, last_rotation_at, rotation_count, rotation_interval, project_id, router_settings, policies, access_group_ids, last_active, agent_id, budget_limits, budget_fallbacks, key_type, settings_updated_at, tpd_limit, total_spend, team_spend, team_max_budget, team_model_max_budget, team_tpm_limit, team_rpm_limit, team_tpd_limit, project_alias
+  [LiteLLM_VerifiedSubject]:
+    subject_id, issuer, tenant_id, oid, kind, user_id, verified_via, verified_at
+
+master_key column table: NONE
+
+-- virtual tokens (names only, count):
+sk-...0euA|default|t
+sk-...70qg|default|t
+sk-...-B0A|default|t
+sk-...d5GQ|llm_api|t
+sk-...hS6w|default|t
+sk-...pdmQ|default|t
+sk-...Q_-w|default|t
+
+=== B1 DB PROBE DONE log=/home/saber/e63-b1-dbprobe-20261116-202957.log ===

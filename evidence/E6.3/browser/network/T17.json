@@ -1,0 +1,8 @@
+[
+ {
+  "m": "POST",
+  "u": "https://radio.ai.ismc.ir/api/rag/chat/stream",
+  "s": 200,
+  "req": "{\"message\":\"مضمون سوره حمد چیست؟\",\"rag_ids\":[\"mizan\"],\"stream\":true}"
+ }
+]

@@ -1,0 +1,68 @@
+=== C5P 20261116-191436
+=== [1] ensure hotfix package ready (re-verify)
+=== [1] ensure hotfix package ready (re-verify)
+hotfix package OK (api.py ea3c1526190f2f15837fb9f802025a3f80739184e4e7c7f928f4adbbdbde4a44)
+=== [2] current (nested) state, for the record
+=== [2] current (nested) state, for the record
+total 92
+-rw-rw-r-- 1 root root   858 Nov 13 16:49 __init__.py
+-rw-rw-r-- 1 root root  1072 Nov 13 17:01 __main__.py
+drwxrwxr-x 2 root root  4096 Nov 13 17:34 __pycache__
+-rw-rw-r-- 1 root root 38761 Nov 13 17:29 api.py
+-rw-rw-r-- 1 root root  2949 Nov 13 17:04 config.py
+-rw-rw-r-- 1 root root  7272 Nov 13 16:49 db.py
+-rw-rw-r-- 1 root root 10446 Nov 13 17:29 provider_client.py
+drwxrwxr-x 2 1001 1001  4096 Nov 13 17:03 registry
+-rw-rw-r-- 1 root root 10495 Nov 13 16:49 security.py
+--- nested:
+total 88
+-rw-rw-r-- 1 1001 1001   858 Nov 13 16:49 __init__.py
+-rw-rw-r-- 1 1001 1001  1072 Nov 13 17:01 __main__.py
+-rw-rw-r-- 1 1001 1001 43037 Nov 14 06:46 api.py
+-rw-rw-r-- 1 1001 1001  2949 Nov 13 17:04 config.py
+-rw-rw-r-- 1 1001 1001  7272 Nov 13 16:49 db.py
+-rw-rw-r-- 1 1001 1001 10446 Nov 13 17:29 provider_client.py
+-rw-rw-r-- 1 1001 1001 10495 Nov 13 16:49 security.py
+--- live api.py sha:
+9096a1ae449f8ecb62d9a8f16113fe47389288fd61833e10362dc6a1b6b2fb87  /app/drag/registry/api.py
+=== [3] root delete + docker cp
+=== [3] root delete + docker cp
+root rm rc=0
+--- verify in container:
+total 88
+-rw-rw-r-- 1 1001 1001   858 Nov 13 16:49 __init__.py
+-rw-rw-r-- 1 1001 1001  1072 Nov 13 17:01 __main__.py
+-rw-rw-r-- 1 1001 1001 43037 Nov 14 06:46 api.py
+-rw-rw-r-- 1 1001 1001  2949 Nov 13 17:04 config.py
+-rw-rw-r-- 1 1001 1001  7272 Nov 13 16:49 db.py
+-rw-rw-r-- 1 1001 1001 10446 Nov 13 17:29 provider_client.py
+-rw-rw-r-- 1 1001 1001 10495 Nov 13 16:49 security.py
+ea3c1526190f2f15837fb9f802025a3f80739184e4e7c7f928f4adbbdbde4a44  /app/drag/registry/api.py
+780:    @app.get("/api/rag-registry/consumers/<consumer_id>/rags")
+in-container api.py matches ea3c1526... — proceeding
+=== [4] restart registry (keep container)
+=== [4] restart registry (keep container)
+ Container rag2-staging-core-registry-1  Restarting
+ Container rag2-staging-core-registry-1  Started
+UP: registry (18200) after 1s
+=== [5] re-probe /rags
+=== [5] re-probe /rags
+--- /consumers/portal/rags:
+{"consumer":{"allowed_rag_ids":["mizan","fiqh"],"citation_format":"standard","consumer_id":"portal","created_at":"2026-11-16T18:07:17.623Z","created_by":"admin","default_rag_id":"mizan","description":"E6.3 staging portal consumer (fresh key).","display_name":"Portal (staging)","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T18:22:52.877Z"},"model_aliases":{"multi":"rag-general","single":["rag-mizan","rag-fiqh"]},"ok":true,"providers":[{"allowed_consumers":[],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T18:07:17.598Z","created_by":"admin","description":"Synthetic staging provider (E6.3 C5) \u2014 NOT the production Mizan RAG.","display_name":"\u062a\u0641\u0633\u06cc\u0631 \u0627\u0644\u0645\u0
+--- /consumers/radio/rags:
+{"consumer":{"allowed_rag_ids":["mizan","fiqh","e6-acceptance"],"citation_format":"standard","consumer_id":"radio","created_at":"2026-11-16T18:07:17.616Z","created_by":"admin","default_rag_id":"mizan","description":"E6.3 staging radio consumer (fresh key).","display_name":"Radio Mar'ef (staging)","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T18:22:52.841Z"},"model_aliases":{"multi":"rag-general","single":["rag-mizan","rag-fiqh"]},"ok":true,"providers":[{"allowed_consumers":[],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T18:07:17.598Z","created_by":"admin","description":"Synthetic staging provider (E6.3 C5) \u2014 NOT the production Mizan RAG.","display_name":"\u062a\u0641\u0633\u06cc\u0631 \
+=== [6] UI picker re-check
+=== [6] UI picker re-check
+--- radio2 /api/rag/sources:
+{"ok":true,"consumer":{"consumer_id":"radio","display_name":"Radio Mar'ef (staging)","description":"E6.3 staging radio consumer (fresh key).","allowed_rag_ids":["mizan","fiqh","e6-acceptance"],"default_rag_id":"mizan","routing_policy":"priority","timeout_ms":60000,"stream_allowed":true,"citation_format":"standard","enabled":true},"providers":[{"rag_id":"mizan","display_name":"تفسیر المیزان (استیجینگ، مصنوعی)","description":"Synthetic staging provider (E6.3 C5) — NOT the production Mizan RAG.","priority":1,"retrieval_weight":1.0,"source_names":{}},{"rag_id":"fiqh","display_name":"فقه (استیجینگ، مصنوعی)","description":"Synthetic staging provider (E6.3 C5) — NOT the production Fiqh RAG.","priority":2,"retrieval_weight":1.0,"source_names":{}}],"model_aliases":{"multi":"rag-general","single":["rag-mizan","rag-fiqh"]},"sources_for_general":["mizan","fiqh"],"litellm_configured":true}
+--- rag2 /api/rag/sources:
+{"ok":true,"consumer":{"consumer_id":"portal","display_name":"Portal (staging)","description":"E6.3 staging portal consumer (fresh key).","allowed_rag_ids":["mizan","fiqh"],"default_rag_id":"mizan","routing_policy":"priority","timeout_ms":60000,"stream_allowed":true,"citation_format":"standard","enabled":true},"providers":[{"rag_id":"mizan","display_name":"تفسیر المیزان (استیجینگ، مصنوعی)","description":"Synthetic staging provider (E6.3 C5) — NOT the production Mizan RAG.","priority":1,"retrieval_weight":1.0},{"rag_id":"fiqh","display_name":"فقه (استیجینگ، مصنوعی)","description":"Synthetic staging provider (E6.3 C5) — NOT the production Fiqh RAG.","priority":2,"retrieval_weight":1.0}],"model_aliases":{"multi":"rag-general","single":["rag-mizan","rag-fiqh"]},"sources_for_general":["mizan","fiqh"],"litellm_configured":true}
+=== [7] state
+=== [7] state
+radio2_api	Up 18 minutes (healthy)
+rag2-staging-core-litellm-1	Up 19 minutes (healthy)
+rag2_api	Up 48 minutes
+rag2-staging-core-synth-provider-1	Up 52 minutes (healthy)
+rag2-staging-core-gateway-1	Up About an hour (healthy)
+rag2-staging-core-registry-1	Up 1 second (health: starting)
+C5P_DONE log=/home/saber/e63-c5p-hotfix2-20261116-191436.log

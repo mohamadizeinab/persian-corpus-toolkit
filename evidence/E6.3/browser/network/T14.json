@@ -1,0 +1,20 @@
+[
+ {
+  "m": "GET",
+  "u": "http://172.20.1.53:8048/api/auth/config",
+  "s": 200,
+  "b": "{\"google\":true}"
+ },
+ {
+  "m": "GET",
+  "u": "http://172.20.1.53:8048/api/me",
+  "s": 200,
+  "b": "{\"user\":null}"
+ },
+ {
+  "m": "GET",
+  "u": "http://172.20.1.53:8048/api/corpora",
+  "s": 200,
+  "b": "[{\"id\":\"eiis\",\"name_fa\":\"کتابخانهٔ علوم عقلی\",\"model\":\"rag-eiis\",\"description\":\"کتب فلسفه و علوم عقلی کتابخانهٔ الکترونیکی\",\"min_points\":40},{\"id\":\"eiis-1000\",\"name_fa\":\"کتابخانهٔ علوم عقلی (۱۰۰۰ کتاب)\",\"model\":\"rag-eiis-1000\",\"description\":\"مجموعهٔ گسترش‌یافتهٔ ۱۰۰۰ کتاب علوم عقلی\",\"min_points\":40},{\"id\":\"mesbah\",\"name_fa\":\"آثار علامه مصباح\",\"model\":\"rag-mesbah\",\"description\":\"آثار و مقالات علامه مصباح یزدی\",\"min_points\":20},{\"id\":\"radio\",\"name_fa\":\"رادیو معارف\",\"model\":\"rag-radio\",\"description\":\"آرشیو صوتی رادیو معارف — برنامه‌ها و پخش‌ها\",\"min_points\":20},{\"id\":\"radio-06b\",\"name_fa\":\"رادیو معارف — 0.6B\",\"model\":\"rag-radio-06b\",\"description\":\"رادیو معارف (مدل 0.6B، سریع)\",\"min_points\":20},{\"id\":\"radio-4b\",\"name_fa\":\"رادیو معارف — 4B\",\"model\":\"rag-radio-4b\",\"description\":\"رادیو معارف (مدل"
+ }
+]

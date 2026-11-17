@@ -1,0 +1,136 @@
+=== B2 PROBE3 TS=20261116-211824 (read-only) ===
+gateway service key: len=51 sha256-16=7205ed208ee8d6ea
+
+## 1) /model/info (admin): decrypted litellm_params per model, secrets digested:
+MODEL rag-mizan
+  allow_client_keepalive_override: False
+  api_base: http://172.30.0.133:8210/v1
+  extra_headers:
+    x-consumer-key: '<len=46 sha256-16=cb7d2491fcfc985f>'
+  merge_reasoning_content_in_choices: False
+  model: openai/rag-mizan
+  timeout: 120.0
+  use_in_pass_through: False
+  use_litellm_proxy: False
+  use_xai_oauth: False
+MODEL rag-fiqh
+  allow_client_keepalive_override: False
+  api_base: http://172.30.0.133:8210/v1
+  extra_headers:
+    x-consumer-key: '<len=46 sha256-16=cb7d2491fcfc985f>'
+  merge_reasoning_content_in_choices: False
+  model: openai/rag-fiqh
+  timeout: 120.0
+  use_in_pass_through: False
+  use_litellm_proxy: False
+  use_xai_oauth: False
+MODEL rag-general
+  allow_client_keepalive_override: False
+  api_base: http://172.30.0.133:8210/v1
+  extra_headers:
+    x-consumer-key: '<len=46 sha256-16=cb7d2491fcfc985f>'
+  merge_reasoning_content_in_choices: False
+  model: openai/rag-general
+  timeout: 120.0
+  use_in_pass_through: False
+  use_litellm_proxy: False
+  use_xai_oauth: False
+MODEL portal-rag-mizan
+  allow_client_keepalive_override: False
+  api_base: http://172.30.0.133:8210/v1
+  extra_headers:
+    x-consumer-key: '<len=46 sha256-16=a0a23788e06e42f6>'
+  merge_reasoning_content_in_choices: False
+  model: openai/rag-mizan
+  timeout: 120.0
+  use_in_pass_through: False
+  use_litellm_proxy: False
+  use_xai_oauth: False
+MODEL portal-rag-fiqh
+  allow_client_keepalive_override: False
+  api_base: http://172.30.0.133:8210/v1
+  extra_headers:
+    x-consumer-key: '<len=46 sha256-16=a0a23788e06e42f6>'
+  merge_reasoning_content_in_choices: False
+  model: openai/rag-fiqh
+  timeout: 120.0
+  use_in_pass_through: False
+  use_litellm_proxy: False
+  use_xai_oauth: False
+MODEL portal-rag-general
+  allow_client_keepalive_override: False
+  api_base: http://172.30.0.133:8210/v1
+  extra_headers:
+    x-consumer-key: '<len=46 sha256-16=a0a23788e06e42f6>'
+  merge_reasoning_content_in_choices: False
+  model: openai/rag-general
+  timeout: 120.0
+  use_in_pass_through: False
+  use_litellm_proxy: False
+  use_xai_oauth: False
+
+## 2) /model/info raw top-level keys (structure check):
+  dict keys: ['data']
+
+## 3) Model-management endpoints in /openapi.json:
+  /agent/daily/activity/aggregated/model_top_keys  [GET]
+  /cursor/models  [GET]
+  /cursor/v1/models  [GET]
+  /customer/daily/activity/aggregated/model_top_keys  [GET]
+  /lens/worker/{lens_id}/{job_id}/model  [POST]
+  /model-insights  [GET]
+  /model-insights/tasks  [GET]
+  /model/block  [POST]
+  /model/delete  [POST]
+  /model/deprecations  [GET]
+  /model/info  [GET]
+  /model/new  [POST]
+  /model/unblock  [POST]
+  /model/update  [POST]
+  /model/{model_id}/update  [PATCH]
+  /model_group/info  [GET]
+  /model_group/make_public  [POST]
+  /model_hub/update_useful_links  [POST]
+  /models  [GET]
+  /models/{model_id}  [GET]
+  /models/{model_name}:countTokens  [POST]
+  /models/{model_name}:generateContent  [POST]
+  /models/{model_name}:streamGenerateContent  [POST]
+  /organization/daily/activity/aggregated/model_top_keys  [GET]
+  /public/model_hub  [GET]
+  /public/model_hub/info  [GET]
+  /public/v1/model_hub  [GET]
+  /public/v1/model_hub/{facet}  [GET]
+  /tag/daily/activity/aggregated/model_top_keys  [GET]
+  /team/daily/activity/aggregated/model_top_keys  [GET]
+  /team/model/add  [POST]
+  /team/model/delete  [POST]
+  /user/daily/activity/aggregated/model_top_keys  [GET]
+  /utils/model_info  [GET]
+  /v1/model/deprecations  [GET]
+  /v1/model/info  [GET]
+  /v1/models  [GET]
+  /v1/models/{model_id}  [GET]
+  /v1beta/models/{model_name}:countTokens  [POST]
+  /v1beta/models/{model_name}:generateContent  [POST]
+  /v1beta/models/{model_name}:streamGenerateContent  [POST]
+  /v2/model/info  [GET]
+
+## 4) Installed litellm: model update/delete handlers:
+6762:            ### STORE MODEL IN DB ### feature flag for `/model/new`
+
+## 5) Reachability FROM the litellm container (bridge net) to the gateway:
+  http://172.30.0.133:8210/health -> 
+  http://172.20.1.52:8210/health -> 
+
+## 6) LiteLLM general settings / config source:
+3116:    forward_client_headers_to_llm_api: bool | None = Field(
+
+## 7) Proxy config table (forward_client_headers-like general settings):
+LiteLLM_CacheConfig
+LiteLLM_Config
+LiteLLM_ConfigOverrides
+LiteLLM_SSOConfig
+LiteLLM_UISettings
+
+=== B2 PROBE3 DONE log=/home/saber/e63-b2-probe3-20261116-211824.log ===

@@ -1,0 +1,40 @@
+=== STAGING CORE BUILD 20261116-180715
+=== STAGING CORE BUILD 20261116-180715
+host python: /usr/bin/python3 (Python 3.12.3)
+=== [1] fresh secrets (values never printed)
+=== [1] fresh secrets (values never printed)
+secrets written: 8 vars, mode 600
+=== [2] synthetic provider script
+=== [2] synthetic provider script
+synth_provider.py: 120 lines
+=== [3] seed script (world: 2 providers + 2 consumers)
+=== [3] seed script (world: 2 providers + 2 consumers)
+seed.py: 100 lines
+=== [4] compose file
+=== [4] compose file
+compose.yml: 80 lines
+=== [5] up synth+registry+gateway
+=== [5] up synth+registry+gateway
+compose: 2.40.3+ds1-0ubuntu1~24.04.1
+ Container rag2-staging-core-gateway-1  Starting
+ Container rag2-staging-core-synth-provider-1  Starting
+ Container rag2-staging-core-gateway-1  Started
+ Container rag2-staging-core-synth-provider-1  Started
+ Container rag2-staging-core-registry-1  Started
+UP: synth-provider (18101) after 1s
+UP: registry (18200) after 0s
+UP: gateway (18210) after 0s
+=== [5b] direct synth checks
+=== [5b] direct synth checks
+{"ok": true, "service": "e63-synth-provider", "collections": ["fiqh", "mizan"]}
+synth /v1/models without Bearer -> 401 (expect 401)
+=== [6] seed world
+=== [6] seed world
+provider mizan: HTTP 201 master_prompt_id=mp-mizan-v1
+provider fiqh: HTTP 201 master_prompt_id=mp-fiqh-v1
+consumer radio: HTTP 201 api_key=WAjhi_…(len 43) -> /stg-secrets/radio-key
+consumer portal: HTTP 201 api_key=fRmXoV…(len 43) -> /stg-secrets/portal-key
+enabled providers: ['mizan', 'fiqh']
+registry version: 2026-11-16T18:07:17.623Z enabled: 2
+audit entries for mizan: 1
+SEED_DONE

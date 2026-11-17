@@ -1,0 +1,26 @@
+[
+ {
+  "m": "GET",
+  "u": "https://radio.ai.ismc.ir/api/rag/status",
+  "s": 200,
+  "b": "{\"ok\":true,\"configured\":true,\"litellm_configured\":true,\"consumer_id\":\"radio\"}"
+ },
+ {
+  "m": "GET",
+  "u": "https://radio.ai.ismc.ir/api/rag/sources",
+  "s": 502,
+  "b": "{\"detail\":\"registry_unreachable: timed out\"}"
+ },
+ {
+  "m": "GET",
+  "u": "https://radio.ai.ismc.ir/api/rag/admin/status",
+  "s": 404,
+  "b": "{\"detail\":\"not found\"}"
+ },
+ {
+  "m": "GET",
+  "u": "https://radio.ai.ismc.ir/api/rag/admin/status",
+  "s": 200,
+  "b": "{\"ok\":true,\"consumer_id\":\"radio\",\"admin\":true}"
+ }
+]

@@ -1,0 +1,358 @@
+=== B2 PROBE10 TS=20261116-214214 (read-only) ===
+## 1) updateLiteLLMParams class body (router.py 520-660):
+
+
+class LiteLLM_Params(GenericLiteLLMParams):
+    """
+    LiteLLM Params with 'model' requirement - used for completions
+    """
+
+    model: str
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+    def __contains__(self, key) -> bool:
+        # Define custom behavior for the 'in' operator
+        return hasattr(self, key)
+
+    def get(self, key, default=None):
+        # Custom .get() method to access attributes with a default value if the attribute doesn't exist
+        return getattr(self, key, default)
+
+    def __getitem__(self, key) -> object:
+        # Allow dictionary-style access to attributes
+        return getattr(self, key)
+
+    def __setitem__(self, key, value) -> None:
+        # Allow dictionary-style assignment of attributes
+        setattr(self, key, value)
+
+
+class updateLiteLLMParams(GenericLiteLLMParams):
+    # This class is used to update the LiteLLM_Params
+    # only differece is model is optional
+    model: str | None = None
+
+
+class updateDeployment(BaseModel):
+    model_name: str | None = None
+    litellm_params: updateLiteLLMParams | None = None
+    model_info: ModelInfo | None = None
+    blocked: bool | None = None
+
+    model_config = ConfigDict(protected_namespaces=())
+
+
+class LiteLLMParamsTypedDict(TypedDict, total=False):
+    model: str
+    custom_llm_provider: str | None
+    tpm: int | None
+    rpm: int | None
+    itpm: int | None
+    otpm: int | None
+    order: int | None
+    weight: int | None
+    max_parallel_requests: int | None
+    api_key: str | None
+    api_base: str | None
+    api_version: str | None
+    timeout: float | str | httpx.Timeout | None
+    stream_timeout: float | str | None
+    max_retries: int | None
+    organization: list | str | None  # for openai orgs
+    provider_affinity_header: ReadOnly[str | None]
+    configurable_clientside_auth_params: (
+        CONFIGURABLE_CLIENTSIDE_AUTH_PARAMS  # for allowing api base switching on finetuned models
+    )
+    ## DROP PARAMS ##
+    drop_params: bool | None
+    ## RESPONSES API → CHAT COMPLETIONS BRIDGE ##
+    use_chat_completions_api: bool | None
+    ## PASS-THROUGH ENDPOINTS ##
+    use_in_pass_through: bool | None
+    litellm_credential_name: str | None
+    ## UNIFIED PROJECT/REGION ##
+    region_name: str | None
+    ## VERTEX AI ##
+    vertex_project: str | None
+    vertex_location: str | None
+    ## AWS BEDROCK / SAGEMAKER ##
+    aws_access_key_id: str | None
+    aws_secret_access_key: str | None
+    aws_region_name: str | None
+    aws_bedrock_project_id: str | None
+    ## AWS S3 VECTORS ##
+    vector_bucket_name: str | None
+    index_name: str | None
+    embedding_model: str | None
+    ## IBM WATSONX ##
+    watsonx_region_name: str | None
+    ## CUSTOM PRICING ##
+    input_cost_per_token: float | None
+    output_cost_per_token: float | None
+    cost_per_second: ReadOnly[float | None]
+    input_cost_per_second: float | None
+    output_cost_per_second: float | None
+    output_cost_per_second_480p: ReadOnly[float | None]
+    output_cost_per_second_720p: ReadOnly[float | None]
+    output_cost_per_second_768p: ReadOnly[float | None]
+    output_cost_per_second_2k: ReadOnly[float | None]
+    output_cost_per_second_1080p: float | None
+    output_cost_per_second_4k: ReadOnly[float | None]
+    num_retries: int | None
+    ## MOCK RESPONSES ##
+    mock_response: str | ModelResponse | Exception | None
+
+    # routing params
+    # use this for tag-based routing
+    tags: list[str] | None
+    # regex patterns matched against request headers (e.g. "^User-Agent:\\s*claude-code\\/")
+    tag_regex: list[str] | None
+
+    # deployment budgets
+    max_budget: float | None
+    budget_duration: str | None
+    keepalive_seconds: float | None
+    allow_client_keepalive_override: bool | None
+
+    # per-deployment cooldown override
+    cooldown_time: float | None
+
+
+class DeploymentTypedDict(TypedDict, total=False):
+    model_name: Required[str]
+    litellm_params: Required[LiteLLMParamsTypedDict]
+    model_info: dict
+
+
+SPECIAL_MODEL_INFO_PARAMS = tuple(MirroredPricingParams.model_fields)
+
+
+class Deployment(BaseModel):
+    model_name: str
+    litellm_params: LiteLLM_Params
+    model_info: ModelInfo
+
+    model_config = ConfigDict(extra="allow", protected_namespaces=())
+
+    def __init__(
+        self,
+        model_name: str,
+        litellm_params: LiteLLM_Params,
+        model_info: ModelInfo | dict | None = None,
+        **params,
+    ) -> None:
+## 2) GenericLiteLLMParams def + model_config lines in router.py:
+52:    model_config = ConfigDict(protected_namespaces=())
+84:    model_config = ConfigDict(protected_namespaces=())
+111:    model_config = ConfigDict(protected_namespaces=())
+172:    model_config = ConfigDict(protected_namespaces=())
+184:    model_config = ConfigDict(frozen=True, extra="forbid")
+303:    model_config = ConfigDict(extra="allow")
+381:class GenericLiteLLMParams(CredentialLiteLLMParams, CustomPricingLiteLLMParams):
+426:    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+528:    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+559:    model_config = ConfigDict(protected_namespaces=())
+652:    model_config = ConfigDict(extra="allow", protected_namespaces=())
+1242:    model_config = ConfigDict(use_enum_values=False)
+## 3) CLEARABLE/SPECIAL definitions (model_management_endpoints.py 90-160):
+    authorize_member_auto_router_dependencies,
+    authorize_member_auto_router_team,
+    authorize_member_auto_router_write,
+)
+from litellm.proxy.management_helpers.model_allowlist_rename_sync import sync_model_allowlists_for_renamed_model
+from litellm.proxy.spend_tracking.ptu_feature_flag import (
+    PTU_COST_ATTRIBUTION_ENV_VAR,
+    is_ptu_cost_attribution_enabled,
+)
+from litellm.proxy.utils import PrismaClient, ProxyLogging
+from litellm.repositories.credentials_repository import CredentialsRepository
+from litellm.repositories.model_repository import ModelRepository
+from litellm.repositories.prisma_protocols import TableActions
+from litellm.repositories.table_repositories import ModelTableRepository
+from litellm.repositories.team_repository import TeamRepository
+from litellm.router import Router
+from litellm.router_strategy.complexity_router import (
+    DEFAULT_CLASSIFIER_CONTEXT_WINDOW_SIZE,
+    ClassificationRubric,
+    ComplexityRouterConfig,
+    ComplexityTier,
+    TierDefinition,
+    built_in_tier_classification_prompt,
+    classification_system_prompt,
+    custom_tier_classification_prompt,
+    normalize_classification_examples,
+    normalize_classification_prompt,
+)
+from litellm.router_utils.auto_router_model_naming import (
+    GATED_AUTO_ROUTER_CAPABILITIES,
+    STRATEGY_ROUTER_PARAM_FIELDS,
+    capability_limit_violation,
+    carries_complexity_router_settings,
+    count_capability_routers,
+    gated_capability_of,
+    is_complexity_router_model,
+    validate_complexity_router_config_placement,
+    validate_complexity_router_config_write,
+    validate_strategy_router_model_write,
+)
+from litellm.router_utils.auto_router_tuning_baseline import is_mutable_tuned_candidate, tuning_quota_violation
+from litellm.types.llms.bedrock import AwsSessionTag
+from litellm.types.proxy.management_endpoints.model_management_endpoints import (
+    AutoRouterClassifierDefaultPromptResponse,
+    UpdateUsefulLinksRequest,
+)
+from litellm.types.router import (
+    SPECIAL_MODEL_INFO_PARAMS,
+    Deployment,
+    GenericLiteLLMParams,
+    ModelInfo,
+    updateDeployment,
+    updateLiteLLMParams,
+)
+from litellm.types.utils import (
+    COST_MAP_LOOKUP_KEY,
+    echoed_cost_map_fields,
+    echoed_cost_map_pricing_fields,
+    without_server_derived_pricing,
+)
+from litellm.utils import get_utc_datetime
+
+if TYPE_CHECKING:
+    from prisma import models as prisma_models
+    from prisma import types as prisma_types
+
+router: Final = APIRouter()
+CLEARABLE_LITELLM_PARAMS: Final = frozenset({"cache_control_injection_points", "litellm_credential_name"})
+NULL_CLEARABLE_LITELLM_PARAMS: Final = frozenset((*SPECIAL_MODEL_INFO_PARAMS, *CLEARABLE_LITELLM_PARAMS))
+
+
+## 4) PATCH handler tail (model_management_endpoints.py 1180-1300):
+        )
+        effective_patch: Final = (
+            patch_data.model_copy(
+                update=MappingProxyType(
+                    {
+                        "model_name": None if member_write is not None else patch_data.model_name,
+                        "model_info": effective_info,
+                    }
+                )
+            )
+            if member_marker is not None
+            else patch_data
+        )
+
+        # Pause/resume (`blocked`) is a proxy-admin-only privilege. Team admins
+        # passed the auth check above for team-scoped models, but they must not
+        # be able to unblock (or block) a model their proxy admin has paused.
+        if patch_data.blocked is not None and user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+            raise ProxyException(
+                message="Only proxy admins can change a model's blocked flag.",
+                type=ProxyErrorTypes.auth_error.value,
+                code=status.HTTP_403_FORBIDDEN,
+                param="blocked",
+            )
+
+        ModelManagementAuthChecks.can_user_attach_credential(
+            litellm_params=patch_data.litellm_params,
+            user_api_key_dict=user_api_key_dict,
+            existing_litellm_params=db_model.litellm_params,
+            null_detaches=True,
+        )
+        await _raise_on_invalid_credential_name(patch_data.litellm_params, db_model.litellm_params, prisma_client)
+
+        ModelManagementAuthChecks.can_user_set_aws_session_tags(
+            litellm_params=patch_data.litellm_params,
+            user_api_key_dict=user_api_key_dict,
+            existing_litellm_params=db_model.litellm_params,
+        )
+
+        _raise_on_strategy_router_write_violation(
+            incoming_params=patch_data.litellm_params,
+            existing_params=db_model.litellm_params,
+        )
+
+        effective_params: Final = _effective_complexity_router_params(
+            patch_data.litellm_params, db_model.litellm_params
+        )
+        requested_model_name: Final = patch_data.model_name
+        stored_model_name: str | None = None
+
+        async def write_row(update_data: PrismaCompatibleUpdateDBModel) -> _ProxyModelRow | None:
+            nonlocal stored_model_name
+            stored_model_name = update_data.get("model_name")
+            update_data["updated_by"] = user_api_key_dict.user_id or litellm_proxy_admin_name
+            update_data["updated_at"] = cast(str, get_utc_datetime())
+            async with _auto_router_capability_slot(
+                prisma_client,
+                effective_params=effective_params,
+                model_id=model_id,
+                member_write=member_write,
+            ) as table:
+                return await table.update(where={"model_id": model_id}, data=update_data)
+
+        # Handle team model updates with proper alias management
+        updated_model: Final = await _update_team_model_in_db(
+            db_model=db_model,
+            patch_data=effective_patch,
+            user_api_key_dict=user_api_key_dict,
+            prisma_client=prisma_client,
+            write_row=write_row,
+        )
+
+        if updated_model is None:
+            raise ProxyException(
+                message=f"Model {model_id} not found on proxy.",
+                type=ProxyErrorTypes.not_found_error,
+                code=status.HTTP_404_NOT_FOUND,
+                param=None,
+            )
+
+        if (
+            stored_model_name is not None
+            and stored_model_name == requested_model_name
+            and stored_model_name != db_model.model_name
+        ):
+            await sync_access_groups_for_renamed_model(
+                prisma_client=prisma_client,
+                model_id=model_id,
+                old_name=db_model.model_name,
+                new_name=stored_model_name,
+                llm_router=llm_router,
+            )
+            await sync_model_allowlists_for_renamed_model(
+                prisma_client=prisma_client,
+                model_id=model_id,
+                old_name=db_model.model_name,
+                new_name=stored_model_name,
+                llm_router=llm_router,
+                user_api_key_cache=user_api_key_cache,
+            )
+
+        # Clear cache and reload models (uses config setting or defaults to preserving config models for DB updates)
+        live_before_reload: Final = live_model_ids_snapshot()
+        reload_outcome: Final = await clear_cache()
+
+        ## CREATE AUDIT LOG ##
+        asyncio.create_task(
+            create_object_audit_log(
+                object_id=model_id,
+                action="updated",
+                user_api_key_dict=user_api_key_dict,
+                table_name=LitellmTableNames.PROXY_MODEL_TABLE_NAME,
+                before_value=db_model.model_dump_json(exclude_none=True),
+                after_value=updated_model.model_dump_json(exclude_none=True),
+                litellm_changed_by=user_api_key_dict.user_id,
+                litellm_proxy_admin_name=LITELLM_PROXY_ADMIN_NAME,
+            )
+        )
+
+        raise_if_reload_degraded_serving(
+            before=live_before_reload,
+## 5) openapi additionalProperties check:
+LiteLLM_Params : additionalProperties= True properties_count= 213
+LiteLLM_Params : extra_headers in props? -> False
+updateLiteLLMParams : additionalProperties= True properties_count= 213
+updateLiteLLMParams : extra_headers in props? -> False
+updateDeployment : additionalProperties= <absent> properties_count= 4
+updateDeployment : extra_headers in props? -> False
+=== B2 PROBE10 DONE log=/home/saber/e63-b2-probe10-20261116-214214.log ===

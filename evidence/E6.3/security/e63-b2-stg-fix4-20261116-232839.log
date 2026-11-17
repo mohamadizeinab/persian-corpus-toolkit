@@ -1,0 +1,80 @@
+=== B2 stg fix4 20261116-232839 (2026-11-16T23:28:39Z)
+=== [1] ground truth
+--- whoami / forwarder owner
+me: 1001:1001 saber
+626860 /usr/bin/python3 /home/saber/saberprojects/rag2-staging-core/e63-b2/bin/rag_keyfwd.py --listen 127.0.0.1:18211 --consumer radio --listen 127.0.0.1:18212 --consumer portal --keyfile /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json --upstream http://127.0.0.1:18210
+pid=626860 owner(uid:gid)=1001:1001
+  cwd: /home/saber
+  cmdline: /usr/bin/python3 /home/saber/saberprojects/rag2-staging-core/e63-b2/bin/rag_keyfwd.py --listen 127.0.0.1:18211 --consumer radio --listen 127.0.0.1:18212 --consumer portal --keyfile /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json --upstream http://127.0.0.1:18210 
+  fds: l-wx------ 1 saber saber 64 Nov 16 23:23 1 -> /home/saber/saberprojects/rag2-staging-core/e63-b2/log/forwarder.out
+l-wx------ 1 saber saber 64 Nov 16 23:23 2 -> /home/saber/saberprojects/rag2-staging-core/e63-b2/log/forwarder.out
+--- forwarder stderr log(s)
+--- every keys.json under /home/saber/saberprojects/rag2-staging-core (size/mtime/owner + digests)
+  /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json  size=265 mtime=2026-11-16 23:23:27.5805353610 owner=saber:saber  [portal=ab7d2730414cbd78 radio=013f5b3dfed51188]
+--- TARGET keyfile stat + current digests
+  /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=265 mtime=2026-11-16 23:23:27.580535361 +0000
+   portal sha256-16=ab7d2730414cbd78
+   radio sha256-16=013f5b3dfed51188
+healthz BEFORE rewrite:
+  radio:  {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+  portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+=== [2] rewrite keyfile from authoritative secrets (fresh mtime, 600)
+secrets radio sha256-16=0713379552befc6b  portal sha256-16=6a170091ab7d54a8
+rewrote /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json (600) size=123
+  after: /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=123 mtime=2026-11-16 23:28:40.096406299 +0000
+=== [3] assert on-disk digest flipped to new keys
+   radio sha256-16=0713379552befc6b
+   portal sha256-16=6a170091ab7d54a8
+   ON-DISK-OK
+=== [4] force reload: probe + healthz
+healthz after probe:
+  radio:  {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+  portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+  (stderr tails)
+--- forwarder still serving stale keys -> clean restart (absolute --keyfile)
+reusing args from pid 626860: /home/saber/saberprojects/rag2-staging-core/e63-b2/bin/rag_keyfwd.py --listen 127.0.0.1:18211 --consumer radio --listen 127.0.0.1:18212 --consumer portal --keyfile /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json --upstream http://127.0.0.1:18210 
+old forwarder(s) gone
+new forwarder pid=NONE
+healthz after restart:
+  radio:  
+  portal: 
+  [FAIL] digests still wrong
+  stderr: usage: rag_keyfwd.py [-h] [--listen LISTEN] [--consumer CONSUMER] --keyfile
+                     KEYFILE --upstream UPSTREAM [--timeout TIMEOUT]
+rag_keyfwd.py: error: unrecognized arguments: /home/saber/saberprojects/rag2-staging-core/e63-b2/bin/rag_keyfwd.py
+=== [5] positives (forwarder new injected keys + direct new portal key)
+fwd-radio(new)   : parse-fail: [Errno 2] No such file or directory: '/tmp/xx.json'
+fwd-portal(new)  : parse-fail: [Errno 2] No such file or directory: '/tmp/xx.json'
+direct-portal(new): choices=1 citations=5 content_len=34
+=== [6] radio2 UI smoke (:8045)
+status: {"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+data: {"error": "litellm.InternalServerError: InternalServerError: OpenAIException - Connection error.\n\nLiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.", "code": "500", "status": 500, "type": "error"}
+[FAIL] UI stream contains error
+=== [7] final state
+version: {"ok":true,"providers_enabled":2,"version":"2026-11-16T23:12:38.137Z"}
+keyfile digests:
+   portal sha256-16=6a170091ab7d54a8
+   radio sha256-16=0713379552befc6b
+secrets: radio=0713379552befc6b portal=6a170091ab7d54a8
+  keyfile: /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=123 mtime=2026-11-16 23:28:40.096406299 +0000
+healthz final:
+  radio:  
+  portal: 
+litellm.yaml rc_ rescan: 0
+0 lines
+containers:
+rag2-staging-core-registry-1	Up 22 minutes (healthy)
+rag2-staging-core-gateway-1	Up About an hour (healthy)
+rag2-staging-core-litellm-1	Up About an hour (healthy)
+rag2-staging-core-synth-provider-1	Up 5 hours (healthy)
+registry log tail:
+127.0.0.1 - - [16/Nov/2026 23:28:36] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:28:46] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:28:55] "POST /api/rag-registry/consumers/verify HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:28:55] "GET /api/rag-registry/version HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:28:55] "GET /api/rag-registry?enabled=true HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:28:55] "GET /api/rag-registry/mizan/prompts HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:28:56] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:29:06] "GET /api/rag-registry/version HTTP/1.1" 200 -
+=== B2 STG FIX4 DONE
+LOG=/home/saber/e63-b2-stg-fix4-20261116-232839.log

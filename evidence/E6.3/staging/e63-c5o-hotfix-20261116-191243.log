@@ -1,0 +1,81 @@
+=== C5O 20261116-191243
+=== [1] verify tarball
+=== [1] verify tarball
+-rw-rw-r-- 1 saber saber 17901 Nov 16 19:04 /tmp/_e63_registry_hotfix.tar.gz
+actual=cd4bdae827934830f3b098527ba1c408c26d3865f92c5e1909e7f02cacdba7ae
+checksum OK
+total 88
+-rw-rw-r-- 1 saber saber 43037 Nov 14 06:46 api.py
+-rw-rw-r-- 1 saber saber  2949 Nov 13 17:04 config.py
+-rw-rw-r-- 1 saber saber  7272 Nov 13 16:49 db.py
+-rw-rw-r-- 1 saber saber   858 Nov 13 16:49 __init__.py
+-rw-rw-r-- 1 saber saber  1072 Nov 13 17:01 __main__.py
+-rw-rw-r-- 1 saber saber 10446 Nov 13 17:29 provider_client.py
+-rw-rw-r-- 1 saber saber 10495 Nov 13 16:49 security.py
+api.py sha256=ea3c1526190f2f15837fb9f802025a3f80739184e4e7c7f928f4adbbdbde4a44
+api.py matches prod's live code (ea3c1526...) — proceed
+=== [2] snapshot current in-container package (rollback)
+=== [2] snapshot current in-container package (rollback)
+total 88
+-rw-rw-r-- 1 saber saber 38761 Nov 13 17:29 api.py
+-rw-rw-r-- 1 saber saber  2949 Nov 13 17:04 config.py
+-rw-rw-r-- 1 saber saber  7272 Nov 13 16:49 db.py
+-rw-rw-r-- 1 saber saber   858 Nov 13 16:49 __init__.py
+-rw-rw-r-- 1 saber saber  1072 Nov 13 17:01 __main__.py
+-rw-rw-r-- 1 saber saber 10446 Nov 13 17:29 provider_client.py
+drwxrwxr-x 2 saber saber  4096 Nov 13 17:34 __pycache__
+-rw-rw-r-- 1 saber saber 10495 Nov 13 16:49 security.py
+9096a1ae449f8ecb62d9a8f16113fe47389288fd61833e10362dc6a1b6b2fb87  /tmp/registry-orig-snap-20261116-191243/api.py
+snapshot at /tmp/registry-orig-snap-20261116-191243
+=== [3] hotfix: docker cp registry package into container
+=== [3] hotfix: docker cp registry package into container
+rm: cannot remove '/app/drag/registry/config.py': Permission denied
+rm: cannot remove '/app/drag/registry/__init__.py': Permission denied
+rm: cannot remove '/app/drag/registry/provider_client.py': Permission denied
+rm: cannot remove '/app/drag/registry/__main__.py': Permission denied
+rm: cannot remove '/app/drag/registry/security.py': Permission denied
+rm: cannot remove '/app/drag/registry/db.py': Permission denied
+rm: cannot remove '/app/drag/registry/api.py': Permission denied
+rm: cannot remove '/app/drag/registry/__pycache__/__init__.cpython-314.pyc': Permission denied
+rm: cannot remove '/app/drag/registry/__pycache__/security.cpython-314.pyc': Permission denied
+rm: cannot remove '/app/drag/registry/__pycache__/config.cpython-314.pyc': Permission denied
+rm: cannot remove '/app/drag/registry/__pycache__/db.cpython-314.pyc': Permission denied
+rm: cannot remove '/app/drag/registry/__pycache__/api.cpython-314.pyc': Permission denied
+rm: cannot remove '/app/drag/registry/__pycache__/provider_client.cpython-314.pyc': Permission denied
+--- verify in container:
+9096a1ae449f8ecb62d9a8f16113fe47389288fd61833e10362dc6a1b6b2fb87  /app/drag/registry/api.py
+=== [4] restart registry (keep container; hotfix persists like prod)
+=== [4] restart registry (keep container; hotfix persists like prod)
+ Container rag2-staging-core-registry-1  Restarting
+ Container rag2-staging-core-registry-1  Started
+UP: registry (18200) after 1s
+=== [5] re-probe /rags
+=== [5] re-probe /rags
+--- /consumers/portal/rags:
+{"detail":"route not found","error":"not_found","ok":false}
+
+HTTP=404
+
+--- /consumers/radio/rags:
+{"detail":"route not found","error":"not_found","ok":false}
+
+HTTP=404
+
+=== [6] UI picker re-check
+=== [6] UI picker re-check
+--- radio2 /api/rag/sources:
+{"detail":"consumer 'radio' not found in registry"}
+--- rag2 /api/rag/sources:
+{"detail":"consumer 'portal' not found in registry"}
+=== [7] full-chain smoke (regression after restart)
+=== [7] full-chain smoke (regression after restart)
+{"id":"chatcmpl-req-16b74e50848942b7","created":1794856390,"model":"rag-general","object":"chat.completion","choices":[{"finish_reason":"stop","index":0,"message":{"content":"پیکره‌ی mizan درباره‌ی تفسیر المیزان است [mizan:2].  \nپیکره‌ی fiqh درباره‌ی فقه، از جمله ارکان نماز و وضو است [fiqh:3].","role":"assistant","provider_specific_fields":{"refusal":null}},"provider_specific_fields":{}}],"usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0},"citations":[{"chunk_id":"fiqh-ch-0001","collection_id":"fiqh","heading":"بخش fiqh","page_number":1,"rag_id":"mizan","snippet":"این متن آزمایشی از پیکره‌ی مصنوعی فقه است؛ درباره‌ی ارکان نماز و شرایط آن.","source_file":"fiqh-synthetic.txt","source_id":"mizan","volume_number":"j1","work_id":"فقه"},{"chunk_id":"mizan-ch-0001","collection_id":"mizan","heading":"بخش mizan","page_number":1,"rag_id":"mizan","snippet":"این متن آزمایشی از پیکره‌ی مصنوعی تفسیر المیزان است؛ تفسیر آیات سوره‌ی حمد به زبان ساده.","source_file":"mizan-synthetic.txt","source_id":"mizan","volume_number":"j1","work_id":"میزان"},{"chunk_id":"fiqh-ch-0001","collection_id":"fiqh","heading":"بخش fiqh","page_number":1,"rag_id":"fiqh","snippet":"این متن آزمایشی از پیکره‌ی مصنوعی فقه است؛ درباره‌ی ارکان نماز و شرایط آن.","source_file":"fiqh-synthetic.txt","source_id":"fiqh","volu
+=== [8] state
+=== [8] state
+radio2_api	Up 16 minutes (healthy)
+rag2-staging-core-litellm-1	Up 17 minutes (healthy)
+rag2_api	Up 46 minutes
+rag2-staging-core-synth-provider-1	Up 50 minutes (healthy)
+rag2-staging-core-gateway-1	Up About an hour (healthy)
+rag2-staging-core-registry-1	Up 16 seconds (healthy)
+C5O_DONE log=/home/saber/e63-c5o-hotfix-20261116-191243.log

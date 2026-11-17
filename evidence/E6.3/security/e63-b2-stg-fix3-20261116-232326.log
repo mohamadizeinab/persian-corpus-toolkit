@@ -1,0 +1,66 @@
+=== B2 stg fix3 20261116-232326 (2026-11-16T23:23:26Z)
+=== [1] forwarder process facts
+626860 /usr/bin/python3 /home/saber/saberprojects/rag2-staging-core/e63-b2/bin/rag_keyfwd.py --listen 127.0.0.1:18211 --consumer radio --listen 127.0.0.1:18212 --consumer portal --keyfile /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json --upstream http://127.0.0.1:18210
+--- pid 626860:
+  cwd: /home/saber
+  cmdline: /usr/bin/python3 /home/saber/saberprojects/rag2-staging-core/e63-b2/bin/rag_keyfwd.py --listen 127.0.0.1:18211 --consumer radio --listen 127.0.0.1:18212 --consumer portal --keyfile /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json --upstream http://127.0.0.1:18210 
+  (no keys fd)
+keyfile arg: '/home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json'  cwd: '/home/saber'
+resolved ACTUAL keyfile: /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json
+  /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=265 mtime=2026-11-16 23:12:38.163588936 +0000
+  current digests in ACTUAL file:
+   portal sha256-16=ab7d2730414cbd78
+   radio sha256-16=013f5b3dfed51188
+  digests in /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json (post-rotation, authoritative):
+   consumers sha256-16=afedf5357d777972
+   portal sha256-16=6a170091ab7d54a8
+   radio sha256-16=0713379552befc6b
+  secrets/radio-key: 0713379552befc6b   secrets/portal-key: 6a170091ab7d54a8
+=== [2] sync ACTUAL keyfile (atomic, 600)
+wrote /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json (600), size=265
+  after: /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=265
+=== [3] hot-reload check (digests must now match new keys)
+healthz radio:  {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+healthz portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+=== [4] positives via forwarder (new injected keys)
+fwd-radio(new)   : err=unknown_consumer_key msg=consumer key is unknown or disabled
+fwd-portal(new)  : err=unknown_consumer_key msg=consumer key is unknown or disabled
+--- direct gateway w/ new portal key (model rag-mizan, portal allowed):
+direct-portal(new): choices=1 citations=5 content_len=34
+=== [5] old-key negatives (old keys are exposed -> must be dead)
+verify(garbage): code=401 body={"detail":"consumer key not recognized","error":"unknown_key","ok":false}
+(rotate v1 already proved: direct OLD radio key -> 401 unknown_consumer_key; same for portal)
+=== [6] radio2 UI smoke (:8045, radio2->litellm->fwd->gateway)
+status: {"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+data: {"error": "litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.", "code": "401", "status": 401, "type": "error"}
+[FAIL] UI stream contains error
+=== [7] final state
+version: {"ok":true,"providers_enabled":2,"version":"2026-11-16T23:12:38.137Z"}
+--- audit LATEST rows (head of desc window = newest):
+  window: 100 rows, max id=188
+  id=188 at=2026-11-16T23:23:30.850Z action=unknown_key_denied rag=None actor=admin
+  id=187 at=2026-11-16T23:23:30.795Z action=unknown_key_denied rag=None actor=admin
+  id=186 at=2026-11-16T23:23:28.702Z action=consumer_verify rag=None actor=admin
+  id=185 at=2026-11-16T23:23:28.661Z action=unknown_key_denied rag=None actor=admin
+  id=184 at=2026-11-16T23:23:28.621Z action=unknown_key_denied rag=None actor=admin
+  id=183 at=2026-11-16T23:20:28.793Z action=unknown_key_denied rag=None actor=admin
+--- healthz digests (must equal secrets digests):
+{"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+{"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+secrets: radio=0713379552befc6b portal=6a170091ab7d54a8
+--- ACTUAL keyfile final:
+  /home/saber/saberprojects/rag2-staging-core/e63-b2/keys.json uid=1001:1001 mode=600 size=265
+--- litellm.yaml rc_ rescan: 0 lines
+--- containers:
+rag2-staging-core-registry-1 Up 16 minutes (healthy)
+rag2-staging-core-gateway-1 Up About an hour (healthy)
+rag2-staging-core-litellm-1 Up About an hour (healthy)
+rag2-staging-core-synth-provider-1 Up 5 hours (healthy)
+--- registry log tail (no readonly errors expected):
+127.0.0.1 - - [16/Nov/2026 23:23:28] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:23:30] "[31m[1mPOST /api/rag-registry/consumers/verify HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Nov/2026 23:23:30] "[31m[1mPOST /api/rag-registry/consumers/verify HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Nov/2026 23:23:30] "GET /api/rag-registry/version HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:23:30] "GET /api/rag-registry/audit HTTP/1.1" 200 -
+=== B2 STG FIX3 DONE
+LOG=/home/saber/e63-b2-stg-fix3-20261116-232326.log

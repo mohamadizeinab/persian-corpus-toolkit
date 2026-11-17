@@ -1,0 +1,76 @@
+=== B2 STAGING RECON TS=20261116-210935 (read-only) ===
+
+## 1) Staging litellm.yaml: model names + x-consumer-key presence (masked):
+-rw------- 1 saber saber 2076 Nov 16 18:22 /home/saber/saberprojects/rag2-staging-core/litellm.yaml
+  model_name: rag-mizan
+  model_name: rag-fiqh
+  model_name: rag-general
+  model_name: portal-rag-mizan
+  model_name: portal-rag-fiqh
+  model_name: portal-rag-general
+  x-consumer-key: len=46 sha256-16=013f5b3dfed51188
+  x-consumer-key: len=46 sha256-16=013f5b3dfed51188
+  x-consumer-key: len=46 sha256-16=013f5b3dfed51188
+  x-consumer-key: len=46 sha256-16=ab7d2730414cbd78
+  x-consumer-key: len=46 sha256-16=ab7d2730414cbd78
+  x-consumer-key: len=46 sha256-16=ab7d2730414cbd78
+  api_base: http://127.0.0.1:18210/v1
+  api_base: http://127.0.0.1:18210/v1
+  api_base: http://127.0.0.1:18210/v1
+  api_base: http://127.0.0.1:18210/v1
+  api_base: http://127.0.0.1:18210/v1
+  api_base: http://127.0.0.1:18210/v1
+
+## 2) Staging litellm container(s):
+rag2-staging-core-litellm-1	ghcr.io/berriai/litellm:main-latest		Up 2 hours (healthy)
+mock-litellm	ghcr.io/berriai/litellm:main-latest	0.0.0.0:9001->4000/tcp, [::]:9001->4000/tcp	Up 4 days
+  [rag2-staging-core-litellm-1] network(s):
+host (invalid IP) 
+  [mock-litellm] network(s):
+mock-stream_mocknet (15.15.10.2) 
+
+## 3) Staging registry (:18200) consumers (metadata only):
+  consumer: {"allowed_rag_ids": ["mizan", "fiqh"], "citation_format": "standard", "consumer_id": "portal", "created_at": "2026-11-16T18:07:17.623Z", "created_by": "admin", "default_rag_id": "mizan", "description": "E6.3 staging portal consumer (fresh key).", "display_name": "Portal (staging)", "enabled": true, "routing_policy": "priority", "stream_allowed": true, "timeout_ms": 60000, "updated_at": "2026-11-16T18:22:52.877Z"}
+  consumer: {"allowed_rag_ids": ["mizan", "fiqh", "e6-acceptance"], "citation_format": "standard", "consumer_id": "radio", "created_at": "2026-11-16T18:07:17.616Z", "created_by": "admin", "default_rag_id": "mizan", "description": "E6.3 staging radio consumer (fresh key).", "display_name": "Radio Mar'ef (staging)", "enabled": true, "routing_policy": "priority", "stream_allowed": true, "timeout_ms": 60000, "updated_at": "2026-11-16T18:22:52.841Z"}
+
+## 4) Staging registry key_hash digests (match vs litellm.yaml keys):
+  registry container: rag2-staging-core-registry-1
+  registry data dir: /home/saber/saberprojects/rag2-staging-core/data
+  radio: enabled=1 key_hash-16=013f5b3dfed51188
+  portal: enabled=1 key_hash-16=ab7d2730414cbd78
+  e6-c6-temp: enabled=0 key_hash-16=8b2a87671e204ffa
+  e6-c6-temp2: enabled=0 key_hash-16=123616b1e26bc3e9
+  e6-b4: enabled=0 key_hash-16=1b6fe583478b214f
+
+## 5) Staging gateway env (names + non-secret values):
+  gateway container: rag2-staging-core-gateway-1
+  GATEWAY_SERVICE_KEY = <len=43 sha256-16=186d00b468507f9d>
+  LITELLM_MASTER_KEY = <len=43 sha256-16=a1123d522ced90fe>
+  REGISTRY_VIEW_TOKEN = <len=43 sha256-16=499da0dc61ce0577>
+  GATEWAY_LLM_ENDPOINT = http://127.0.0.1:8000/v1/chat/completions
+  GATEWAY_REGISTRY_ADMIN_TOKEN = <len=43 sha256-16=6186fd30ee35d361>
+  REGISTRY_ADMIN_TOKEN = <len=43 sha256-16=6186fd30ee35d361>
+  STG_PROVIDER_TOKEN = <len=43 sha256-16=e0c970410b25763a>
+  GATEWAY_REGISTRY_URL = http://127.0.0.1:18200
+  GATEWAY_LLM_API_KEY_REF = <len=0 sha256-16=e3b0c44298fc1c14>
+  REGISTRY_OPERATOR_TOKEN = <len=43 sha256-16=9af54068fc7af8d4>
+  GATEWAY_LLM_MODEL = /models/Qwen3.8-27B-FP8
+  SYNTH_TOKEN = <len=43 sha256-16=e0c970410b25763a>
+  GATEWAY_MODEL_ONLY_ALIASES = qwen38-hub
+  GATEWAY_AUDIT_PATH = /audit/gateway-audit.jsonl
+  PATH = /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  LANG = C.UTF-8
+  GPG_KEY = <len=40 sha256-16=6c3b7674b58d9f72>
+  PYTHON_VERSION = 3.12.15
+  PYTHON_SHA256 = c2c4321961fab0fb999d66e0cecf521c2ab3994c7992873ea99e306c1094fd5a
+  PYTHONDONTWRITEBYTECODE = 1
+  PYTHONUNBUFFERED = 1
+
+## 6) Staging provider + UI health (for later smoke):
+  http://127.0.0.1:18101/health -> 200
+  http://127.0.0.1:18210/health -> 200
+  http://127.0.0.1:18200/health -> 200
+  staging litellm /v1/models (no auth attempt, expect 401 or list):
+401
+
+=== B2 STAGING RECON DONE log=/home/saber/e63-b2-stg-recon-20261116-210935.log ===

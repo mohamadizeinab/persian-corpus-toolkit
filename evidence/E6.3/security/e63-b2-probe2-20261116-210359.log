@@ -1,0 +1,176 @@
+=== B2 PROBE2 TS=20261116-210359 (read-only, digests only) ===
+
+## 1) LiteLLM_ProxyModelTable columns:
+model_id, model_name, litellm_params, model_info, created_at, created_by, updated_at, updated_by, blocked
+
+## 2) All 13 model rows (model_name + litellm_params); secrets digested:
+MODEL bootstrap-do-not-use
+  allow_client_keepalive_override = False
+  api_base = tymG6L4a1O-oThQn3Z_43YD-U6O3pWt3HrLa95ovNTTkUQiVabOWShFu-YKOqnpn5VhKMk8imdyYCK1CBg==
+  api_key: len=72 sha256=9fab77a81a31a3b1e874450abe54a8fb2f0c0c5af925176011d544d5c042d6cc
+  merge_reasoning_content_in_choices = False
+  model = nZLWiug61k3OItX_rQwfsBqiH454w2meXGpBOo63m0LuHTy4hSQgmNpixu3UsCGrtJDLIaa3FMqXMv-64jHoZQIZaA==
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL bootstrap-do-not-use
+  allow_client_keepalive_override = False
+  api_base = XEcaQio2pfQe9Y_sNrG48kykNlaazXrtlLNVr7ZYxJfaBvJ7cXTir95ZGneudSKhxu8kvpaHQdZuAk5_4g==
+  api_key: len=72 sha256=cfd99a1a200098b17980f40c5ed27bc29035f8edab63bb82562e97b41d2f7a5a
+  merge_reasoning_content_in_choices = False
+  model = X7e2VLVbPaLslL-lOAOhVAsJIzi3lgtKucaJ_CnDGNhmKF5zuB0jwTchCeCdAKZqElHrieN8otnnzzwmCG640vX8FA==
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL bootstrap-do-not-use
+  allow_client_keepalive_override = False
+  api_base = tiESb-EJi8IjCt5EzYa0RIll_fBNMK8BzUO7m8ZwUFhygTaPI2ORybEUAiD4hTyKOJQMuniuDRcvDbDjDA==
+  api_key: len=72 sha256=bd805845bd017d68184397ce5b1357d9a36e64c7de37b5587ac60819b49e7f3f
+  merge_reasoning_content_in_choices = False
+  model = 240Q2EMmszw-Dvgoxw3sCerFLo4Tb3jabAR8aLGCKKFWzBiv4hX9Zn7EH0kB4Sw3nbM_WdoFqoVLU0dq46XuUTE5Rw==
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL gpt-oss-120b
+  allow_client_keepalive_override = False
+  api_base = IdGG7Ihezshi9YZNqCv4jPh0XlQ10YeoU5T1aSATG6prUkWl6mpST3vh0fBI8Vx_OSe5koHbfrf_umpXr-M-znNgQQ==
+  api_key: len=84 sha256=d91d532ddc1b6ad46dc90404fde8ebce9e8915dc134d0cf268bb0937c58b73a8
+  merge_reasoning_content_in_choices = False
+  model = bW4EUcBrp4zBcxCsYfl65G2Th3oZd5yx6OUZ7BmwrF8wOB5krZz_vTDxkm_rgBcc1Am9z1qPqS8S7Fw=
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL portal-rag-fiqh
+  allow_client_keepalive_override = False
+  api_base = SdsxI9-yJuG-sB3TJQXI57bKvQ-1k2BLTCyt4P2KGQCqqwTUAYswG-Q33iVAelyhdvsepokjfC5da8zMFXABF3nZcg==
+  api_key: len=124 sha256=e6e2a71a12d14f43208d4f950acc6c08b3a516deea4be865b5171a51da1ddbc5
+  extra_headers: dict keys=['x-consumer-key']
+    x-consumer-key: len=46 sha256=a9a63be6cb1cc007de0c008432cbd5161593be19100f9fad6c4c5876d6ddcb25
+  merge_reasoning_content_in_choices = False
+  model = VJWH7Jp0eEXXeHhDPvj4suxH83Ry37prw21Fkn8Gxmtta2IANFDH_43zTxgofeqNKjLJvmfSzA==
+  timeout = 120.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL portal-rag-general
+  allow_client_keepalive_override = False
+  api_base = HolQEJYk5iC7_WaYLwBfD0qJjnNLmQo3i6mn48R1vh1sK1i23FPPtNVNGYr-0D5s4uNdSgBD9TiF_zcE8Qd4inwWwQ==
+  api_key: len=124 sha256=86dcbe7b619d76b0fd0619d58bad177744cb3e513c1a7efa7b3707bc855558ca
+  extra_headers: dict keys=['x-consumer-key']
+    x-consumer-key: len=46 sha256=a9a63be6cb1cc007de0c008432cbd5161593be19100f9fad6c4c5876d6ddcb25
+  merge_reasoning_content_in_choices = False
+  model = ZuoQ7hxjv9NlfOMlwNGHFhitUPff61wRRui_K_joZqqi7x20ZeuAZys0gZ-pBuGZbNR47HeSV38p3A==
+  timeout = 120.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL portal-rag-mizan
+  allow_client_keepalive_override = False
+  api_base = CQJ3UNnjjMS6OETQKxKKslnWY1dq9z-asClgfDUCllboW628qG-RT6o_KQHKMr36vUY0MS06RtQLbiqRap6YHcL66g==
+  api_key: len=124 sha256=3ef74c2ca76b9e2b56d241dc34be42aba4dde4db35737287307aa6720972710f
+  extra_headers: dict keys=['x-consumer-key']
+    x-consumer-key: len=46 sha256=a9a63be6cb1cc007de0c008432cbd5161593be19100f9fad6c4c5876d6ddcb25
+  merge_reasoning_content_in_choices = False
+  model = V0UKcAgLKjgRKtTqHIsy_e_OJ1peLX4wwwF5GplQ5bd2YrQksYfbheLyoTw6q_Nl0aXeK4e0Qf4=
+  timeout = 120.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL q1-embedding-06b
+  allow_client_keepalive_override = False
+  api_base = Xy9aYH5v6cnD07kDaM-G-BOvHDiHw-E9L4vYd0okzEPcD1McKrdUaUy8uDRXR1A8BsuI4I99pgebieHgUiM49gpw
+  api_key: len=68 sha256=fa52262d8c8ffc9f47c4611d4f1ff51c841027672162622fd068027ee67cebdf
+  merge_reasoning_content_in_choices = False
+  model = RvCuT5dIKM4ab8tuOkzOplD_oyj-IqR3Jq6wFj6tI17-8ENuRyiAK27yxDcmLBVfTZsuaIxgyhQmBbowsoI1RLVBHw==
+  num_retries = 0
+  timeout = 15.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL q1-embedding-4b
+  allow_client_keepalive_override = False
+  api_base = bfS3BkkCLSvHgQ6U9VzizrUiwwBaCIrdnEza5J9cfY1do4PRlkrguSDkVUj1ViltgYS42iCPM3R13PMwpqYkRxmX
+  api_key: len=68 sha256=9b22b7ff4af3c7b3ab8bac0589473819d98e3fbeffc59b439fffb4428acdaff5
+  merge_reasoning_content_in_choices = False
+  model = SJ0cgMFidoZxfJAFSXqgh5RdN2_JRJhl44JieVLFMZjwjjcYm2L5LsypdBMKwsEP3z71nlwYeb8Ibuipf81X28g=
+  num_retries = 0
+  timeout = 15.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL qwen38-hub
+  allow_client_keepalive_override = False
+  api_base = n7CT7oWIx-9QXWSeZ4yYPm-Q-5LKcrUiSV34yaDxLo8j6SCCzXTaLi0AhzA0SWXziGMnggW07EUd9YPYlOn_RXAM
+  api_key: len=60 sha256=58886e9d024785c87f2bfe0d3b89f1f3aecc8b3c5d5dd659e9e149fb9580e802
+  merge_reasoning_content_in_choices = False
+  model = -CUTp932LilDlMuaG9CJSceTIQWfCoKoYTUdO04ybN7v63KDagAtqV2wE0NyRbtIKPcrxLznkPLbsOl2DjJFWEsjWD9GGg==
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL rag-fiqh
+  allow_client_keepalive_override = False
+  api_base = yGzg1Ey9bYw9gImuqnhW8sqlE0OkrMY8Xf0slnhT9QJinnltQ0zYBjOsh_UW-gNbHjonib4pOEj1JqOUB3kmidJiQA==
+  api_key: len=124 sha256=442243f7fe6b20072e2ffbcc81518c245748806834ae177792f434fa91fd0023
+  extra_headers: dict keys=['x-consumer-key']
+    x-consumer-key: len=46 sha256=a7e7b77a03898afb25a986bd6ccf7d0063aef6a9950f784504ed14c35c697598
+  merge_reasoning_content_in_choices = False
+  model = a6UV0RPFwcnZRVxLlU7_jwYE-tIDC1NnyYaOW_3G9sPXY0iaJR1iX9sxghxlV1Scf8BxIy5Wqg==
+  timeout = 120.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL rag-general
+  allow_client_keepalive_override = False
+  api_base = T12Q-N4-YvQDEDv-RjWslHFWjd57FMP4ZCAUHHImUZBxXNNnNVfKn5Th8hGwDfjFVXH-gQdyNtgEDHeNpEIiPPWnxg==
+  api_key: len=124 sha256=f65317aede8d99668fc21b4764bb3635b6d9cdd34e0e8e05abe35073e3008b41
+  extra_headers: dict keys=['x-consumer-key']
+    x-consumer-key: len=46 sha256=a7e7b77a03898afb25a986bd6ccf7d0063aef6a9950f784504ed14c35c697598
+  merge_reasoning_content_in_choices = False
+  model = HymdhuftfHu7TheUUhhUSrkHO-Kcv_VXKtd4e-Nedz904De6SQG9ePH9HXy9zZzzyjEnnfAzHw3cTQ==
+  timeout = 120.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+MODEL rag-mizan
+  allow_client_keepalive_override = False
+  api_base = _cxrS0M372B3sZaMYS_w6qKS4s7_tl9FPO0BxOelmLgrpwPBDWwh1wc56h8JLZ2oooIsIA7a3pAq2Ug0SD0B3WECAw==
+  api_key: len=124 sha256=21dd118baec8cb2d63fd7242a68e4c9f638c1c1ce51fc167d8ca0338a60bb970
+  extra_headers: dict keys=['x-consumer-key']
+    x-consumer-key: len=46 sha256=a7e7b77a03898afb25a986bd6ccf7d0063aef6a9950f784504ed14c35c697598
+  merge_reasoning_content_in_choices = False
+  model = 5VlX1KVwO52vhsm0ZZ_Sx5M55DQha4Zbkv2tCIJWZkrNmy_A3PfYsoJrmXTL7dX_tM0qCFUzydY=
+  timeout = 120.0
+  use_in_pass_through = False
+  use_litellm_proxy = False
+  use_xai_oauth = False
+
+## 3) Match plaintext header values against registry key_hash (sha256):
+  registry key_hash->consumer: {"a7e7b77a03898afb25a986bd6ccf7d0063aef6a9950f784504ed14c35c697598": "radio", "8645b1aa7dfd5146c6de0bdef9b97009c80bf22bcf6bbb98242367a9a72d3dc6": "e2e-client", "4200473470d4f31023c88b2855a5c95c71f700b4924b2daac3783350e37621f1": "e2e-denied", "a9a63be6cb1cc007de0c008432cbd5161593be19100f9fad6c4c5876d6ddcb25": "portal", "5ad128588bab55915efaa27aded8ec263ff70b59a47c8a5d6f5f181235b6d441": "e6-b4-prod"}
+  portal-rag-fiqh: key len=46 sha256-16=a9a63be6cb1cc007 -> registry consumer: portal
+  portal-rag-general: key len=46 sha256-16=a9a63be6cb1cc007 -> registry consumer: portal
+  portal-rag-mizan: key len=46 sha256-16=a9a63be6cb1cc007 -> registry consumer: portal
+  rag-fiqh: key len=46 sha256-16=a7e7b77a03898afb -> registry consumer: radio
+  rag-general: key len=46 sha256-16=a7e7b77a03898afb -> registry consumer: radio
+  rag-mizan: key len=46 sha256-16=a7e7b77a03898afb -> registry consumer: radio
+  distinct consumers exposed: portal, radio
+
+## 4) x-rag-service values (metadata, non-secret):
+portal-rag-fiqh|||
+portal-rag-general|||
+portal-rag-mizan|||
+rag-fiqh|||
+rag-general|||
+rag-mizan|||
+
+## 5) Gateway access log tail (model names in path):
+      1 rag-gateway
+      1 qwen38-hub
+
+## 6) Gateway full /metrics (first 60 lines):
+<!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+=== B2 PROBE2 DONE log=/home/saber/e63-b2-probe2-20261116-210359.log ===

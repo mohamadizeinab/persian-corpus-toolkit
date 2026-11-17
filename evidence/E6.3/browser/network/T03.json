@@ -1,0 +1,8 @@
+[
+ {
+  "m": "GET",
+  "u": "https://radio.ai.ismc.ir/api/rag/admin/status",
+  "s": 404,
+  "b": "{\"detail\":\"not found\"}"
+ }
+]

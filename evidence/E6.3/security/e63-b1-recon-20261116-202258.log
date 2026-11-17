@@ -1,0 +1,76 @@
+=== B1 RECON: LITELLM master-key rotation planning (READ-ONLY) ===
+TS=20261116-202258 host=AI-TOOLS
+
+--- 1) current master key digest (litellm-personal env, host-side) ---
+master key: len=67 sha256=d6a88a9ce1acbe5bac68f2d54e2e59002436a79eaf286aebe5adcca0478f1eaf
+
+--- 2) scan ALL containers for env values matching that digest ---
+  MATCH  container=rag-gateway env=GATEWAY_LLM_API_KEY len=67
+  MATCH  container=litellm-personal env=LITELLM_MASTER_KEY len=67
+  total matches: 2
+
+--- 3) litellm-personal container definition ---
+Image=ghcr.io/berriai/litellm
+Restart=unless-stopped
+NetworkMode=litellm-personal-net
+Cmd=["--port","4000"]
+Entrypoint=["docker/prod_entrypoint.sh"]
+Ports={"4000/tcp":[{"HostIp":"","HostPort":"4101"}]}
+Binds=null
+compose labels:
+  (no compose labels -> manually created container)
+
+--- 4) rag-gateway container definition ---
+Image=rag-gateway:0.1.0
+Restart=unless-stopped
+NetworkMode=host
+Cmd=["python","-m","drag.gateway","serve","--host","0.0.0.0","--port","8210"]
+Binds=["/home/saber/dedicated-rag-gateway/openapi:/app/openapi:ro"]
+com.docker.compose.config-hash=d889706f8324c01f5170830224309df9c0605eebef07122b6e4202f3692dc0d1
+com.docker.compose.container-number=1
+com.docker.compose.depends_on=
+com.docker.compose.image=sha256:ef9da642a15adfffca2eb602cb23846a33d2a59d53b584557fae36c4a9176987
+com.docker.compose.oneoff=False
+com.docker.compose.project=dedicated-rag-gateway
+com.docker.compose.project.config_files=/home/saber/dedicated-rag-gateway/compose.gateway.yml
+com.docker.compose.project.working_dir=/home/saber/dedicated-rag-gateway
+com.docker.compose.service=rag-gateway
+com.docker.compose.version=2.40.3
+
+--- 5) GATEWAY_LLM_API_KEY_REF (file-based key?) ---
+GATEWAY_LLM_API_KEY len (from gateway env) = 67
+REF len=23 (not an absolute path)
+
+--- 6) litellm DB: master_key presence + virtual tokens (NO values) ---
+db=litellm user=litellm passlen=48
+-- proxy_server_config (master_key presence only):
+ERROR:  relation "LiteLLM_ProxyServerConfig" does not exist
+LINE 1: ...LL AND master_key <> ''), length(master_key) FROM "LiteLLM_P...
+                                                             ^
+  (query failed)
+-- virtual tokens (names/types only):
+ERROR:  column "token_name" does not exist
+LINE 1: SELECT token_name, key_type, (token IS NOT NULL AND token <>...
+               ^
+HINT:  Perhaps you meant to reference the column "LiteLLM_VerificationToken.key_name".
+  (query failed)
+
+--- 7) e61_phase5_secrets.txt (names only, no values) ---
+perms=600 size=404 sha256=7a9dbaffeb14513814b7e7a4e832d7df809c94958cdd3eaaf7fbdf3b39b9f486
+  name: GATEWAY_SERVICE_KEY
+  name: REGISTRY_ADMIN_TOKEN
+  name: PORTAL_CONSUMER_KEY
+  name: VK_RADIO
+  name: VK_PORTAL
+
+--- 8) who else talks to litellm :4000 (containers w/ 4000 in env, names only) ---
+  fiqh-rag: DRAG_EMBED_ENDPOINTS=http://172.20.1.53:4000/v1|Qwen3-Embedding-4B
+  mizan-rag: DRAG_EMBED_ENDPOINTS=http://172.20.1.53:4000/v1|Qwen3-Embedding-4B
+  bot-gateway: RAG_BASE_URL=http://172.20.1.52:4000
+  bot-gateway-candidate: RAG_BASE_URL=http://172.20.1.52:4000
+  agno-agentos-repo: LITELLM_BASE_URL=http://172.20.1.52:4000/v1
+  agno-agentos-repo: OPENAI_BASE_URL=http://172.20.1.52:4000/v1
+  open-webui: OPENAI_API_BASE_URL=http://172.20.1.52:4000/v1
+  agno-agentos: OPENAI_BASE_URL=http://172.20.1.52:4000/v1
+
+=== B1 RECON DONE log=/home/saber/e63-b1-recon-20261116-202258.log ===

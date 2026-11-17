@@ -1,0 +1,2007 @@
+=== B3 ENV/EXPOSURE AUDIT s53 (staging + prod UIs) 20261116-200055 ===
+
+--- containers ---
+radio2_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up About an hour (healthy)
+rag2-staging-core-litellm-1 | ghcr.io/berriai/litellm:main-latest | Up About an hour (healthy)
+rag2_api | rag2-staging-api | Up 2 hours
+rag2-staging-core-synth-provider-1 | rag-registry:0.1.0 | Up 2 hours (healthy)
+rag2-staging-core-gateway-1 | rag-gateway:0.1.0 | Up 2 hours (healthy)
+rag2-staging-core-registry-1 | rag-registry:0.1.0 | Up 46 minutes (healthy)
+ragportal_api | rag-portal-ragportal_api | Up 2 days
+radio_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up 2 days (healthy)
+rag2_frontend | nginx:alpine | Up 2 days
+rag2_auth_db | postgres:15-alpine | Up 2 days (healthy)
+rag2_db | postgres:15-alpine | Up 2 days (healthy)
+radio2_frontend | nginx:alpine | Up 2 days (healthy)
+tasnim_frontend | nginx:alpine | Up 4 days (healthy)
+tasnim_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up 4 days (healthy)
+rag_monitor | rag-monitor-rag_monitor | Up 4 days (healthy)
+keen_booth | 979e5a8a5684 | Exited (2) 4 days ago
+radio_frontend | nginx:alpine | Up 4 days (healthy)
+sources_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up 4 days (healthy)
+mesbah_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up 2 days (healthy)
+eiis_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up 4 days (healthy)
+taghrir_api | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Up 4 days (healthy)
+neo4j_db | neo4j:2025.10.1-enterprise | Up 4 days (healthy)
+tasnim_feedback_db | postgres:15-alpine | Up 4 days (healthy)
+taghrir_frontend | nginx:alpine | Up 4 days (healthy)
+eiis_frontend | nginx:alpine | Up 4 days (healthy)
+mesbah_frontend | nginx:alpine | Up 4 days (healthy)
+sources_frontend | nginx:alpine | Up 4 days (healthy)
+iranseda-whisper-worker | iranseda-whisper:latest | Up 4 days
+deploy-sidekiq-1 | chatwoot/chatwoot:v4.19.0 | Up 4 days
+deploy-rails-1 | chatwoot/chatwoot:v4.19.0 | Up 4 days
+deploy-base-1 | chatwoot/chatwoot:v4.19.0 | Exited (0) 3 weeks ago
+deploy-redis-1 | redis:alpine | Up 4 days
+deploy-postgres-1 | pgvector/pgvector:pg16 | Up 4 days (healthy)
+taghrirqa | 0fa04f61f3b6 | Up 4 days
+kong-gw-oss-kong | kong:3.9.4 | Up 4 days (healthy)
+kong-gw-oss-migrate | kong:3.9.4 | Exited (0) 3 weeks ago
+kong-gw-oss-db | postgres:16.6-alpine | Up 4 days (healthy)
+kong-gw-oss-echo | kong-gw-oss-echo:1.0 | Up 4 days (healthy)
+kong-gw-manage | python:3.12-alpine | Up 4 days
+kong-admin-auth | nginx:alpine | Up 4 days
+vllm-embedding-06b | vllm/vllm-openai:v0.11.0 | Up 4 days
+ragportal_frontend | nginx:alpine | Up 4 days
+ragportal_db | postgres:15-alpine | Up 4 days (healthy)
+ragportal_auth_db | postgres:15-alpine | Up 4 days (healthy)
+vllm-qwen38-gpu1 | vllm/vllm-openai:nightly | Up 4 days
+taghrir_feedback_db | postgres:15-alpine | Up 4 days (healthy)
+eiis_feedback_db | postgres:15-alpine | Up 4 days (healthy)
+mesbah_feedback_db | postgres:15-alpine | Up 4 days (healthy)
+open-webui | ghcr.io/open-webui/open-webui:main | Up 4 days (healthy)
+iranseda-whisper-api | iranseda-whisper:latest | Up 4 days
+langgraph_app | mrbaqeri/qa_lang_neo4j_mesbah:1.0.0 | Exited (255) 2 weeks ago
+csghub-omnibus | opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsghq/omnibus-csghub:v1.10.0-ce | Up 4 days
+mock-open-webui | ghcr.io/open-webui/open-webui:main | Up 4 days (healthy)
+mock-litellm | ghcr.io/berriai/litellm:main-latest | Up 4 days
+mock-service | mock-stream:v1 | Up 4 days (healthy)
+tyk-gateway | tykio/tyk-gateway-ee:v5.15.0 | Up 4 days
+tyk-dashboard | tykio/tyk-dashboard:v5.15.0 | Up 4 days
+tyk-pump | tykio/tyk-pump-docker-pub:v1.17.0 | Up 4 days
+tyk-portal | tykio/portal:v1.19.0 | Up 4 days (unhealthy)
+tyk-redis | redis:7.2.0 | Up 4 days (healthy)
+tyk-postgres | postgres:16-alpine | Up 4 days (healthy)
+iranseda-mysql | mysql:8.0 | Up 4 days (healthy)
+vllm-qwen38 | vllm/vllm-openai:nightly | Up 4 days
+vllm-embedding | vllm/vllm-openai:v0.11.0 | Up 4 days
+dcgm-exporter | nvcr.io/nvidia/k8s/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04 | Up 4 days
+promtail | grafana/promtail:3.4.2 | Up 4 days
+node-exporter | prom/node-exporter:v1.8.2 | Up 4 days
+qdrant | qdrant/qdrant:v1.19.1 | Up 4 days
+ollama | ollama/ollama:latest | Up 4 days
+surfsense-proxy-1 | caddy:2-alpine | Up 4 days
+surfsense-celery_beat-1 | ghcr.io/modsetter/surfsense-backend:latest-cuda | Up 4 days
+surfsense-frontend-1 | ghcr.io/modsetter/surfsense-web:latest | Up 4 days
+surfsense-celery_worker-1 | ghcr.io/modsetter/surfsense-backend:latest-cuda | Up 4 days
+surfsense-backend-1 | ghcr.io/modsetter/surfsense-backend:latest-cuda | Up 4 days (healthy)
+surfsense-zero-cache-1 | rocicorp/zero:1.6.0 | Up 4 days (healthy)
+surfsense-db-1 | pgvector/pgvector:pg17 | Up 4 days (healthy)
+surfsense-redis-1 | redis:8-alpine | Up 4 days (healthy)
+h200-public-tunnel | cloudflare/cloudflared:latest | Up 4 days
+
+--- env var NAMES per container (name = <len> chars, no values) + bind mounts ---
+### radio2_api
+  ENV EMBED_MODEL = <20 chars>
+  ENV GEN_MODEL = <6 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LITELLM_API_KEY = <25 chars>
+  ENV LITELLM_BASE = <27 chars>
+  ENV NEO4J_DATABASE = <5 chars>
+  ENV NEO4J_PASSWORD = <48 chars>
+  ENV NEO4J_URI = <20 chars>
+  ENV NEO4J_USERNAME = <9 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV RADIO_MIN_SCORE = <4 chars>
+  ENV RADIO_TOP_K = <1 chars>
+  ENV RAG_ADMIN_TOKEN = <43 chars>
+  ENV RAG_CONSUMER_ID = <5 chars>
+  ENV RAG_LITELLM_KEY = <43 chars>
+  ENV RAG_LITELLM_URL = <26 chars>
+  ENV RAG_MODEL_PREFIX = <4 chars>
+  ENV RAG_REGISTRY_TOKEN = <43 chars>
+  ENV RAG_REGISTRY_URL = <23 chars>
+  ENV RAG_SERVICE_TOKEN = <32 chars>
+  ENV RAG_TIMEOUT_S = <3 chars>
+  ENV SITE_EXAMPLES = <172 chars>
+  ENV SITE_NAME = <34 chars>
+  ENV SITE_TAGLINE = <95 chars>
+  ENV VECTOR_INDEX = <18 chars>
+  BIND /home/saber/saberprojects/radio2-staging/rag_proxy.py -> /app/app/rag_proxy.py rw=False
+  BIND /home/saber/saberprojects/radio2-staging/api.py -> /app/app/api.py rw=False
+### rag2-staging-core-litellm-1
+  ENV GATEWAY_REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV GATEWAY_SERVICE_KEY = <43 chars>
+  ENV LITELLM_MASTER_KEY = <43 chars>
+  ENV PATH = <75 chars>
+  ENV PRISMA_BINARY_CACHE_DIR = <20 chars>
+  ENV PRISMA_CLI_PATH = <45 chars>
+  ENV PRISMA_CLI_QUERY_ENGINE_TYPE = <6 chars>
+  ENV PRISMA_OFFLINE_MODE = <4 chars>
+  ENV REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV REGISTRY_OPERATOR_TOKEN = <43 chars>
+  ENV REGISTRY_VIEW_TOKEN = <43 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV STG_PROVIDER_TOKEN = <43 chars>
+  ENV SYNTH_TOKEN = <43 chars>
+  BIND /home/saber/saberprojects/rag2-staging-core/litellm.yaml -> /app/config.yaml rw=False
+### rag2_api
+  ENV ADMIN_EMAILS = <85 chars>
+  ENV AUTH_DB_URI = <45 chars>
+  ENV BALE_BOT_ENABLED = <1 chars>
+  ENV BALE_BOT_URL = <22 chars>
+  ENV BALE_WEBHOOK_SECRET = <64 chars>
+  ENV GOOGLE_ALLOWED_ORIGINS = <0 chars>
+  ENV GOOGLE_CLIENT_ID = <72 chars>
+  ENV GOOGLE_CLIENT_SECRET = <35 chars>
+  ENV GOOGLE_REDIRECT_URI = <47 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV GPU_IDLE_MAX_MEM_FRAC = <4 chars>
+  ENV GPU_IDLE_MAX_UTIL = <2 chars>
+  ENV JWT_SECRET = <64 chars>
+  ENV LANG = <7 chars>
+  ENV LITELLM_BASE = <27 chars>
+  ENV LITELLM_KEY = <25 chars>
+  ENV MAX_ANSWERS = <1 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV QA_CORPUS_CHUNKS_NIGHT = <2 chars>
+  ENV QA_CORPUS_NEO4J_PW = <32 chars>
+  ENV QA_RADIO_CHUNKS_NIGHT = <2 chars>
+  ENV QA_RADIO_NEO4J_PW = <32 chars>
+  ENV RAGPORTAL_DB_URI = <55 chars>
+  ENV RAGTOK_EIIS = <48 chars>
+  ENV RAGTOK_MESBAH = <48 chars>
+  ENV RAGTOK_RADIO = <32 chars>
+  ENV RAGTOK_TAGHRIR100 = <48 chars>
+  ENV RAGTOK_TAGHRIR = <48 chars>
+  ENV RAGTOK_TASNIM = <64 chars>
+  ENV RAG_BASE_URLS = <0 chars>
+  ENV RAG_CONSUMER_ID = <6 chars>
+  ENV RAG_LITELLM_KEY = <43 chars>
+  ENV RAG_LITELLM_URL = <26 chars>
+  ENV RAG_MODEL_PREFIX = <11 chars>
+  ENV RAG_REGISTRY_TOKEN = <43 chars>
+  ENV RAG_REGISTRY_URL = <23 chars>
+  ENV RAG_TIMEOUT_S = <3 chars>
+  ENV STREAM_ANSWERS = <1 chars>
+### rag2-staging-core-synth-provider-1
+  ENV GATEWAY_REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV GATEWAY_SERVICE_KEY = <43 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV LITELLM_MASTER_KEY = <43 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <5 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV REGISTRY_DB_PATH = <21 chars>
+  ENV REGISTRY_OPERATOR_TOKEN = <43 chars>
+  ENV REGISTRY_VIEW_TOKEN = <43 chars>
+  ENV STG_PROVIDER_TOKEN = <43 chars>
+  ENV SYNTH_TOKEN = <43 chars>
+  BIND /home/saber/saberprojects/rag2-staging-core/synth -> /stg rw=False
+  BIND /home/saber/saberprojects/rag2-staging-core/secrets -> /stg-secrets rw=False
+### rag2-staging-core-gateway-1
+  ENV GATEWAY_AUDIT_PATH = <26 chars>
+  ENV GATEWAY_LLM_API_KEY_REF = <0 chars>
+  ENV GATEWAY_LLM_ENDPOINT = <41 chars>
+  ENV GATEWAY_LLM_MODEL = <23 chars>
+  ENV GATEWAY_MODEL_ONLY_ALIASES = <10 chars>
+  ENV GATEWAY_REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV GATEWAY_REGISTRY_URL = <22 chars>
+  ENV GATEWAY_SERVICE_KEY = <43 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV LITELLM_MASTER_KEY = <43 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV REGISTRY_OPERATOR_TOKEN = <43 chars>
+  ENV REGISTRY_VIEW_TOKEN = <43 chars>
+  ENV STG_PROVIDER_TOKEN = <43 chars>
+  ENV SYNTH_TOKEN = <43 chars>
+  BIND /home/saber/saberprojects/rag2-staging-core/audit -> /audit rw=True
+### rag2-staging-core-registry-1
+  ENV GATEWAY_REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV GATEWAY_SERVICE_KEY = <43 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV LITELLM_MASTER_KEY = <43 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV REGISTRY_DB_PATH = <21 chars>
+  ENV REGISTRY_OPERATOR_TOKEN = <43 chars>
+  ENV REGISTRY_VIEW_TOKEN = <43 chars>
+  ENV STG_PROVIDER_TOKEN = <43 chars>
+  ENV SYNTH_TOKEN = <43 chars>
+  BIND /home/saber/saberprojects/rag2-staging-core/data -> /data rw=True
+  BIND /home/saber/saberprojects/rag2-staging-core/synth -> /stg rw=False
+  BIND /home/saber/saberprojects/rag2-staging-core/secrets -> /stg-secrets rw=True
+### ragportal_api
+  ENV ADMIN_EMAILS = <85 chars>
+  ENV AUTH_DB_URI = <40 chars>
+  ENV BALE_BOT_ENABLED = <1 chars>
+  ENV BALE_BOT_URL = <22 chars>
+  ENV BALE_WEBHOOK_SECRET = <64 chars>
+  ENV GOOGLE_ALLOWED_ORIGINS = <0 chars>
+  ENV GOOGLE_CLIENT_ID = <72 chars>
+  ENV GOOGLE_CLIENT_SECRET = <35 chars>
+  ENV GOOGLE_REDIRECT_URI = <47 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV GPU_IDLE_MAX_MEM_FRAC = <4 chars>
+  ENV GPU_IDLE_MAX_UTIL = <2 chars>
+  ENV JWT_SECRET = <64 chars>
+  ENV LANG = <7 chars>
+  ENV LITELLM_BASE = <27 chars>
+  ENV LITELLM_KEY = <25 chars>
+  ENV MAX_ANSWERS = <1 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV QA_CORPUS_CHUNKS_NIGHT = <2 chars>
+  ENV QA_CORPUS_NEO4J_PW = <32 chars>
+  ENV QA_RADIO_CHUNKS_NIGHT = <2 chars>
+  ENV QA_RADIO_NEO4J_PW = <32 chars>
+  ENV RAGPORTAL_DB_URI = <60 chars>
+  ENV RAGTOK_EIIS = <48 chars>
+  ENV RAGTOK_MESBAH = <48 chars>
+  ENV RAGTOK_RADIO = <32 chars>
+  ENV RAGTOK_TAGHRIR100 = <48 chars>
+  ENV RAGTOK_TAGHRIR = <48 chars>
+  ENV RAGTOK_TASNIM = <64 chars>
+  ENV RAG_BASE_URLS = <0 chars>
+  ENV RAG_CONSUMER_ID = <6 chars>
+  ENV RAG_LITELLM_KEY = <25 chars>
+  ENV RAG_LITELLM_URL = <27 chars>
+  ENV RAG_MODEL_PREFIX = <11 chars>
+  ENV RAG_REGISTRY_TOKEN = <43 chars>
+  ENV RAG_REGISTRY_URL = <24 chars>
+  ENV RAG_TIMEOUT_S = <3 chars>
+  ENV STREAM_ANSWERS = <1 chars>
+### radio_api
+  ENV EMBED_MODEL = <20 chars>
+  ENV GEN_MODEL = <6 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LITELLM_API_KEY = <25 chars>
+  ENV LITELLM_BASE = <27 chars>
+  ENV NEO4J_DATABASE = <5 chars>
+  ENV NEO4J_PASSWORD = <48 chars>
+  ENV NEO4J_URI = <20 chars>
+  ENV NEO4J_USERNAME = <9 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV RADIO_MIN_SCORE = <4 chars>
+  ENV RADIO_TOP_K = <1 chars>
+  ENV RAG_ADMIN_TOKEN = <46 chars>
+  ENV RAG_CONSUMER_ID = <5 chars>
+  ENV RAG_LITELLM_KEY = <25 chars>
+  ENV RAG_LITELLM_URL = <27 chars>
+  ENV RAG_MODEL_PREFIX = <4 chars>
+  ENV RAG_REGISTRY_TOKEN = <43 chars>
+  ENV RAG_REGISTRY_URL = <24 chars>
+  ENV RAG_SERVICE_TOKEN = <32 chars>
+  ENV RAG_TIMEOUT_S = <3 chars>
+  ENV SITE_EXAMPLES = <172 chars>
+  ENV SITE_NAME = <23 chars>
+  ENV SITE_TAGLINE = <137 chars>
+  ENV VECTOR_INDEX = <18 chars>
+  BIND /home/saber/saberprojects/radio-rag-service/rag_proxy.py -> /app/app/rag_proxy.py rw=False
+  BIND /home/saber/saberprojects/radio-rag-service/api.py -> /app/app/api.py rw=False
+### rag2_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <8 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  BIND /home/saber/saberprojects/rag2-staging/frontend/dist -> /usr/share/nginx/html rw=False
+  BIND /home/saber/saberprojects/rag2-staging/frontend/nginx.conf -> /etc/nginx/conf.d/default.conf rw=False
+### rag2_auth_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <4 chars>
+  ENV POSTGRES_PASSWORD = <4 chars>
+  ENV POSTGRES_USER = <4 chars>
+  VOL  rag2-staging_rag2_auth_data -> /var/lib/postgresql/data
+### rag2_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <9 chars>
+  ENV POSTGRES_PASSWORD = <9 chars>
+  ENV POSTGRES_USER = <9 chars>
+  VOL  rag2-staging_rag2_pgdata -> /var/lib/postgresql/data
+### radio2_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <15 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV EIIS_UPSTREAM = <13 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  ENV RAG_EIIS_TOKEN = <48 chars>
+  ENV RAG_TAGHRIR_TOKEN = <48 chars>
+  ENV SITE_CANONICAL = <25 chars>
+  ENV SITE_NAME = <34 chars>
+  ENV SITE_OG_IMAGE = <52 chars>
+  ENV SITE_TAGLINE = <95 chars>
+  ENV SITE_TITLE = <39 chars>
+  ENV SITE_URL = <25 chars>
+  ENV TAGHRIR_UPSTREAM = <16 chars>
+  BIND /home/saber/saberprojects/radio2-staging/frontend -> /usr/share/nginx/html rw=False
+  BIND /home/saber/saberprojects/radio2-staging/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/radio2-staging/entrypoint.sh -> /entrypoint.sh rw=False
+### tasnim_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <15 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  ENV SITE_CANONICAL = <25 chars>
+  ENV SITE_NAME = <25 chars>
+  ENV SITE_OG_IMAGE = <46 chars>
+  ENV SITE_TAGLINE = <64 chars>
+  ENV SITE_TITLE = <45 chars>
+  ENV SITE_URL = <25 chars>
+  BIND /home/saber/saberprojects/tasnim/frontend -> /usr/share/nginx/html rw=False
+  BIND /home/saber/saberprojects/tasnim/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/tasnim/entrypoint.sh -> /entrypoint.sh rw=False
+### tasnim_api
+  ENV EMBED_MODEL = <20 chars>
+  ENV GEN_MODEL = <6 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LITELLM_API_KEY = <25 chars>
+  ENV LITELLM_BASE = <27 chars>
+  ENV NEO4J_DATABASE = <22 chars>
+  ENV NEO4J_PASSWORD = <32 chars>
+  ENV NEO4J_URI = <20 chars>
+  ENV NEO4J_USERNAME = <5 chars>
+  ENV PATH = <75 chars>
+  ENV PRODUCT_MODULE = <7 chars>
+  ENV PRODUCT_NAME = <6 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV RAG_DEFAULT_VARIANT = <3 chars>
+  ENV RAG_KEEPALIVE_S = <2 chars>
+  ENV RAG_MIN_SCORE = <4 chars>
+  ENV RAG_MODEL_ID = <10 chars>
+  ENV RAG_SERVICE_TOKEN = <64 chars>
+  ENV RAG_STREAM_DEADLINE_S = <3 chars>
+  ENV RAG_TOP_K = <1 chars>
+  ENV SITE_EXAMPLES = <148 chars>
+  ENV SITE_NAME = <25 chars>
+  ENV SITE_TAGLINE = <64 chars>
+  ENV VECTOR_INDEX = <18 chars>
+  BIND /home/saber/saberprojects/tasnim/api.py -> /app/app/api.py rw=False
+  BIND /home/saber/saberprojects/tasnim/product.py -> /app/app/product.py rw=False
+### rag_monitor
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV MON_DATA = <5 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /var/run/docker.sock -> /var/run/docker.sock rw=False
+  VOL  rag-monitor_ragmon_data -> /data
+### keen_booth
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### radio_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <14 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV EIIS_UPSTREAM = <13 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  ENV RAG_EIIS_TOKEN = <48 chars>
+  ENV RAG_TAGHRIR_TOKEN = <48 chars>
+  ENV SITE_CANONICAL = <24 chars>
+  ENV SITE_NAME = <23 chars>
+  ENV SITE_OG_IMAGE = <51 chars>
+  ENV SITE_TAGLINE = <137 chars>
+  ENV SITE_TITLE = <60 chars>
+  ENV SITE_URL = <24 chars>
+  ENV TAGHRIR_UPSTREAM = <16 chars>
+  BIND /home/saber/saberprojects/radio-rag-service/entrypoint.sh -> /entrypoint.sh rw=False
+  BIND /home/saber/saberprojects/radio-rag-service/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/radio-rag-service/frontend -> /usr/share/nginx/html rw=False
+### sources_api
+  ENV GPG_KEY = <40 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV SOURCES_NEO4J_PASS = <32 chars>
+  ENV SOURCES_NEO4J_URI = <20 chars>
+  ENV SOURCES_NEO4J_USER = <5 chars>
+  ENV SOURCES_RADIO_DB = <5 chars>
+  ENV SOURCES_SITE_BASE = <26 chars>
+  ENV SOURCES_SITE_NAME = <28 chars>
+  ENV SOURCES_SITE_TAGLINE = <37 chars>
+  BIND /home/saber/saberprojects/sources-portal/sources_api.py -> /app/app/sources_api.py rw=False
+### mesbah_api
+  ENV ADMIN_EMAILS = <85 chars>
+  ENV AUTH_DB_URI = <44 chars>
+  ENV CITATION_LINK_BASE = <32 chars>
+  ENV EMBEDDING_MODEL_PATH = <27 chars>
+  ENV FEEDBACK_DB_URI = <59 chars>
+  ENV FRONTEND_URL = <25 chars>
+  ENV GOOGLE_ALLOWED_ORIGINS = <25 chars>
+  ENV GOOGLE_CLIENT_ID = <72 chars>
+  ENV GOOGLE_CLIENT_SECRET = <35 chars>
+  ENV GOOGLE_REDIRECT_URI = <50 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV INST = <6 chars>
+  ENV JWT_SECRET = <64 chars>
+  ENV LLM_API_KEY = <25 chars>
+  ENV LLM_BASE_URL = <27 chars>
+  ENV LLM_MODEL = <6 chars>
+  ENV NEO4J_DATABASE = <6 chars>
+  ENV NEO4J_PASSWORD = <32 chars>
+  ENV NEO4J_URI = <20 chars>
+  ENV NEO4J_USERNAME = <5 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV RAG_SCALES = <0 chars>
+  ENV RAG_SERVICE_TOKEN = <48 chars>
+  ENV SITE_ATTRIBUTION = <16 chars>
+  ENV SITE_BOOKS = <343 chars>
+  ENV SITE_BOOKS_HEADING = <23 chars>
+  ENV SITE_CANONICAL = <25 chars>
+  ENV SITE_EXAMPLES = <136 chars>
+  ENV SITE_HERO_IMAGE = <0 chars>
+  ENV SITE_INPUT_PLACEHOLDER = <33 chars>
+  ENV SITE_INSTANCE = <6 chars>
+  ENV SITE_LOGIN_TITLE_HIGHLIGHT = <16 chars>
+  ENV SITE_NAME = <30 chars>
+  ENV SITE_OG_IMAGE = <53 chars>
+  ENV SITE_SCOPE = <34 chars>
+  ENV SITE_SUBTITLE = <88 chars>
+  ENV SITE_TAGLINE_HIGHLIGHT = <6 chars>
+  ENV SITE_TAGLINE_MAIN = <19 chars>
+  ENV SITE_THEME_ACCENT = <0 chars>
+  ENV SITE_THEME_COLOR = <7 chars>
+  ENV SITE_THEME_PRIMARY = <0 chars>
+  ENV SITE_THEME_SECONDARY = <0 chars>
+  ENV SITE_TITLE = <32 chars>
+  ENV SITE_URL = <25 chars>
+  ENV STREAM_LLM_TOKENS = <1 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app -> /app/app rw=True
+### eiis_api
+  ENV ADMIN_EMAILS = <85 chars>
+  ENV AUTH_DB_URI = <44 chars>
+  ENV CITATION_LINK_BASE = <32 chars>
+  ENV EMBEDDING_MODEL_PATH = <27 chars>
+  ENV FEEDBACK_DB_URI = <71 chars>
+  ENV FRONTEND_URL = <23 chars>
+  ENV GOOGLE_ALLOWED_ORIGINS = <23 chars>
+  ENV GOOGLE_CLIENT_ID = <72 chars>
+  ENV GOOGLE_CLIENT_SECRET = <35 chars>
+  ENV GOOGLE_REDIRECT_URI = <48 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV INST = <4 chars>
+  ENV JWT_SECRET = <64 chars>
+  ENV LLM_API_KEY = <25 chars>
+  ENV LLM_BASE_URL = <27 chars>
+  ENV LLM_MODEL = <6 chars>
+  ENV NEO4J_DATABASE = <29 chars>
+  ENV NEO4J_PASSWORD = <32 chars>
+  ENV NEO4J_URI = <20 chars>
+  ENV NEO4J_USERNAME = <5 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV RAG_SCALES = <67 chars>
+  ENV RAG_SERVICE_TOKEN = <48 chars>
+  ENV SITE_ATTRIBUTION = <0 chars>
+  ENV SITE_BOOKS = <392 chars>
+  ENV SITE_BOOKS_HEADING = <25 chars>
+  ENV SITE_CANONICAL = <23 chars>
+  ENV SITE_EXAMPLES = <160 chars>
+  ENV SITE_HERO_IMAGE = <28 chars>
+  ENV SITE_INPUT_PLACEHOLDER = <49 chars>
+  ENV SITE_INSTANCE = <4 chars>
+  ENV SITE_LOGIN_TITLE_HIGHLIGHT = <25 chars>
+  ENV SITE_NAME = <33 chars>
+  ENV SITE_OG_IMAGE = <49 chars>
+  ENV SITE_SCOPE = <30 chars>
+  ENV SITE_SUBTITLE = <94 chars>
+  ENV SITE_TAGLINE_HIGHLIGHT = <6 chars>
+  ENV SITE_TAGLINE_MAIN = <22 chars>
+  ENV SITE_THEME_ACCENT = <10 chars>
+  ENV SITE_THEME_COLOR = <7 chars>
+  ENV SITE_THEME_PRIMARY = <11 chars>
+  ENV SITE_THEME_SECONDARY = <11 chars>
+  ENV SITE_TITLE = <35 chars>
+  ENV SITE_URL = <23 chars>
+  ENV STREAM_LLM_TOKENS = <1 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app -> /app/app rw=True
+### taghrir_api
+  ENV ADMIN_EMAILS = <85 chars>
+  ENV AUTH_DB_URI = <44 chars>
+  ENV CITATION_LINK_BASE = <32 chars>
+  ENV EMBEDDING_MODEL_PATH = <27 chars>
+  ENV FEEDBACK_DB_URI = <62 chars>
+  ENV FRONTEND_URL = <26 chars>
+  ENV GOOGLE_ALLOWED_ORIGINS = <26 chars>
+  ENV GOOGLE_CLIENT_ID = <72 chars>
+  ENV GOOGLE_CLIENT_SECRET = <35 chars>
+  ENV GOOGLE_REDIRECT_URI = <51 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV INST = <7 chars>
+  ENV JWT_SECRET = <64 chars>
+  ENV LLM_API_KEY = <25 chars>
+  ENV LLM_BASE_URL = <27 chars>
+  ENV LLM_MODEL = <6 chars>
+  ENV NEO4J_DATABASE = <7 chars>
+  ENV NEO4J_PASSWORD = <32 chars>
+  ENV NEO4J_URI = <20 chars>
+  ENV NEO4J_USERNAME = <5 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  ENV RAG_SCALES = <53 chars>
+  ENV RAG_SERVICE_TOKEN = <48 chars>
+  ENV SITE_ATTRIBUTION = <0 chars>
+  ENV SITE_BOOKS = <163 chars>
+  ENV SITE_BOOKS_HEADING = <23 chars>
+  ENV SITE_CANONICAL = <26 chars>
+  ENV SITE_EXAMPLES = <149 chars>
+  ENV SITE_HERO_IMAGE = <31 chars>
+  ENV SITE_INPUT_PLACEHOLDER = <33 chars>
+  ENV SITE_INSTANCE = <7 chars>
+  ENV SITE_LOGIN_TITLE_HIGHLIGHT = <20 chars>
+  ENV SITE_NAME = <27 chars>
+  ENV SITE_OG_IMAGE = <55 chars>
+  ENV SITE_SCOPE = <20 chars>
+  ENV SITE_SUBTITLE = <86 chars>
+  ENV SITE_TAGLINE_HIGHLIGHT = <6 chars>
+  ENV SITE_TAGLINE_MAIN = <23 chars>
+  ENV SITE_THEME_ACCENT = <10 chars>
+  ENV SITE_THEME_COLOR = <7 chars>
+  ENV SITE_THEME_PRIMARY = <11 chars>
+  ENV SITE_THEME_SECONDARY = <11 chars>
+  ENV SITE_TITLE = <23 chars>
+  ENV SITE_URL = <26 chars>
+  ENV STREAM_LLM_TOKENS = <1 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app -> /app/app rw=True
+### neo4j_db
+  ENV JAVA_HOME = <17 chars>
+  ENV LANG = <7 chars>
+  ENV NEO4J_ACCEPT_LICENSE_AGREEMENT = <3 chars>
+  ENV NEO4J_AUTH = <38 chars>
+  ENV NEO4J_EDITION = <10 chars>
+  ENV NEO4J_HOME = <14 chars>
+  ENV NEO4J_PLUGINS = <8 chars>
+  ENV NEO4J_SHA256 = <64 chars>
+  ENV NEO4J_TARBALL = <38 chars>
+  ENV NEO4J_apoc_export_file_enabled = <4 chars>
+  ENV NEO4J_apoc_import_file_enabled = <4 chars>
+  ENV NEO4J_dbms_security_procedures_unrestricted = <6 chars>
+  ENV PATH = <101 chars>
+  BIND /home/saber/saberprojects/graph-rag/neo4j_dump -> /import rw=True
+  VOL  fe9eceacc0a2f315d56d8b2d8c036c1cd958a38232a71cc54f2c910fc2dace0b -> /logs
+  BIND /home/saber/saberprojects/graph-rag/neo4j_data -> /data rw=True
+### tasnim_feedback_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <8 chars>
+  ENV POSTGRES_PASSWORD = <30 chars>
+  ENV POSTGRES_USER = <6 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app/feedback_schema.sql -> /docker-entrypoint-initdb.d/feedback_schema.sql rw=False
+  VOL  tasnim_feedback_data -> /var/lib/postgresql/data
+### taghrir_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <16 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV INST = <7 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  ENV SITE_CANONICAL = <26 chars>
+  ENV SITE_HERO_IMAGE = <31 chars>
+  ENV SITE_NAME = <27 chars>
+  ENV SITE_OG_IMAGE = <55 chars>
+  ENV SITE_SUBTITLE = <86 chars>
+  ENV SITE_THEME_COLOR = <7 chars>
+  ENV SITE_TITLE = <23 chars>
+  ENV SITE_URL = <26 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/entrypoint.sh -> /entrypoint.sh rw=False
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/dist -> /usr/share/nginx/html rw=False
+### eiis_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <13 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV INST = <4 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  ENV SITE_CANONICAL = <23 chars>
+  ENV SITE_HERO_IMAGE = <28 chars>
+  ENV SITE_NAME = <33 chars>
+  ENV SITE_OG_IMAGE = <49 chars>
+  ENV SITE_SUBTITLE = <94 chars>
+  ENV SITE_THEME_COLOR = <7 chars>
+  ENV SITE_TITLE = <35 chars>
+  ENV SITE_URL = <23 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/entrypoint.sh -> /entrypoint.sh rw=False
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/dist -> /usr/share/nginx/html rw=False
+### mesbah_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <15 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV INST = <6 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  ENV SITE_CANONICAL = <25 chars>
+  ENV SITE_HERO_IMAGE = <0 chars>
+  ENV SITE_NAME = <30 chars>
+  ENV SITE_OG_IMAGE = <53 chars>
+  ENV SITE_SUBTITLE = <88 chars>
+  ENV SITE_THEME_COLOR = <7 chars>
+  ENV SITE_TITLE = <32 chars>
+  ENV SITE_URL = <25 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/entrypoint.sh -> /entrypoint.sh rw=False
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/frontend/dist -> /usr/share/nginx/html rw=False
+### sources_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <16 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  BIND /home/saber/saberprojects/sources-portal/entrypoint.sh -> /entrypoint.sh rw=False
+  BIND /home/saber/saberprojects/sources-portal/nginx.conf -> /etc/nginx/templates-api/default.conf.template rw=False
+  BIND /home/saber/saberprojects/sources-portal/frontend -> /usr/share/nginx/html rw=False
+### iranseda-whisper-worker
+  ENV BATCH_SIZE = <1 chars>
+  ENV CUDA_VERSION = <6 chars>
+  ENV CUDA_VISIBLE_DEVICES = <1 chars>
+  ENV DB_HOST = <11 chars>
+  ENV DB_NAME = <5 chars>
+  ENV DB_PASS = <18 chars>
+  ENV DB_PORT = <4 chars>
+  ENV DB_USER = <7 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV DELAY_BETWEEN = <1 chars>
+  ENV IDLE_SLEEP = <2 chars>
+  ENV KEEP_MP4 = <1 chars>
+  ENV LD_LIBRARY_PATH = <21 chars>
+  ENV LOCAL_DOWNLOADS_DIR = <60 chars>
+  ENV MAX_ATTEMPTS = <1 chars>
+  ENV NCCL_VERSION = <8 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <15 chars>
+  ENV NVIDIA_PRODUCT_NAME = <4 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <2165 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <3 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV NV_CUDA_LIB_VERSION = <8 chars>
+  ENV NV_CUDNN_PACKAGE = <28 chars>
+  ENV NV_CUDNN_PACKAGE_NAME = <17 chars>
+  ENV NV_CUDNN_VERSION = <10 chars>
+  ENV NV_LIBCUBLAS_PACKAGE = <25 chars>
+  ENV NV_LIBCUBLAS_PACKAGE_NAME = <14 chars>
+  ENV NV_LIBCUBLAS_VERSION = <10 chars>
+  ENV NV_LIBCUSPARSE_VERSION = <11 chars>
+  ENV NV_LIBNCCL_PACKAGE = <26 chars>
+  ENV NV_LIBNCCL_PACKAGE_NAME = <8 chars>
+  ENV NV_LIBNCCL_PACKAGE_VERSION = <8 chars>
+  ENV NV_LIBNPP_PACKAGE = <24 chars>
+  ENV NV_LIBNPP_VERSION = <12 chars>
+  ENV NV_NVTX_VERSION = <9 chars>
+  ENV PATH = <80 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV REMOTE_DOWNLOADS = <60 chars>
+  ENV SSH_TARGET = <0 chars>
+  ENV WHISPER_COMPUTE = <4 chars>
+  ENV WHISPER_LANGUAGE = <2 chars>
+  ENV WHISPER_MODEL = <30 chars>
+  ENV WHISPER_MODELS_CACHE = <24 chars>
+  ENV WORK_DIR = <19 chars>
+  ENV http_proxy = <22 chars>
+  ENV https_proxy = <22 chars>
+  ENV no_proxy = <19 chars>
+  BIND /home/saber/saberprojects/iranseda-crawler-golang-/downloads -> /home/saber/saberprojects/iranseda-crawler-golang-/downloads rw=True
+  BIND /home/saber/whisper-models -> /models rw=False
+  BIND /home/saber/saberprojects/iranseda-crawler-golang-/scripts -> /app/scripts rw=False
+  BIND /home/saber/saberprojects/iranseda-crawler-golang-/services/whisper -> /app/whisper rw=True
+### deploy-sidekiq-1
+  ENV BUNDLER_VERSION = <6 chars>
+  ENV BUNDLE_APP_CONFIG = <17 chars>
+  ENV BUNDLE_FORCE_RUBY_PLATFORM = <1 chars>
+  ENV BUNDLE_PATH = <5 chars>
+  ENV BUNDLE_SILENCE_ROOT_WARNING = <1 chars>
+  ENV BUNDLE_WITHOUT = <16 chars>
+  ENV CHATWOOT_PORT = <4 chars>
+  ENV CW_EDITION = <2 chars>
+  ENV DATABASE_URL = <77 chars>
+  ENV EXECJS_RUNTIME = <8 chars>
+  ENV FORCE_SSL = <5 chars>
+  ENV FRONTEND_URL = <21 chars>
+  ENV GEM_HOME = <17 chars>
+  ENV INSTALLATION_ENV = <6 chars>
+  ENV LANG = <7 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <82 chars>
+  ENV PNPM_VERSION = <6 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV RAILS_ENV = <10 chars>
+  ENV RAILS_SERVE_STATIC_FILES = <4 chars>
+  ENV REDIS_PASSWORD = <32 chars>
+  ENV REDIS_URL = <18 chars>
+  ENV RUBY_DOWNLOAD_SHA256 = <64 chars>
+  ENV RUBY_DOWNLOAD_URL = <58 chars>
+  ENV RUBY_VERSION = <5 chars>
+  ENV SECRET_KEY_BASE = <128 chars>
+  ENV VIPS_BLOCK_UNTRUSTED = <1 chars>
+  VOL  deploy_storage_data -> /app/storage
+### deploy-rails-1
+  ENV BUNDLER_VERSION = <6 chars>
+  ENV BUNDLE_APP_CONFIG = <17 chars>
+  ENV BUNDLE_FORCE_RUBY_PLATFORM = <1 chars>
+  ENV BUNDLE_PATH = <5 chars>
+  ENV BUNDLE_SILENCE_ROOT_WARNING = <1 chars>
+  ENV BUNDLE_WITHOUT = <16 chars>
+  ENV CHATWOOT_PORT = <4 chars>
+  ENV CW_EDITION = <2 chars>
+  ENV DATABASE_URL = <77 chars>
+  ENV EXECJS_RUNTIME = <8 chars>
+  ENV FORCE_SSL = <5 chars>
+  ENV FRONTEND_URL = <21 chars>
+  ENV GEM_HOME = <17 chars>
+  ENV INSTALLATION_ENV = <6 chars>
+  ENV LANG = <7 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <82 chars>
+  ENV PNPM_VERSION = <6 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV RAILS_ENV = <10 chars>
+  ENV RAILS_SERVE_STATIC_FILES = <4 chars>
+  ENV REDIS_PASSWORD = <32 chars>
+  ENV REDIS_URL = <18 chars>
+  ENV RUBY_DOWNLOAD_SHA256 = <64 chars>
+  ENV RUBY_DOWNLOAD_URL = <58 chars>
+  ENV RUBY_VERSION = <5 chars>
+  ENV SECRET_KEY_BASE = <128 chars>
+  ENV VIPS_BLOCK_UNTRUSTED = <1 chars>
+  VOL  deploy_storage_data -> /app/storage
+### deploy-base-1
+  ENV BUNDLER_VERSION = <6 chars>
+  ENV BUNDLE_APP_CONFIG = <17 chars>
+  ENV BUNDLE_FORCE_RUBY_PLATFORM = <1 chars>
+  ENV BUNDLE_PATH = <5 chars>
+  ENV BUNDLE_SILENCE_ROOT_WARNING = <1 chars>
+  ENV BUNDLE_WITHOUT = <16 chars>
+  ENV CHATWOOT_PORT = <4 chars>
+  ENV CW_EDITION = <2 chars>
+  ENV DATABASE_URL = <77 chars>
+  ENV EXECJS_RUNTIME = <8 chars>
+  ENV FORCE_SSL = <5 chars>
+  ENV FRONTEND_URL = <21 chars>
+  ENV GEM_HOME = <17 chars>
+  ENV LANG = <7 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <82 chars>
+  ENV PNPM_VERSION = <6 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV RAILS_ENV = <10 chars>
+  ENV RAILS_SERVE_STATIC_FILES = <4 chars>
+  ENV REDIS_PASSWORD = <32 chars>
+  ENV REDIS_URL = <18 chars>
+  ENV RUBY_DOWNLOAD_SHA256 = <64 chars>
+  ENV RUBY_DOWNLOAD_URL = <58 chars>
+  ENV RUBY_VERSION = <5 chars>
+  ENV SECRET_KEY_BASE = <128 chars>
+  ENV VIPS_BLOCK_UNTRUSTED = <1 chars>
+  VOL  deploy_storage_data -> /app/storage
+### deploy-redis-1
+  ENV CHATWOOT_PORT = <4 chars>
+  ENV DATABASE_URL = <77 chars>
+  ENV FORCE_SSL = <5 chars>
+  ENV FRONTEND_URL = <21 chars>
+  ENV PATH = <60 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV REDIS_PASSWORD = <32 chars>
+  ENV REDIS_URL = <18 chars>
+  ENV REDIS_VERSION = <6 chars>
+  ENV SECRET_KEY_BASE = <128 chars>
+  VOL  deploy_redis_data -> /data
+### deploy-postgres-1
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <87 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_VERSION = <16 chars>
+  ENV POSTGRES_DB = <8 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV POSTGRES_USER = <8 chars>
+  VOL  deploy_postgres_data -> /var/lib/postgresql/data
+### taghrirqa
+  ENV EMB_BASE = <26 chars>
+  ENV EMB_MODEL = <18 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV INDEX_DIR = <11 chars>
+  ENV LANG = <7 chars>
+  ENV MIN_SCORE = <4 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/saberprojects/taghrirqa/index -> /data/index rw=False
+  BIND /home/saber/saberprojects/taghrirqa/server.py -> /data/server.py rw=False
+### kong-gw-oss-kong
+  ENV ASSET = <2 chars>
+  ENV KONG_ADMIN_ACCESS_LOG = <11 chars>
+  ENV KONG_ADMIN_ERROR_LOG = <11 chars>
+  ENV KONG_ADMIN_LISTEN = <12 chars>
+  ENV KONG_DATABASE = <8 chars>
+  ENV KONG_LOG_LEVEL = <6 chars>
+  ENV KONG_PG_DATABASE = <4 chars>
+  ENV KONG_PG_HOST = <14 chars>
+  ENV KONG_PG_PASSWORD = <48 chars>
+  ENV KONG_PG_USER = <4 chars>
+  ENV KONG_PLUGINS = <24 chars>
+  ENV KONG_PROXY_ACCESS_LOG = <11 chars>
+  ENV KONG_PROXY_ERROR_LOG = <11 chars>
+  ENV KONG_PROXY_LISTEN = <12 chars>
+  ENV KONG_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  BIND /home/saber/kong-api-gateway-oss/plugins/oss-pre -> /usr/local/share/lua/5.1/kong/plugins/oss-pre rw=False
+  BIND /home/saber/kong-api-gateway-oss/plugins/oss-post -> /usr/local/share/lua/5.1/kong/plugins/oss-post rw=False
+### kong-gw-oss-migrate
+  ENV ASSET = <2 chars>
+  ENV KONG_ADMIN_ACCESS_LOG = <11 chars>
+  ENV KONG_ADMIN_ERROR_LOG = <11 chars>
+  ENV KONG_DATABASE = <8 chars>
+  ENV KONG_LOG_LEVEL = <6 chars>
+  ENV KONG_PG_DATABASE = <4 chars>
+  ENV KONG_PG_HOST = <14 chars>
+  ENV KONG_PG_PASSWORD = <48 chars>
+  ENV KONG_PG_USER = <4 chars>
+  ENV KONG_PROXY_ACCESS_LOG = <11 chars>
+  ENV KONG_PROXY_ERROR_LOG = <11 chars>
+  ENV KONG_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+### kong-gw-oss-db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <4 chars>
+  ENV POSTGRES_DB = <4 chars>
+  ENV POSTGRES_HOST_AUTH_METHOD = <5 chars>
+  ENV POSTGRES_PASSWORD = <48 chars>
+  ENV POSTGRES_USER = <4 chars>
+  VOL  kong-gw-oss-pgdata -> /var/lib/postgresql/data
+### kong-gw-oss-echo
+  ENV ECHO_BACKEND_NAME = <8 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### kong-gw-manage
+  ENV GPG_KEY = <40 chars>
+  ENV KONG_ADMIN = <28 chars>
+  ENV LANG = <7 chars>
+  ENV MANAGE_AUDIT_LOG = <27 chars>
+  ENV MANAGE_BACKUP_DIR = <19 chars>
+  ENV MANAGE_USERS_FILE = <19 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/kong-api-gateway-oss/panel/manage.py -> /app/manage.py rw=False
+  BIND /home/saber/kong-manage/manage-users -> /users/manage-users rw=False
+  BIND /home/saber/kong-manage/backups -> /var/backups/manage rw=True
+  BIND /home/saber/kong-manage/audit -> /var/log/manage rw=True
+### kong-admin-auth
+  ENV ACME_VERSION = <5 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  BIND /home/saber/kong-admin-auth -> /etc/nginx rw=False
+### vllm-embedding-06b
+  ENV CUDA_HOME = <15 chars>
+  ENV CUDA_VERSION = <6 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV HF_HUB_OFFLINE = <1 chars>
+  ENV LD_LIBRARY_PATH = <21 chars>
+  ENV LIBRARY_PATH = <27 chars>
+  ENV NCCL_VERSION = <8 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <15 chars>
+  ENV NVIDIA_PRODUCT_NAME = <4 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <2165 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <1 chars>
+  ENV NV_CUDA_CUDART_DEV_VERSION = <9 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV NV_CUDA_LIB_VERSION = <8 chars>
+  ENV NV_CUDA_NSIGHT_COMPUTE_DEV_PACKAGE = <33 chars>
+  ENV NV_CUDA_NSIGHT_COMPUTE_VERSION = <8 chars>
+  ENV NV_LIBCUBLAS_DEV_PACKAGE = <29 chars>
+  ENV NV_LIBCUBLAS_DEV_PACKAGE_NAME = <18 chars>
+  ENV NV_LIBCUBLAS_DEV_VERSION = <10 chars>
+  ENV NV_LIBCUBLAS_PACKAGE = <25 chars>
+  ENV NV_LIBCUBLAS_PACKAGE_NAME = <14 chars>
+  ENV NV_LIBCUBLAS_VERSION = <10 chars>
+  ENV NV_LIBCUSPARSE_DEV_VERSION = <11 chars>
+  ENV NV_LIBCUSPARSE_VERSION = <11 chars>
+  ENV NV_LIBNCCL_DEV_PACKAGE = <29 chars>
+  ENV NV_LIBNCCL_DEV_PACKAGE_NAME = <11 chars>
+  ENV NV_LIBNCCL_DEV_PACKAGE_VERSION = <8 chars>
+  ENV NV_LIBNCCL_PACKAGE = <26 chars>
+  ENV NV_LIBNCCL_PACKAGE_NAME = <8 chars>
+  ENV NV_LIBNCCL_PACKAGE_VERSION = <8 chars>
+  ENV NV_LIBNPP_DEV_PACKAGE = <28 chars>
+  ENV NV_LIBNPP_DEV_VERSION = <12 chars>
+  ENV NV_LIBNPP_PACKAGE = <24 chars>
+  ENV NV_LIBNPP_VERSION = <12 chars>
+  ENV NV_NVML_DEV_VERSION = <9 chars>
+  ENV NV_NVPROF_DEV_PACKAGE = <26 chars>
+  ENV NV_NVPROF_VERSION = <9 chars>
+  ENV NV_NVTX_VERSION = <9 chars>
+  ENV PATH = <80 chars>
+  ENV PYTORCH_CUDA_ALLOC_CONF = <24 chars>
+  ENV TRANSFORMERS_OFFLINE = <1 chars>
+  ENV UV_HTTP_TIMEOUT = <3 chars>
+  ENV UV_INDEX_STRATEGY = <17 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV VLLM_CACHE_ROOT = <17 chars>
+  ENV VLLM_USAGE_SOURCE = <23 chars>
+  BIND /home/saber/models-ml/Qwen3-Embedding-0.6B -> /models/Qwen3-Embedding-0.6B rw=False
+  BIND /home/saber/.cache/vllm -> /root/.cache/vllm rw=True
+### ragportal_frontend
+  ENV ACME_VERSION = <5 chars>
+  ENV API_UPSTREAM = <13 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  BIND /home/saber/saberprojects/rag-portal/frontend/nginx.conf -> /etc/nginx/conf.d/default.conf rw=False
+  BIND /home/saber/saberprojects/rag-portal/frontend/dist -> /usr/share/nginx/html rw=False
+### ragportal_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <9 chars>
+  ENV POSTGRES_PASSWORD = <9 chars>
+  ENV POSTGRES_USER = <9 chars>
+  VOL  rag-portal_ragportal_pgdata -> /var/lib/postgresql/data
+### ragportal_auth_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <4 chars>
+  ENV POSTGRES_PASSWORD = <4 chars>
+  ENV POSTGRES_USER = <4 chars>
+  VOL  rag-portal_ragportal_auth_data -> /var/lib/postgresql/data
+### vllm-qwen38-gpu1
+  ENV CUDA_HOME = <15 chars>
+  ENV CUDA_VERSION = <6 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV LD_LIBRARY_PATH = <135 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <3 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <2165 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <1 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV PATH = <122 chars>
+  ENV TORCH_CUDA_ARCH_LIST = <29 chars>
+  ENV UV_CACHE_DIR = <13 chars>
+  ENV UV_HTTP_TIMEOUT = <3 chars>
+  ENV UV_INDEX_STRATEGY = <17 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV UV_OVERRIDE = <21 chars>
+  ENV UV_PYTHON_INSTALL_DIR = <14 chars>
+  ENV VLLM_BUILD_COMMIT = <40 chars>
+  ENV VLLM_BUILD_PIPELINE = <36 chars>
+  ENV VLLM_BUILD_URL = <49 chars>
+  ENV VLLM_CACHE_ROOT = <17 chars>
+  ENV VLLM_ENABLE_CUDA_COMPATIBILITY = <1 chars>
+  ENV VLLM_IMAGE_TAG = <65 chars>
+  ENV VLLM_USAGE_SOURCE = <23 chars>
+  BIND /home/saber/models/Qwen3.8-27B-FP8 -> /models/Qwen3.8-27B-FP8 rw=True
+  BIND /root/.cache/vllm -> /root/.cache/vllm rw=True
+### taghrir_feedback_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <8 chars>
+  ENV POSTGRES_PASSWORD = <7 chars>
+  ENV POSTGRES_USER = <7 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app/feedback_schema.sql -> /docker-entrypoint-initdb.d/feedback_schema.sql rw=False
+  VOL  taghrir_feedback_data -> /var/lib/postgresql/data
+### eiis_feedback_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <8 chars>
+  ENV POSTGRES_PASSWORD = <22 chars>
+  ENV POSTGRES_USER = <4 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app/feedback_schema.sql -> /docker-entrypoint-initdb.d/feedback_schema.sql rw=False
+  VOL  eiis_feedback_data -> /var/lib/postgresql/data
+### mesbah_feedback_db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <8 chars>
+  ENV POSTGRES_PASSWORD = <6 chars>
+  ENV POSTGRES_USER = <6 chars>
+  BIND /home/saber/saberprojects/langgraph-neo4j-qa/app/feedback_schema.sql -> /docker-entrypoint-initdb.d/feedback_schema.sql rw=False
+  VOL  mesbah_feedback_data -> /var/lib/postgresql/data
+### open-webui
+  ENV ANONYMIZED_TELEMETRY = <5 chars>
+  ENV AUXILIARY_EMBEDDING_MODEL = <21 chars>
+  ENV COMFYUI_BASE_URL = <23 chars>
+  ENV DOCKER = <4 chars>
+  ENV DO_NOT_TRACK = <4 chars>
+  ENV ENABLE_CHAT_HISTORY = <4 chars>
+  ENV ENABLE_IMAGE_GENERATION = <4 chars>
+  ENV ENABLE_RAG = <4 chars>
+  ENV ENV = <4 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HOME = <40 chars>
+  ENV HOME = <5 chars>
+  ENV IMAGE_GENERATION_ENGINE = <7 chars>
+  ENV LANG = <7 chars>
+  ENV OLLAMA_BASE_URL = <19 chars>
+  ENV OPENAI_API_BASE_URL = <26 chars>
+  ENV OPENAI_API_KEY = <25 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV RAG_EMBEDDING_MODEL = <38 chars>
+  ENV RAG_RERANKING_MODEL = <0 chars>
+  ENV SCARF_NO_ANALYTICS = <4 chars>
+  ENV SENTENCE_TRANSFORMERS_HOME = <40 chars>
+  ENV TIKTOKEN_CACHE_DIR = <32 chars>
+  ENV TIKTOKEN_ENCODING_NAME = <11 chars>
+  ENV USE_AUXILIARY_EMBEDDING_MODEL_DOCKER = <21 chars>
+  ENV USE_CUDA_DOCKER = <5 chars>
+  ENV USE_CUDA_DOCKER_VER = <5 chars>
+  ENV USE_EMBEDDING_MODEL_DOCKER = <38 chars>
+  ENV USE_OLLAMA_DOCKER = <5 chars>
+  ENV USE_RERANKING_MODEL_DOCKER = <0 chars>
+  ENV USE_SLIM_DOCKER = <5 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV WEBUI_BUILD_VERSION = <40 chars>
+  ENV WEBUI_SECRET_KEY = <0 chars>
+  ENV WHISPER_MODEL = <4 chars>
+  ENV WHISPER_MODEL_DIR = <38 chars>
+  BIND /root/docker/open-webui -> /app/backend/data rw=True
+### iranseda-whisper-api
+  ENV CUDA_VERSION = <6 chars>
+  ENV CUDA_VISIBLE_DEVICES = <1 chars>
+  ENV DB_HOST = <11 chars>
+  ENV DB_NAME = <5 chars>
+  ENV DB_PASS = <18 chars>
+  ENV DB_PORT = <4 chars>
+  ENV DB_USER = <7 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV LD_LIBRARY_PATH = <21 chars>
+  ENV NCCL_VERSION = <8 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <15 chars>
+  ENV NVIDIA_PRODUCT_NAME = <4 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <2165 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <3 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV NV_CUDA_LIB_VERSION = <8 chars>
+  ENV NV_CUDNN_PACKAGE = <28 chars>
+  ENV NV_CUDNN_PACKAGE_NAME = <17 chars>
+  ENV NV_CUDNN_VERSION = <10 chars>
+  ENV NV_LIBCUBLAS_PACKAGE = <25 chars>
+  ENV NV_LIBCUBLAS_PACKAGE_NAME = <14 chars>
+  ENV NV_LIBCUBLAS_VERSION = <10 chars>
+  ENV NV_LIBCUSPARSE_VERSION = <11 chars>
+  ENV NV_LIBNCCL_PACKAGE = <26 chars>
+  ENV NV_LIBNCCL_PACKAGE_NAME = <8 chars>
+  ENV NV_LIBNCCL_PACKAGE_VERSION = <8 chars>
+  ENV NV_LIBNPP_PACKAGE = <24 chars>
+  ENV NV_LIBNPP_VERSION = <12 chars>
+  ENV NV_NVTX_VERSION = <9 chars>
+  ENV PATH = <80 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV WHISPER_COMPUTE = <4 chars>
+  ENV WHISPER_LANGUAGE = <2 chars>
+  ENV WHISPER_MODEL = <30 chars>
+  ENV WHISPER_MODELS_CACHE = <24 chars>
+  ENV http_proxy = <22 chars>
+  ENV https_proxy = <22 chars>
+  ENV no_proxy = <19 chars>
+  BIND /home/saber/whisper-models -> /models rw=False
+### langgraph_app
+  ENV DEEPSEEK_API_KEY = <26 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV NEO4J_DATABASE = <5 chars>
+  ENV NEO4J_PASSWORD = <24 chars>
+  ENV NEO4J_URI = <17 chars>
+  ENV NEO4J_USERNAME = <5 chars>
+  ENV OPENAI_API_KEY = <24 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <6 chars>
+  BIND /home/saber/saberprojects/graph-rag/app -> /app/app rw=True
+### csghub-omnibus
+  ENV CSGHUB_EMBEDDED = <20 chars>
+  ENV CSGHUB_HOME = <11 chars>
+  ENV CSGHUB_OMNIBUS_CONFIG = <50 chars>
+  ENV CSGHUB_SRV_HOME = <23 chars>
+  ENV GIN_MODE = <7 chars>
+  ENV PATH = <85 chars>
+  BIND /home/saber/saberprojects/csghub-deployment/csghub/logs -> /var/log/csghub rw=True
+  BIND /home/saber/saberprojects/csghub-deployment/csghub/data -> /var/opt/csghub rw=True
+  BIND /home/saber/saberprojects/csghub-deployment/csghub/etc -> /etc/csghub rw=True
+### mock-open-webui
+  ENV ANONYMIZED_TELEMETRY = <5 chars>
+  ENV AUXILIARY_EMBEDDING_MODEL = <21 chars>
+  ENV DOCKER = <4 chars>
+  ENV DO_NOT_TRACK = <4 chars>
+  ENV ENV = <4 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HOME = <40 chars>
+  ENV HOME = <5 chars>
+  ENV LANG = <7 chars>
+  ENV OLLAMA_BASE_URL = <7 chars>
+  ENV OPENAI_API_BASE_URL = <22 chars>
+  ENV OPENAI_API_KEY = <22 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV RAG_EMBEDDING_MODEL = <38 chars>
+  ENV RAG_RERANKING_MODEL = <0 chars>
+  ENV SCARF_NO_ANALYTICS = <4 chars>
+  ENV SENTENCE_TRANSFORMERS_HOME = <40 chars>
+  ENV TIKTOKEN_CACHE_DIR = <32 chars>
+  ENV TIKTOKEN_ENCODING_NAME = <11 chars>
+  ENV USE_AUXILIARY_EMBEDDING_MODEL_DOCKER = <21 chars>
+  ENV USE_CUDA_DOCKER = <5 chars>
+  ENV USE_CUDA_DOCKER_VER = <5 chars>
+  ENV USE_EMBEDDING_MODEL_DOCKER = <38 chars>
+  ENV USE_OLLAMA_DOCKER = <5 chars>
+  ENV USE_RERANKING_MODEL_DOCKER = <0 chars>
+  ENV USE_SLIM_DOCKER = <5 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV WEBUI_BUILD_VERSION = <40 chars>
+  ENV WEBUI_SECRET_KEY = <0 chars>
+  ENV WHISPER_MODEL = <4 chars>
+  ENV WHISPER_MODEL_DIR = <38 chars>
+  VOL  mock-stream_open-webui-data -> /app/backend/data
+### mock-litellm
+  ENV LITELLM_MASTER_KEY = <22 chars>
+  ENV MOCK_SERVICE_API_KEY = <21 chars>
+  ENV PATH = <75 chars>
+  ENV PRISMA_BINARY_CACHE_DIR = <20 chars>
+  ENV PRISMA_CLI_PATH = <45 chars>
+  ENV PRISMA_CLI_QUERY_ENGINE_TYPE = <6 chars>
+  ENV PRISMA_OFFLINE_MODE = <4 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  BIND /home/saber/mock-stream/deploy/litellm/config.yaml -> /app/config.yaml rw=False
+### mock-service
+  ENV CORS_ORIGINS = <1 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV MOCK_ALLOW_DEV_KEY = <1 chars>
+  ENV MOCK_API_KEYS = <21 chars>
+  ENV MOCK_MODEL_NAME = <13 chars>
+  ENV MOCK_RATE_LIMIT_PER_MIN = <2 chars>
+  ENV MOCK_TEXT_CHUNK_MS = <2 chars>
+  ENV MOCK_THINK_DELAY_MS = <3 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_DISABLE_PIP_VERSION_CHECK = <1 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### tyk-gateway
+  ENV BUSYBOX_VERSION = <6 chars>
+  ENV OPENSSL_CONF = <24 chars>
+  ENV OPENSSL_MODULES = <38 chars>
+  ENV PATH = <60 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV TYK_GW_ACCESSLOGS_ENABLED = <5 chars>
+  ENV TYK_GW_ALLOWINSECURECONFIGS = <4 chars>
+  ENV TYK_GW_ALLOWMASTERKEYS = <5 chars>
+  ENV TYK_GW_ALLOWREMOTECONFIG = <4 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_ENABLEDETAILEDRECORDING = <4 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_ENABLEGEOIP = <5 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_IGNOREDIPS = <2 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_NORMALISEURLS_CUSTOM = <2 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_NORMALISEURLS_ENABLED = <4 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_NORMALISEURLS_NORMALISENUMBERS = <4 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_NORMALISEURLS_NORMALISEUUIDS = <4 chars>
+  ENV TYK_GW_ANALYTICSCONFIG_TYPE = <0 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_ADDRS = <14 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_DATABASE = <1 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_ENABLECLUSTER = <5 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_MAXACTIVE = <4 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_MAXIDLE = <4 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_PASSWORD = <0 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_TYPE = <5 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_USERNAME = <0 chars>
+  ENV TYK_GW_ANALYTICSSTORAGE_USESSL = <5 chars>
+  ENV TYK_GW_APPPATH = <7 chars>
+  ENV TYK_GW_BUNDLEBASEURL = <0 chars>
+  ENV TYK_GW_CACHESTORAGE_MAXACTIVE = <4 chars>
+  ENV TYK_GW_CLOSECONNECTIONS = <5 chars>
+  ENV TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS = <4 chars>
+  ENV TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING = <25 chars>
+  ENV TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED = <5 chars>
+  ENV TYK_GW_DBAPPCONFOPTIONS_TAGS = <2 chars>
+  ENV TYK_GW_DISABLEPORTWHITELIST = <4 chars>
+  ENV TYK_GW_ENABLEANALYTICS = <4 chars>
+  ENV TYK_GW_ENABLEBUNDLEDOWNLOADER = <4 chars>
+  ENV TYK_GW_ENABLECUSTOMDOMAINS = <4 chars>
+  ENV TYK_GW_ENABLEHASHEDKEYSLISTING = <4 chars>
+  ENV TYK_GW_ENABLEJSVM = <4 chars>
+  ENV TYK_GW_ENABLESEPERATEANALYTICSSTORE = <5 chars>
+  ENV TYK_GW_GLOBALSESSIONLIFETIME = <5 chars>
+  ENV TYK_GW_HASHKEYFUNCTION = <8 chars>
+  ENV TYK_GW_HASHKEYS = <4 chars>
+  ENV TYK_GW_HEALTHCHECK_ENABLEHEALTHCHECKS = <4 chars>
+  ENV TYK_GW_HIDEGENERATORHEADER = <5 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_ENABLEHTTP2 = <4 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_ENABLEPATHPREFIXMATCHING = <4 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_ENABLEPATHSUFFIXMATCHING = <4 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES = <4 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS = <4 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_FLUSHINTERVAL = <1 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_MINVERSION = <3 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_SERVERNAME = <11 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_USESSL = <5 chars>
+  ENV TYK_GW_HTTPSERVEROPTIONS_XFFDEPTH = <1 chars>
+  ENV TYK_GW_LISTENPORT = <4 chars>
+  ENV TYK_GW_LOGLEVEL = <4 chars>
+  ENV TYK_GW_MIDDLEWAREPATH = <12 chars>
+  ENV TYK_GW_MINTOKENLENGTH = <2 chars>
+  ENV TYK_GW_NODESECRET = <32 chars>
+  ENV TYK_GW_POLICIES_POLICYCONNECTIONSTRING = <25 chars>
+  ENV TYK_GW_POLICIES_POLICYSOURCE = <7 chars>
+  ENV TYK_GW_PROXYENABLEHTTP2 = <4 chars>
+  ENV TYK_GW_PROXYSSLMINVERSION = <3 chars>
+  ENV TYK_GW_SECRET = <32 chars>
+  ENV TYK_GW_SECURITY_ALLOWUNSAFEDYNAMICMTLSTOKEN = <5 chars>
+  ENV TYK_GW_STORAGE_ADDRS = <14 chars>
+  ENV TYK_GW_STORAGE_DATABASE = <1 chars>
+  ENV TYK_GW_STORAGE_ENABLECLUSTER = <5 chars>
+  ENV TYK_GW_STORAGE_MAXACTIVE = <4 chars>
+  ENV TYK_GW_STORAGE_MAXIDLE = <4 chars>
+  ENV TYK_GW_STORAGE_PASSWORD = <0 chars>
+  ENV TYK_GW_STORAGE_TYPE = <5 chars>
+  ENV TYK_GW_STORAGE_USERNAME = <0 chars>
+  ENV TYK_GW_STORAGE_USESSL = <5 chars>
+  ENV TYK_GW_STREAMING_ENABLED = <4 chars>
+  ENV TYK_GW_SUPPRESSREDISSIGNALRELOAD = <5 chars>
+  ENV TYK_GW_TEMPLATEPATH = <11 chars>
+  ENV TYK_GW_TYKJSPATH = <11 chars>
+  ENV TYK_GW_UPTIMETESTS_CONFIG_ENABLEUPTIMEANALYTICS = <4 chars>
+  ENV TYK_GW_UPTIMETESTS_CONFIG_FAILURETRIGGERSAMPLESIZE = <1 chars>
+  ENV TYK_GW_UPTIMETESTS_CONFIG_TIMEWAIT = <2 chars>
+  ENV TYK_GW_UPTIMETESTS_DISABLE = <5 chars>
+  ENV TYK_GW_USEDBAPPCONFIGS = <4 chars>
+  ENV TYK_GW_USEREDISLOG = <4 chars>
+  VOL  gateway-certs -> /opt/tyk-gateway/certs
+### tyk-dashboard
+  ENV PATH = <60 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV TYK_DB_ADMINSECRET = <12 chars>
+  ENV TYK_DB_AUDIT_ENABLED = <5 chars>
+  ENV TYK_DB_AUDIT_FORMAT = <4 chars>
+  ENV TYK_DB_AUDIT_STORETYPE = <2 chars>
+  ENV TYK_DB_ENABLEAGGREGATELOOKUPS = <4 chars>
+  ENV TYK_DB_ENABLECLUSTER = <5 chars>
+  ENV TYK_DB_ENABLEDELETEKEYBYHASH = <4 chars>
+  ENV TYK_DB_ENABLEDUPLICATESLUGS = <4 chars>
+  ENV TYK_DB_ENABLEHASHEDKEYSLISTING = <4 chars>
+  ENV TYK_DB_ENABLEMASTERKEYS = <5 chars>
+  ENV TYK_DB_ENABLEOWNERSHIP = <4 chars>
+  ENV TYK_DB_ENABLEUPDATEKEYBYHASH = <4 chars>
+  ENV TYK_DB_FORCEAPIDEFAULTS = <5 chars>
+  ENV TYK_DB_HASHKEYS = <4 chars>
+  ENV TYK_DB_HIDELISTENPATH = <5 chars>
+  ENV TYK_DB_HOMEDIR = <18 chars>
+  ENV TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES = <4 chars>
+  ENV TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME = <16 chars>
+  ENV TYK_DB_HOSTCONFIG_HOSTNAME = <13 chars>
+  ENV TYK_DB_HOSTCONFIG_SECURECOOKIES = <5 chars>
+  ENV TYK_DB_HTTPSERVEROPTIONS_USESSL = <5 chars>
+  ENV TYK_DB_LICENSEKEY = <0 chars>
+  ENV TYK_DB_LISTENPORT = <4 chars>
+  ENV TYK_DB_MAINTENANCEMODE = <5 chars>
+  ENV TYK_DB_NODESECRET = <32 chars>
+  ENV TYK_DB_NOTIFYONCHANGE = <4 chars>
+  ENV TYK_DB_PAGESIZE = <2 chars>
+  ENV TYK_DB_REDISADDRS = <14 chars>
+  ENV TYK_DB_REDISDATABASE = <1 chars>
+  ENV TYK_DB_REDISPASSWORD = <0 chars>
+  ENV TYK_DB_REDISUSESSL = <5 chars>
+  ENV TYK_DB_SECURITY_ALLOWADMINRESETPASSWORD = <4 chars>
+  ENV TYK_DB_SECURITY_ENABLECONTENTSECURITYPOLICY = <5 chars>
+  ENV TYK_DB_SECURITY_ENFORCEPASSWORDHISTORY = <1 chars>
+  ENV TYK_DB_SECURITY_FORBIDADMINRESETACCESSTOKEN = <5 chars>
+  ENV TYK_DB_SECURITY_FORBIDADMINVIEWACCESSTOKEN = <5 chars>
+  ENV TYK_DB_SECURITY_FORCEFIRSTLOGINPWRESET = <5 chars>
+  ENV TYK_DB_SECURITY_LOGINDISALLOWFORWARDPROXY = <5 chars>
+  ENV TYK_DB_SECURITY_OPENPOLICY_ENABLEAPI = <4 chars>
+  ENV TYK_DB_SECURITY_OPENPOLICY_ENABLED = <4 chars>
+  ENV TYK_DB_SECURITY_USERPASSWORDMAXDAYS = <1 chars>
+  ENV TYK_DB_SHOWORGID = <4 chars>
+  ENV TYK_DB_SSOENABLEUSERLOOKUP = <4 chars>
+  ENV TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING = <105 chars>
+  ENV TYK_DB_STORAGE_ANALYTICS_TYPE = <8 chars>
+  ENV TYK_DB_STORAGE_MAIN_CONNECTIONSTRING = <105 chars>
+  ENV TYK_DB_STORAGE_MAIN_TYPE = <8 chars>
+  ENV TYK_DB_STREAMING_ENABLED = <4 chars>
+  ENV TYK_DB_TIB_ENABLED = <4 chars>
+  ENV TYK_DB_TYKAPI_HOST = <18 chars>
+  ENV TYK_DB_TYKAPI_PORT = <4 chars>
+  ENV TYK_DB_TYKAPI_SECRET = <32 chars>
+  ENV TYK_DB_UI_DEFAULTLANG = <2 chars>
+  ENV TYK_DB_UI_DONTALLOWLICENSEMANAGEMENT = <5 chars>
+  ENV TYK_DB_UI_ENABLEMCP = <4 chars>
+  ENV TYK_DB_UI_HIDEHELP = <5 chars>
+  VOL  dashboard-certs -> /opt/tyk-dashboard/certs
+### tyk-pump
+  ENV PATH = <60 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS = <14 chars>
+  ENV TYK_PMP_ANALYTICSSTORAGECONFIG_DATABASE = <1 chars>
+  ENV TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER = <5 chars>
+  ENV TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD = <0 chars>
+  ENV TYK_PMP_ANALYTICSSTORAGECONFIG_USERNAME = <0 chars>
+  ENV TYK_PMP_ANALYTICSSTORAGETYPE = <5 chars>
+  ENV TYK_PMP_DONTPURGEUPTIMEDATA = <5 chars>
+  ENV TYK_PMP_LOGLEVEL = <4 chars>
+  ENV TYK_PMP_OMITCONFIGFILE = <4 chars>
+  ENV TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING = <103 chars>
+  ENV TYK_PMP_PUMPS_SQLAGGREGATE_META_TRACKALLPATHS = <4 chars>
+  ENV TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE = <8 chars>
+  ENV TYK_PMP_PUMPS_SQLAGGREGATE_TYPE = <13 chars>
+  ENV TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING = <103 chars>
+  ENV TYK_PMP_PUMPS_SQL_META_TYPE = <8 chars>
+  ENV TYK_PMP_PUMPS_SQL_TYPE = <3 chars>
+  ENV TYK_PMP_PURGEDELAY = <1 chars>
+  ENV TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING = <103 chars>
+  ENV TYK_PMP_UPTIMEPUMPCONFIG_LOGLEVEL = <5 chars>
+  ENV TYK_PMP_UPTIMEPUMPCONFIG_TYPE = <8 chars>
+  ENV TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE = <3 chars>
+### tyk-portal
+  ENV PATH = <60 chars>
+  ENV PORTAL_AUDIT_LOG_ENABLE = <4 chars>
+  ENV PORTAL_AUDIT_LOG_PATH = <4 chars>
+  ENV PORTAL_DATABASE_CONNECTIONSTRING = <96 chars>
+  ENV PORTAL_DATABASE_DIALECT = <8 chars>
+  ENV PORTAL_DATABASE_MAXRETRIES = <1 chars>
+  ENV PORTAL_DISABLECSRFCHECK = <4 chars>
+  ENV PORTAL_HOSTPORT = <4 chars>
+  ENV PORTAL_LICENSEKEY = <0 chars>
+  ENV PORTAL_LOGFORMAT = <3 chars>
+  ENV PORTAL_LOGLEVEL = <4 chars>
+  ENV PORTAL_REFRESHINTERVAL = <1 chars>
+  ENV PORTAL_STORAGE = <2 chars>
+  ENV PORTAL_THEMING_DISABLE_UPLOAD = <5 chars>
+  ENV PORTAL_THEMING_THEME = <7 chars>
+  ENV PORTAL_TIB_ENABLED = <4 chars>
+  ENV PROVIDER_DATA = <2 chars>
+  ENV PROVIDER_NAME = <23 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+### tyk-redis
+  ENV GOSU_VERSION = <4 chars>
+  ENV PATH = <60 chars>
+  ENV REDIS_DOWNLOAD_SHA = <64 chars>
+  ENV REDIS_DOWNLOAD_URL = <52 chars>
+  ENV REDIS_VERSION = <5 chars>
+  VOL  redis-data -> /data
+### tyk-postgres
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <13 chars>
+  ENV POSTGRES_PASSWORD = <16 chars>
+  ENV POSTGRES_USER = <7 chars>
+  VOL  postgres-data -> /var/lib/postgresql/data
+  BIND /home/saber/saberprojects/tyk-install/docker/utils/dbs.sql -> /docker-entrypoint-initdb.d/01-init.sql rw=True
+### iranseda-mysql
+  ENV GOSU_VERSION = <4 chars>
+  ENV MYSQL_DATABASE = <5 chars>
+  ENV MYSQL_MAJOR = <3 chars>
+  ENV MYSQL_PASSWORD = <18 chars>
+  ENV MYSQL_ROOT_PASSWORD = <8 chars>
+  ENV MYSQL_SHELL_VERSION = <12 chars>
+  ENV MYSQL_USER = <7 chars>
+  ENV MYSQL_VERSION = <12 chars>
+  ENV PATH = <60 chars>
+  BIND /home/saber/saberprojects/iranseda-crawler-golang-/radio.sql -> /docker-entrypoint-initdb.d/01-radio.sql rw=False
+  VOL  iranseda-crawler-golang-_mysql_data -> /var/lib/mysql
+### vllm-qwen38
+  ENV CUDA_HOME = <15 chars>
+  ENV CUDA_VERSION = <6 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV LD_LIBRARY_PATH = <135 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <3 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <2165 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <1 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV PATH = <122 chars>
+  ENV TORCH_CUDA_ARCH_LIST = <29 chars>
+  ENV UV_CACHE_DIR = <13 chars>
+  ENV UV_HTTP_TIMEOUT = <3 chars>
+  ENV UV_INDEX_STRATEGY = <17 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV UV_OVERRIDE = <21 chars>
+  ENV UV_PYTHON_INSTALL_DIR = <14 chars>
+  ENV VLLM_BUILD_COMMIT = <40 chars>
+  ENV VLLM_BUILD_PIPELINE = <36 chars>
+  ENV VLLM_BUILD_URL = <49 chars>
+  ENV VLLM_CACHE_ROOT = <17 chars>
+  ENV VLLM_ENABLE_CUDA_COMPATIBILITY = <1 chars>
+  ENV VLLM_IMAGE_TAG = <65 chars>
+  ENV VLLM_USAGE_SOURCE = <23 chars>
+  BIND /home/saber/models/Qwen3.8-27B-FP8 -> /models/Qwen3.8-27B-FP8 rw=True
+  BIND /home/saber/.cache/vllm -> /root/.cache/vllm rw=True
+### vllm-embedding
+  ENV CUDA_HOME = <15 chars>
+  ENV CUDA_VERSION = <6 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV HF_HUB_OFFLINE = <1 chars>
+  ENV LD_LIBRARY_PATH = <21 chars>
+  ENV LIBRARY_PATH = <27 chars>
+  ENV NCCL_VERSION = <8 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <15 chars>
+  ENV NVIDIA_PRODUCT_NAME = <4 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <2165 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <1 chars>
+  ENV NV_CUDA_CUDART_DEV_VERSION = <9 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV NV_CUDA_LIB_VERSION = <8 chars>
+  ENV NV_CUDA_NSIGHT_COMPUTE_DEV_PACKAGE = <33 chars>
+  ENV NV_CUDA_NSIGHT_COMPUTE_VERSION = <8 chars>
+  ENV NV_LIBCUBLAS_DEV_PACKAGE = <29 chars>
+  ENV NV_LIBCUBLAS_DEV_PACKAGE_NAME = <18 chars>
+  ENV NV_LIBCUBLAS_DEV_VERSION = <10 chars>
+  ENV NV_LIBCUBLAS_PACKAGE = <25 chars>
+  ENV NV_LIBCUBLAS_PACKAGE_NAME = <14 chars>
+  ENV NV_LIBCUBLAS_VERSION = <10 chars>
+  ENV NV_LIBCUSPARSE_DEV_VERSION = <11 chars>
+  ENV NV_LIBCUSPARSE_VERSION = <11 chars>
+  ENV NV_LIBNCCL_DEV_PACKAGE = <29 chars>
+  ENV NV_LIBNCCL_DEV_PACKAGE_NAME = <11 chars>
+  ENV NV_LIBNCCL_DEV_PACKAGE_VERSION = <8 chars>
+  ENV NV_LIBNCCL_PACKAGE = <26 chars>
+  ENV NV_LIBNCCL_PACKAGE_NAME = <8 chars>
+  ENV NV_LIBNCCL_PACKAGE_VERSION = <8 chars>
+  ENV NV_LIBNPP_DEV_PACKAGE = <28 chars>
+  ENV NV_LIBNPP_DEV_VERSION = <12 chars>
+  ENV NV_LIBNPP_PACKAGE = <24 chars>
+  ENV NV_LIBNPP_VERSION = <12 chars>
+  ENV NV_NVML_DEV_VERSION = <9 chars>
+  ENV NV_NVPROF_DEV_PACKAGE = <26 chars>
+  ENV NV_NVPROF_VERSION = <9 chars>
+  ENV NV_NVTX_VERSION = <9 chars>
+  ENV PATH = <80 chars>
+  ENV TRANSFORMERS_OFFLINE = <1 chars>
+  ENV UV_HTTP_TIMEOUT = <3 chars>
+  ENV UV_INDEX_STRATEGY = <17 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV VLLM_CACHE_ROOT = <17 chars>
+  ENV VLLM_USAGE_SOURCE = <23 chars>
+  BIND /home/saber/models/Qwen3-Embedding-4B -> /models/Qwen3-Embedding-4B rw=False
+  BIND /root/.cache/vllm -> /root/.cache/vllm rw=True
+### dcgm-exporter
+  ENV CUDA_VERSION = <6 chars>
+  ENV LD_LIBRARY_PATH = <45 chars>
+  ENV NO_SETCAP = <0 chars>
+  ENV NVARCH = <6 chars>
+  ENV NVIDIA_DISABLE_REQUIRE = <4 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <24 chars>
+  ENV NVIDIA_REQUIRE_CUDA = <1303 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <3 chars>
+  ENV NV_CUDA_CUDART_VERSION = <9 chars>
+  ENV PATH = <102 chars>
+### promtail
+  ENV PATH = <60 chars>
+  BIND /opt/gpu-agent/promtail-config.yaml -> /etc/promtail/config.yml rw=False
+  BIND /var/lib/docker/containers -> /var/lib/docker/containers rw=False
+  BIND /var/run/docker.sock -> /var/run/docker.sock rw=False
+### node-exporter
+  ENV PATH = <60 chars>
+  BIND / -> /rootfs rw=False
+  BIND /proc -> /host/proc rw=False
+  BIND /sys -> /host/sys rw=False
+### qdrant
+  ENV DIR = <0 chars>
+  ENV PATH = <60 chars>
+  ENV QDRANT__LOG_LEVEL = <4 chars>
+  ENV QDRANT__SERVICE__API_KEY = <64 chars>
+  ENV QDRANT__SERVICE__READ_ONLY_API_KEY = <64 chars>
+  ENV RUN_MODE = <10 chars>
+  ENV TZ = <7 chars>
+  BIND /home/saber/qdrant-deployment/qdrant_snapshots -> /qdrant/snapshots rw=True
+  BIND /home/saber/qdrant-deployment/qdrant_storage -> /qdrant/storage rw=True
+### ollama
+  ENV LD_LIBRARY_PATH = <45 chars>
+  ENV NVIDIA_DRIVER_CAPABILITIES = <15 chars>
+  ENV NVIDIA_VISIBLE_DEVICES = <3 chars>
+  ENV OLLAMA_FLASH_ATTENTION = <1 chars>
+  ENV OLLAMA_HOST = <13 chars>
+  ENV OLLAMA_KEEP_ALIVE = <3 chars>
+  ENV OLLAMA_MAX_LOADED_MODELS = <1 chars>
+  ENV OLLAMA_NUM_PARALLEL = <1 chars>
+  ENV PATH = <60 chars>
+  BIND /root/docker/ollama -> /root/.ollama rw=True
+### surfsense-proxy-1
+  ENV CADDY_VERSION = <7 chars>
+  ENV CERT_ACME_CA = <46 chars>
+  ENV CERT_ACME_DNS = <0 chars>
+  ENV CERT_EMAIL = <0 chars>
+  ENV PATH = <60 chars>
+  ENV SURFSENSE_MAX_BODY_SIZE = <3 chars>
+  ENV SURFSENSE_SITE_ADDRESS = <3 chars>
+  ENV TRUSTED_PROXIES = <9 chars>
+  ENV XDG_CONFIG_HOME = <7 chars>
+  ENV XDG_DATA_HOME = <5 chars>
+  VOL  surfsense-caddy-config -> /config
+  VOL  surfsense-caddy-data -> /data
+  BIND /home/saber/apps/surfsense/proxy/Caddyfile -> /etc/caddy/Caddyfile rw=False
+### surfsense-celery_beat-1
+  ENV AUTH_TYPE = <5 chars>
+  ENV BACKEND_URL = <23 chars>
+  ENV CELERY_BROKER_URL = <20 chars>
+  ENV CELERY_MAX_TASKS_PER_CHILD = <2 chars>
+  ENV CELERY_MAX_WORKERS = <2 chars>
+  ENV CELERY_MIN_WORKERS = <1 chars>
+  ENV CELERY_QUEUES = <0 chars>
+  ENV CELERY_RESULT_BACKEND = <20 chars>
+  ENV CELERY_TASK_DEFAULT_QUEUE = <9 chars>
+  ENV CERT_EMAIL = <0 chars>
+  ENV COMPOSE_FILE = <41 chars>
+  ENV DATABASE_URL = <58 chars>
+  ENV DEPLOYMENT_MODE = <11 chars>
+  ENV EMBEDDING_BASE_URL = <33 chars>
+  ENV EMBEDDING_MODEL = <33 chars>
+  ENV ETL_SERVICE = <7 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HUB_OFFLINE = <1 chars>
+  ENV LANG = <7 chars>
+  ENV LISTEN_HTTPS_PORT = <4 chars>
+  ENV LISTEN_HTTP_PORT = <4 chars>
+  ENV MALLOC_MMAP_MAX_ = <5 chars>
+  ENV MALLOC_MMAP_THRESHOLD_ = <5 chars>
+  ENV MALLOC_TRIM_THRESHOLD_ = <6 chars>
+  ENV NEXT_FRONTEND_URL = <23 chars>
+  ENV NOLOGIN_MODE_ENABLED = <5 chars>
+  ENV OLLAMA_EMBEDDING_BASE_URL = <33 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONPATH = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REGISTRATION_ENABLED = <4 chars>
+  ENV REQUESTS_CA_BUNDLE = <58 chars>
+  ENV SECRET_KEY = <44 chars>
+  ENV SERVICE_ROLE = <4 chars>
+  ENV SSL_CERT_FILE = <58 chars>
+  ENV STRIPE_CREDIT_BUYING_ENABLED = <5 chars>
+  ENV STT_SERVICE = <10 chars>
+  ENV SURFSENSE_ALLOW_STATIC_FFMPEG_DOWNLOAD = <5 chars>
+  ENV SURFSENSE_ENABLE_ACTION_LOG = <4 chars>
+  ENV SURFSENSE_ENABLE_BUSY_MUTEX = <4 chars>
+  ENV SURFSENSE_ENABLE_COMPACTION_V2 = <4 chars>
+  ENV SURFSENSE_ENABLE_CONTEXT_EDITING = <4 chars>
+  ENV SURFSENSE_ENABLE_DOOM_LOOP = <4 chars>
+  ENV SURFSENSE_ENABLE_MODEL_CALL_LIMIT = <4 chars>
+  ENV SURFSENSE_ENABLE_MODEL_FALLBACK = <5 chars>
+  ENV SURFSENSE_ENABLE_PERMISSION = <4 chars>
+  ENV SURFSENSE_ENABLE_RETRY_AFTER = <4 chars>
+  ENV SURFSENSE_ENABLE_REVERT_ROUTE = <4 chars>
+  ENV SURFSENSE_ENABLE_SKILLS = <4 chars>
+  ENV SURFSENSE_ENABLE_SPECIALIZED_SUBAGENTS = <4 chars>
+  ENV SURFSENSE_ENABLE_TOOL_CALL_LIMIT = <4 chars>
+  ENV SURFSENSE_ENABLE_TOOL_CALL_REPAIR = <4 chars>
+  ENV SURFSENSE_ENV = <10 chars>
+  ENV SURFSENSE_GPU_COUNT = <1 chars>
+  ENV SURFSENSE_PUBLIC_URL = <23 chars>
+  ENV SURFSENSE_SITE_ADDRESS = <3 chars>
+  ENV SURFSENSE_VARIANT = <4 chars>
+  ENV SURFSENSE_VERSION = <6 chars>
+  ENV TMPDIR = <11 chars>
+  ENV TRANSFORMERS_OFFLINE = <1 chars>
+  ENV TTS_SERVICE = <12 chars>
+  ENV UVICORN_LOOP = <7 chars>
+### surfsense-frontend-1
+  ENV AUTH_TYPE = <5 chars>
+  ENV DEPLOYMENT_MODE = <11 chars>
+  ENV ETL_SERVICE = <7 chars>
+  ENV HOSTNAME = <7 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV SURFSENSE_BACKEND_INTERNAL_URL = <19 chars>
+  ENV YARN_VERSION = <7 chars>
+### surfsense-celery_worker-1
+  ENV AUTH_TYPE = <5 chars>
+  ENV BACKEND_URL = <23 chars>
+  ENV CELERY_BROKER_URL = <20 chars>
+  ENV CELERY_MAX_TASKS_PER_CHILD = <2 chars>
+  ENV CELERY_MAX_WORKERS = <2 chars>
+  ENV CELERY_MIN_WORKERS = <1 chars>
+  ENV CELERY_QUEUES = <0 chars>
+  ENV CELERY_RESULT_BACKEND = <20 chars>
+  ENV CELERY_TASK_DEFAULT_QUEUE = <9 chars>
+  ENV CERT_EMAIL = <0 chars>
+  ENV COMPOSE_FILE = <41 chars>
+  ENV DATABASE_URL = <58 chars>
+  ENV DEPLOYMENT_MODE = <11 chars>
+  ENV EMBEDDING_BASE_URL = <33 chars>
+  ENV EMBEDDING_MODEL = <33 chars>
+  ENV ETL_SERVICE = <7 chars>
+  ENV FILE_STORAGE_LOCAL_PATH = <24 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HUB_OFFLINE = <1 chars>
+  ENV LANG = <7 chars>
+  ENV LISTEN_HTTPS_PORT = <4 chars>
+  ENV LISTEN_HTTP_PORT = <4 chars>
+  ENV MALLOC_MMAP_MAX_ = <5 chars>
+  ENV MALLOC_MMAP_THRESHOLD_ = <5 chars>
+  ENV MALLOC_TRIM_THRESHOLD_ = <6 chars>
+  ENV NEXT_FRONTEND_URL = <23 chars>
+  ENV NOLOGIN_MODE_ENABLED = <5 chars>
+  ENV OLLAMA_EMBEDDING_BASE_URL = <33 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONPATH = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REDIS_APP_URL = <20 chars>
+  ENV REGISTRATION_ENABLED = <4 chars>
+  ENV REQUESTS_CA_BUNDLE = <58 chars>
+  ENV SECRET_KEY = <44 chars>
+  ENV SERVICE_ROLE = <6 chars>
+  ENV SSL_CERT_FILE = <58 chars>
+  ENV STRIPE_CREDIT_BUYING_ENABLED = <5 chars>
+  ENV STT_SERVICE = <10 chars>
+  ENV SURFSENSE_ALLOW_STATIC_FFMPEG_DOWNLOAD = <5 chars>
+  ENV SURFSENSE_ENABLE_ACTION_LOG = <4 chars>
+  ENV SURFSENSE_ENABLE_BUSY_MUTEX = <4 chars>
+  ENV SURFSENSE_ENABLE_COMPACTION_V2 = <4 chars>
+  ENV SURFSENSE_ENABLE_CONTEXT_EDITING = <4 chars>
+  ENV SURFSENSE_ENABLE_DOOM_LOOP = <4 chars>
+  ENV SURFSENSE_ENABLE_MODEL_CALL_LIMIT = <4 chars>
+  ENV SURFSENSE_ENABLE_MODEL_FALLBACK = <5 chars>
+  ENV SURFSENSE_ENABLE_PERMISSION = <4 chars>
+  ENV SURFSENSE_ENABLE_RETRY_AFTER = <4 chars>
+  ENV SURFSENSE_ENABLE_REVERT_ROUTE = <4 chars>
+  ENV SURFSENSE_ENABLE_SKILLS = <4 chars>
+  ENV SURFSENSE_ENABLE_SPECIALIZED_SUBAGENTS = <4 chars>
+  ENV SURFSENSE_ENABLE_TOOL_CALL_LIMIT = <4 chars>
+  ENV SURFSENSE_ENABLE_TOOL_CALL_REPAIR = <4 chars>
+  ENV SURFSENSE_ENV = <10 chars>
+  ENV SURFSENSE_GPU_COUNT = <1 chars>
+  ENV SURFSENSE_PUBLIC_URL = <23 chars>
+  ENV SURFSENSE_SITE_ADDRESS = <3 chars>
+  ENV SURFSENSE_VARIANT = <4 chars>
+  ENV SURFSENSE_VERSION = <6 chars>
+  ENV TMPDIR = <11 chars>
+  ENV TRANSFORMERS_OFFLINE = <1 chars>
+  ENV TTS_SERVICE = <12 chars>
+  ENV UVICORN_LOOP = <7 chars>
+  VOL  surfsense-object-store -> /app/.local_object_store
+  VOL  surfsense-shared-temp -> /shared_tmp
+### surfsense-backend-1
+  ENV AUTH_TYPE = <5 chars>
+  ENV BACKEND_URL = <23 chars>
+  ENV CELERY_BROKER_URL = <20 chars>
+  ENV CELERY_MAX_TASKS_PER_CHILD = <2 chars>
+  ENV CELERY_MAX_WORKERS = <2 chars>
+  ENV CELERY_MIN_WORKERS = <1 chars>
+  ENV CELERY_QUEUES = <0 chars>
+  ENV CELERY_RESULT_BACKEND = <20 chars>
+  ENV CELERY_TASK_DEFAULT_QUEUE = <9 chars>
+  ENV CERT_EMAIL = <0 chars>
+  ENV COMPOSE_FILE = <41 chars>
+  ENV DATABASE_URL = <58 chars>
+  ENV DEPLOYMENT_MODE = <11 chars>
+  ENV EMBEDDING_BASE_URL = <33 chars>
+  ENV EMBEDDING_MODEL = <33 chars>
+  ENV ETL_SERVICE = <7 chars>
+  ENV FILE_STORAGE_LOCAL_PATH = <24 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HUB_OFFLINE = <1 chars>
+  ENV LANG = <7 chars>
+  ENV LISTEN_HTTPS_PORT = <4 chars>
+  ENV LISTEN_HTTP_PORT = <4 chars>
+  ENV MALLOC_MMAP_MAX_ = <5 chars>
+  ENV MALLOC_MMAP_THRESHOLD_ = <5 chars>
+  ENV MALLOC_TRIM_THRESHOLD_ = <6 chars>
+  ENV NEXT_FRONTEND_URL = <23 chars>
+  ENV NOLOGIN_MODE_ENABLED = <5 chars>
+  ENV OLLAMA_EMBEDDING_BASE_URL = <33 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONPATH = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REDIS_APP_URL = <20 chars>
+  ENV REGISTRATION_ENABLED = <4 chars>
+  ENV REQUESTS_CA_BUNDLE = <58 chars>
+  ENV SECRET_KEY = <44 chars>
+  ENV SERVICE_ROLE = <3 chars>
+  ENV SSL_CERT_FILE = <58 chars>
+  ENV STRIPE_CREDIT_BUYING_ENABLED = <5 chars>
+  ENV STT_SERVICE = <10 chars>
+  ENV SURFSENSE_ALLOW_STATIC_FFMPEG_DOWNLOAD = <5 chars>
+  ENV SURFSENSE_ENABLE_ACTION_LOG = <4 chars>
+  ENV SURFSENSE_ENABLE_BUSY_MUTEX = <4 chars>
+  ENV SURFSENSE_ENABLE_COMPACTION_V2 = <4 chars>
+  ENV SURFSENSE_ENABLE_CONTEXT_EDITING = <4 chars>
+  ENV SURFSENSE_ENABLE_DOOM_LOOP = <4 chars>
+  ENV SURFSENSE_ENABLE_MODEL_CALL_LIMIT = <4 chars>
+  ENV SURFSENSE_ENABLE_MODEL_FALLBACK = <5 chars>
+  ENV SURFSENSE_ENABLE_PERMISSION = <4 chars>
+  ENV SURFSENSE_ENABLE_RETRY_AFTER = <4 chars>
+  ENV SURFSENSE_ENABLE_REVERT_ROUTE = <4 chars>
+  ENV SURFSENSE_ENABLE_SKILLS = <4 chars>
+  ENV SURFSENSE_ENABLE_SPECIALIZED_SUBAGENTS = <4 chars>
+  ENV SURFSENSE_ENABLE_TOOL_CALL_LIMIT = <4 chars>
+  ENV SURFSENSE_ENABLE_TOOL_CALL_REPAIR = <4 chars>
+  ENV SURFSENSE_ENV = <10 chars>
+  ENV SURFSENSE_GPU_COUNT = <1 chars>
+  ENV SURFSENSE_PUBLIC_URL = <23 chars>
+  ENV SURFSENSE_SITE_ADDRESS = <3 chars>
+  ENV SURFSENSE_VARIANT = <4 chars>
+  ENV SURFSENSE_VERSION = <6 chars>
+  ENV TMPDIR = <11 chars>
+  ENV TRANSFORMERS_OFFLINE = <1 chars>
+  ENV TTS_SERVICE = <12 chars>
+  ENV UNSTRUCTURED_HAS_PATCHED_LOOP = <1 chars>
+  ENV UVICORN_LOOP = <7 chars>
+  ENV WHATSAPP_BRIDGE_URL = <27 chars>
+  VOL  surfsense-shared-temp -> /shared_tmp
+  VOL  surfsense-object-store -> /app/.local_object_store
+### surfsense-zero-cache-1
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <60 chars>
+  ENV YARN_VERSION = <7 chars>
+  ENV ZERO_ADMIN_PASSWORD = <20 chars>
+  ENV ZERO_APP_PUBLICATIONS = <16 chars>
+  ENV ZERO_AUTH_RETRANSFORM_INTERVAL_SECONDS = <2 chars>
+  ENV ZERO_AUTH_REVALIDATE_INTERVAL_SECONDS = <2 chars>
+  ENV ZERO_AUTO_RESET = <4 chars>
+  ENV ZERO_CHANGE_DB = <66 chars>
+  ENV ZERO_CVR_DB = <66 chars>
+  ENV ZERO_CVR_MAX_CONNS = <2 chars>
+  ENV ZERO_IN_CONTAINER = <1 chars>
+  ENV ZERO_LITESTREAM_CONFIG_PATH = <19 chars>
+  ENV ZERO_LITESTREAM_EXECUTABLE = <25 chars>
+  ENV ZERO_LITESTREAM_EXECUTABLE_V5 = <28 chars>
+  ENV ZERO_LOG_FORMAT = <4 chars>
+  ENV ZERO_MUTATE_URL = <36 chars>
+  ENV ZERO_NUM_SYNC_WORKERS = <1 chars>
+  ENV ZERO_QUERY_API_KEY = <0 chars>
+  ENV ZERO_QUERY_FORWARD_COOKIES = <4 chars>
+  ENV ZERO_QUERY_URL = <35 chars>
+  ENV ZERO_REPLICA_FILE = <13 chars>
+  ENV ZERO_SERVER_VERSION = <5 chars>
+  ENV ZERO_UPSTREAM_DB = <66 chars>
+  ENV ZERO_UPSTREAM_MAX_CONNS = <2 chars>
+  VOL  surfsense-zero-cache -> /data
+### surfsense-db-1
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <87 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_VERSION = <16 chars>
+  ENV POSTGRES_DB = <9 chars>
+  ENV POSTGRES_PASSWORD = <9 chars>
+  ENV POSTGRES_USER = <9 chars>
+  BIND /home/saber/apps/surfsense/postgresql.conf -> /etc/postgresql/postgresql.conf rw=False
+  VOL  surfsense-postgres -> /var/lib/postgresql/data
+### surfsense-redis-1
+  ENV PATH = <60 chars>
+  ENV REDIS_VERSION = <5 chars>
+  VOL  surfsense-redis -> /data
+### h200-public-tunnel
+  ENV PATH = <60 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  BIND /home/saber/h200-api/cloudflared -> /etc/cloudflared rw=False
+
+--- staging stack config/secrets files (perms + size, NO contents) ---
+  FILE -rw-rw-r-- 3478B /home/saber/saberprojects/rag2-staging-core/compose.yml
+  FILE -rw------- 516B /home/saber/saberprojects/rag2-staging-core/stg.env
+  DIR  /home/saber/saberprojects/rag2-staging-core/secrets
+    ENTRY drwxrwxrwx 4096B .
+    ENTRY drwxrwxr-x 4096B ..
+    ENTRY -rw------- 46B portal-key
+    ENTRY -rw------- 46B radio-key
+  FILE -rw------- 2076B /home/saber/saberprojects/rag2-staging-core/litellm.yaml
+
+--- staging litellm.yaml key references (line refs only, values masked) ---
+3:  # x-consumer-key (mirrors the production LiteLLM pattern). File chmod 600.
+9:      api_key: "<masked>"
+11:        x-consumer-key: "<masked>"
+16:      api_key: "<masked>"
+18:        x-consumer-key: "<masked>"
+23:      api_key: "<masked>"
+25:        x-consumer-key: "<masked>"
+32:      api_key: "<masked>"
+34:        x-consumer-key: "<masked>"
+39:      api_key: "<masked>"
+41:        x-consumer-key: "<masked>"
+46:      api_key: "<masked>"
+48:        x-consumer-key: "<masked>"
+
+--- listening sockets (local exposure surface) ---
+State  Recv-Q Send-Q                         Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096                               127.0.0.1:42099      0.0.0.0:*          
+LISTEN 0      4096                              127.0.0.54:53         0.0.0.0:*          
+LISTEN 0      4096                           127.0.0.53%lo:53         0.0.0.0:*          
+LISTEN 0      2048                                 0.0.0.0:14101      0.0.0.0:*          
+LISTEN 0      2048                                 0.0.0.0:9500       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9400       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9443       0.0.0.0:*          
+LISTEN 0      2048                                 0.0.0.0:8990       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9004       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9000       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9001       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9002       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:9003       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5436       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5432       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5456       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5466       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5467       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5446       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5440       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5477       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:5478       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:7474       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8080       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8083       0.0.0.0:*          
+LISTEN 0      2048                                 0.0.0.0:8090       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8064       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8023       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8024       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8004       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8000       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8001       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8003       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8013       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8014       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8053       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8054       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8048       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8063       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8033       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8034       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8044       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8045       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8046       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8047       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:8043       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:7687       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:6333       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:6334       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:6379       0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:22         0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:80         0.0.0.0:*          
+LISTEN 0      511                                127.0.0.1:18789      0.0.0.0:*          
+LISTEN 0      4096                               127.0.0.1:18091      0.0.0.0:*          
+LISTEN 0      4096                               127.0.0.1:18080      0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:3308       0.0.0.0:*          
+LISTEN 0      4096                               127.0.0.1:18001      0.0.0.0:*          
+LISTEN 0      511                                127.0.0.1:18002      0.0.0.0:*          
+LISTEN 0      4096                                 0.0.0.0:4000       0.0.0.0:*          
+
+=== B3 ENV AUDIT s53 DONE: log=/home/saber/e63-b3-envs-s53-20261116-200055.log ===

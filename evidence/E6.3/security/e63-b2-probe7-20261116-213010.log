@@ -1,0 +1,96 @@
+=== B2 PROBE7 TS=20261116-213010 (read-only) ===
+gateway service key digest: len=51 sha256-16=7205ed208ee8d6ea
+
+## 1) model_management_endpoints.py: handler list:
+  file size: 3331 lines
+161:async def update_team(*args, **kwargs):
+209:    async def query_raw(self, query: str, *args: object) -> Sequence[Mapping[str, object]]: ...
+255:def _proxy_model_table(prisma_client: PrismaClient) -> _ProxyModelTable:
+259:def _repo_team_table(prisma_client: PrismaClient) -> _TeamLookupTable:
+263:def _db_team_table(prisma_client: PrismaClient) -> _TeamTable:
+267:def _model_alias_table(prisma_client: PrismaClient) -> "TableActions[prisma_models.LiteLLM_ModelTable]":
+271:async def get_db_model(model_id: str, prisma_client: PrismaClient) -> Deployment | None:
+281:def _strategy_router_write_violation(
+329:def _raise_on_strategy_router_write_violation(
+344:def _stored_credential_name(existing_litellm_params: GenericLiteLLMParams | None) -> str | None:
+355:async def _raise_on_invalid_credential_name(
+408:def _effective_complexity_router_config(
+440:def _effective_model(
+459:def _effective_complexity_router_params(
+471:def _member_auto_router_marker_for_update(
+490:def _decrypted_model(stored_model: object) -> str | None:
+499:def _tuning_candidate(effective_params: Mapping[str, object], model_id: str | None) -> Mapping[str, object]:
+508:def _raise_on_tuning_quota_violation(
+521:async def _auto_router_capability_slot(
+681:def _raise_if_rate_limits_required_but_missing(*, litellm_params: GenericLiteLLMParams, enforced: bool) -> None:
+712:def _explicitly_cleared_ptu_fields(model_info: ModelInfo | None) -> frozenset[str]:
+727:def _merged_ptu_model_info(*, db_model: Deployment, patch_data: updateDeployment) -> Mapping[str, object]:
+741:def _raise_if_ptu_cost_attribution_disabled(incoming_model_info: Mapping[str, object]) -> None:
+767:def _validate_ptu_model_info(model_info: Mapping[str, object]) -> None:
+812:def _is_nonzero_rate(value: object) -> bool:
+816:def _is_nonzero_price(value: object) -> bool:
+822:def _is_zero_price(value: object) -> bool:
+830:def _raise_if_ptu_deployment_is_priced(*, model_info: Mapping[str, object], supplied: Mapping[str, object]) -> None:
+858:def _ptu_zeroed_pricing(
+898:def _ptu_pricing_delta(
+931:def _ptu_priced_deployment(model_params: Deployment) -> Deployment:
+953:def _cost_map_entry(db_model: Deployment, incoming_model_info: Mapping[str, object]) -> Mapping[str, object]:
+966:def _loaded_catalog_entry(
+975:def update_db_model(
+1088:@router.patch(
+1093:async def patch_model(
+1230:        async def write_row(update_data: PrismaCompatibleUpdateDBModel) -> _ProxyModelRow | None:
+1323:async def _set_model_blocked_status(
+1431:@router.post(
+1436:async def block_model(
+
+## 2) /model/update + PATCH handler bodies (find by route string):
+--- route model/update:
+2562:    "/model/update",
+--- route model/new:
+1147:                    message="Cannot edit config-based model. Store model in DB via /model/new first.",
+1368:                    message="Cannot edit config-based model. Store model in DB via /model/new first.",
+--- route model/delete:
+2177:    "/model/delete",
+
+## 3) merge semantics around litellm_params in update flow:
+233:    def litellm_params(self) -> Mapping[str, object]: ...
+287:    An auto-router deployment's ``litellm_params.model`` (``auto_router/...``) is
+340:        param="litellm_params.model",
+344:def _stored_credential_name(existing_litellm_params: GenericLiteLLMParams | None) -> str | None:
+345:    if existing_litellm_params is None or existing_litellm_params.litellm_credential_name is None:
+348:        value=existing_litellm_params.litellm_credential_name,
+356:    litellm_params: updateLiteLLMParams | None,
+357:    existing_litellm_params: GenericLiteLLMParams | None,
+360:    if litellm_params is None or "litellm_credential_name" not in litellm_params.model_fields_set:
+362:    credential_name: Final = litellm_params.litellm_credential_name
+372:    if credential_name == _stored_credential_name(existing_litellm_params):
+392:    "(CASE jsonb_typeof(litellm_params) WHEN 'string' THEN (litellm_params #>> '{}')::jsonb ELSE litellm_params END)"
+485:    if incoming_params.model is not None and incoming_params.model != _effective_model(None, existing.litellm_params):
+502:            "litellm_params": effective_params,
+664:                            "litellm_params": row.litellm_params,
+681:def _raise_if_rate_limits_required_but_missing(*, litellm_params: GenericLiteLLMParams, enforced: bool) -> None:
+693:        for field, value in (("rpm", litellm_params.rpm), ("tpm", litellm_params.tpm))
+705:        param=f"litellm_params.{missing[0]}",
+861:    litellm_params: Mapping[str, object],
+874:    ``supplied`` is the caller's litellm_params alone, because that is the blob a price is
+887:        if _is_nonzero_price(model_info.get(field)) or _is_nonzero_price(litellm_params.get(field))
+902:    litellm_params: Mapping[str, object],
+917:    supplied: Final = patch.litellm_params.model_dump(exclude_none=True) if patch.litellm_params else _EMPTY_MODEL_INFO
+918:    zeroed: Final = _ptu_zeroed_pricing(model_info=model_info, litellm_params=litellm_params, supplied=supplied)
+927:        if _is_zero_price(model_info.get(field)) or _is_zero_price(litellm_params.get(field))
+934:    litellm_params: Final = model_params.litellm_params.model_dump(exclude_none=True)
+935:    override: Final = _ptu_zeroed_pricing(model_info=model_info, litellm_params=litellm_params, supplied=litellm_params)
+946:                "litellm_params": model_params.litellm_params.model_copy(update=stored),
+955:    lookup: Final = base_model if isinstance(base_model, str) else _decrypted_model(db_model.litellm_params.model)
+983:    merged_litellm_params: Final = db_model.litellm_params.model_dump(exclude_none=True)
+
+## 4) api_key decrypt digest check (NO plaintext printed):
+  rag-mizan: api_key decrypted OK len=51 sha256-16=7205ed208ee8d6ea
+  portal-rag-mizan: api_key decrypted OK len=51 sha256-16=7205ed208ee8d6ea
+
+## 5) forwarder placement: net + IP facts (for compose):
+network id=b9391b947e0a3d50f968ed948fc93e5f1bbd16d8c0b3f30a4a235de637ab70a2 driver=bridge subnet=10.240.17.0/24
+litellm-personal ip=10.240.17.3 restart=unless-stopped
+
+=== B2 PROBE7 DONE log=/home/saber/e63-b2-probe7-20261116-213010.log ===

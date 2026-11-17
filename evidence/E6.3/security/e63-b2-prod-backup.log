@@ -1,0 +1,41 @@
+=== B2 PROD BACKUP TS=20261117-000829 -> /home/saber/backups/e63-b2-20261117-000829 ===
+
+## 1) pg_dump litellm-personal-db (litellm) -> litellm-personal.sql
+  size=73924342 sha256-16=29c7b852b74c7ee2
+  dump contains 'rag-mizan' refs: 55 (expect >=1)
+
+## 2) registry sqlite (cp only — NO sqlite3 open):
+  rag-registry.db size=368640 sha256-16=593a01ac2b264a7c
+  rag-registry.db-wal (absent — OK)
+  rag-registry.db-shm (absent — OK)
+
+## 3) live-state artifacts (from pre-stage):
+  keys.raw.json size=119 sha256-16=ebf86b4d935f9449
+  model-info-pre.json size=93641 sha256-16=2dd9529d6885526c
+  decision.txt size=305 sha256-16=4f3bcfbd9dd0b5a3
+
+## 4) config / secret files (cp, 600):
+  gateway.env size=967 sha256-16=315387821f0a17f4
+  e61_phase5_secrets.txt size=491 sha256-16=928058aa66771e7f
+
+## 5) litellm container env snapshot (masked digests) + container state:
+  LITELLM_MASTER_KEY len=67 sha256-16=8aad12d40c26d89a
+rag-gateway	Up 3 hours (healthy)
+litellm-personal	Up 3 hours
+rag-registry	Up 2 days (healthy)
+litellm-personal-db	Up 2 weeks
+
+## 6) manifest + final listing:
+total 72664
+-rw------- 1 saber saber      305 Nov 16 23:55 decision.txt
+-rw------- 1 saber saber      491 Nov 16 20:47 e61_phase5_secrets.txt
+-rw------- 1 saber saber      967 Nov 16 20:47 gateway.env
+-rw------- 1 saber saber      119 Nov 16 23:51 keys.raw.json
+-rw------- 1 saber saber 73924342 Nov 17 00:08 litellm-personal.sql
+-rw------- 1 saber saber    93641 Nov 16 23:51 model-info-pre.json
+-rw-rw-r-- 1 saber saber        0 Nov 17 00:08 pg_dump.err
+-rw------- 1 saber saber   368640 Nov 16 23:58 rag-registry.db
+-rw------- 1 saber saber      659 Nov 17 00:08 SHA256SUMS
+BACKUP_DIR=/home/saber/backups/e63-b2-20261117-000829
+=== BACKUP DONE ===
+LOG=/home/saber/e63-b2-prod-backup-20261117-000829.log

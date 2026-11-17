@@ -1,0 +1,43 @@
+=== B2 PROD PATCH TS=20261117-002205 ===
+
+## 0) pre-checks:
+  keyfwd healthz: radio:8211=200 portal:8212=200
+  db: user=litellm db=litellm
+
+## 1) PATCH 6 models via /model/{model_id}/update:
+  486e6444-261d-49fd-990e-aeae6cc30794 -> http://rag-keyfwd:8211/v1 : http 200 body=914B
+  55114adc-08e3-43a0-a4ee-8fc5c022be0c -> http://rag-keyfwd:8211/v1 : http 200 body=920B
+  1be5d423-2583-4ae8-906c-ffa0a513bdc1 -> http://rag-keyfwd:8211/v1 : http 200 body=913B
+  e6f9ac8f-7480-44c5-b11e-f5d1578c32b4 -> http://rag-keyfwd:8212/v1 : http 200 body=889B
+  a3c058eb-12d1-4376-8c3d-7f69059680e1 -> http://rag-keyfwd:8212/v1 : http 200 body=895B
+  9093791d-e1c2-447e-abe0-6d26bb796f1b -> http://rag-keyfwd:8212/v1 : http 200 body=888B
+
+## 2) verification: zero x-consumer-key in DB + decrypted /model/api_base view:
+  rows: 6
+  DB models with x-consumer-key still set: 0 (expect 0)
+  rag-mizan          api_base=http://rag-keyfwd:8211/v1    xck=none OK
+  rag-general        api_base=http://rag-keyfwd:8211/v1    xck=none OK
+  rag-fiqh           api_base=http://rag-keyfwd:8211/v1    xck=none OK
+  portal-rag-mizan   api_base=http://rag-keyfwd:8212/v1    xck=none OK
+  portal-rag-general api_base=http://rag-keyfwd:8212/v1    xck=none OK
+  portal-rag-fiqh    api_base=http://rag-keyfwd:8212/v1    xck=none OK
+  MI-RESULT: ZERO-XCK-OK (6/6) + api_base=forwarder
+
+## 3) positive chain through forwarder (4101 -> litellm -> keyfwd -> gateway):
+  rag-mizan: GREEN choices=1 citations=5 content_len=34 err=-
+  portal-rag-mizan: GREEN choices=1 citations=5 content_len=34 err=-
+
+## 4) keyfwd log tail (traffic proof):
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+
+=== PATCH DONE ===
+LOG=/home/saber/e63-b2-prod-patch-20261117-002205.log
+ROLLBACK-IF-NEEDED: for each model, PATCH api_base back to http://172.30.0.133:8210/v1 and
+  restore extra_headers {"x-consumer-key": <pre-rotation key>} from /home/saber/backups/e63-b2-20261117-000829/keys.raw.json

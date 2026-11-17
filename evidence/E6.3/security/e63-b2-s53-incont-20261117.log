@@ -1,0 +1,15 @@
+S53-INCONT 2026-11-17T01:14:24Z
+-- container: radio_api
+TCP_172.30.0.133:4101 FAIL time=10.01 TimeoutError
+TCP_172.30.0.133:4000 OPEN time=0.00
+TCP_172.30.0.133:8200 FAIL time=10.01 TimeoutError
+HTTP_LIVE_4000 status=200 time=0.01 body=b'"I\'m alive!"'
+HTTP_LIVE_4101 err=URLError time=15.01
+-- container: ragportal_api
+TCP_172.30.0.133:4101 FAIL time=10.00 TimeoutError
+TCP_172.30.0.133:4000 OPEN time=0.00
+TCP_172.30.0.133:8200 FAIL time=10.01 TimeoutError
+HTTP_LIVE_4000 status=200 time=0.01 body=b'"I\'m alive!"'
+HTTP_LIVE_4101 err=URLError time=15.00
+EXIT=0
+NOTE: captured from stdout of _e63_b2_incont_s53.sh run at 01:14 UTC (script streams to stdout, no remote log file).

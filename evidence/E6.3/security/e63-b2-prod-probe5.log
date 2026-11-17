@@ -1,0 +1,18 @@
+=== B2 PROD PROBE-5 TS=20261117-000743 (read-only) ===
+GATEWAY_SERVICE_KEY len=51 sha256-16=7205ed208ee8d6ea
+expected Bearer literal: h16('Bearer <svc>')=000abd0d98429e4b
+
+## 1) in-container decrypt of api_base/api_key (one radio, one portal):
+  rag-mizan | api_base=http://172.30.0.133:8210/v1 | api_key len=0 16=- | xck 16=cb7d2491fcfc985f
+  portal-rag-mizan | api_base=http://172.30.0.133:8210/v1 | api_key len=0 16=- | xck 16=a0a23788e06e42f6
+
+## 2) live OpenAPI — update-path schema acceptance:
+  updateLiteLLMParams: additionalProperties=True props_n=213 has_extra_headers=False has_api_base=True
+  GenericLiteLLMParams: SCHEMA NOT FOUND
+  LiteLLM_Params: additionalProperties=True props_n=213 has_extra_headers=False has_api_base=True
+  updateDeployment: additionalProperties=<absent> props_n=4 has_extra_headers=False has_api_base=False
+
+## 3) GenericLiteLLMParams model_config (extra policy):
+381:class GenericLiteLLMParams(CredentialLiteLLMParams, CustomPricingLiteLLMParams):
+=== PROBE-5 DONE ===
+LOG=/home/saber/e63-b2-prod-probe5-20261117-000743.log

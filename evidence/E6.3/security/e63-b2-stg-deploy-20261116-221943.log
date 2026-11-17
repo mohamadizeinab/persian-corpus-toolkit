@@ -1,0 +1,61 @@
+[22:19:43] === B2 STG PROTOTYPE 20261116-221943 ===
+[22:19:43] === [0] sanitize previously leaked stg-yaml log (s53 copy)
+redacted len=43 sha256-16=186d00b468507f9d occurrences=6
+redacted len=46 sha256-16=ab7d2730414cbd78 occurrences=3
+redacted len=46 sha256-16=013f5b3dfed51188 occurrences=3
+total redacted: 12
+[22:19:43] === [1] backups
+total 16
+-rw------- 1 saber saber 2076 Nov 16 18:22 litellm.yaml.bak-20261116-221943
+-rw------- 1 saber saber 46 Nov 16 18:22 portal-key.bak-20261116-221943
+-rw------- 1 saber saber 46 Nov 16 18:22 radio-key.bak-20261116-221943
+-rw------- 1 saber saber 516 Nov 16 18:07 stg.env.bak-20261116-221943
+[22:19:43] === [2] pre-rotation state (digests only)
+[22:19:43] old radio key:  len=46 sha256-16=013f5b3dfed51188
+[22:19:43] old portal key: len=46 sha256-16=ab7d2730414cbd78
+consumer fields: ['allowed_rag_ids', 'citation_format', 'consumer_id', 'created_at', 'created_by', 'default_rag_id', 'description', 'display_name', 'enabled', 'routing_policy', 'stream_allowed', 'timeout_ms', 'updated_at']
+consumer portal: enabled=True allowed=['mizan', 'fiqh'] key_hash16=?
+consumer radio: enabled=True allowed=['mizan', 'fiqh', 'e6-acceptance'] key_hash16=?
+keyfile radio matches registry key_hash: False (file sha256-16=013f5b3dfed51188)
+keyfile portal matches registry key_hash: False (file sha256-16=ab7d2730414cbd78)
+[22:19:43] === [3] start rag_keyfwd.py (18211=radio, 18212=portal)
+keys.json seeded portal len=46 sha256-16=ab7d2730414cbd78
+keys.json seeded radio len=46 sha256-16=013f5b3dfed51188
+[22:19:44] keys.json seed rc=0
+[22:19:44] forwarder pid=626860
+[22:19:46] healthz radio:  {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+[22:19:46] healthz portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+[22:19:46] OK   healthz radio ok = {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+[22:19:46] OK   healthz portal ok = {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+[22:19:46] === [4] rotate staging GATEWAY_SERVICE_KEY + rewrite litellm.yaml
+[22:19:46] new service key: len=43 sha256-16=f2cba44b5414f0f4
+yaml rewritten: api_base=6 api_key_rotated=6 extra_headers_removed=6
+[22:19:46] yaml rewrite rc=0
+stg.env: GATEWAY_SERVICE_KEY rotated
+[22:19:46] stg.env update rc=0
+[22:19:46] === [5] recreate gateway + litellm, wait healthy
+ Container rag2-staging-core-gateway-1  Starting
+ Container rag2-staging-core-litellm-1  Starting
+ Container rag2-staging-core-litellm-1  Started
+ Container rag2-staging-core-gateway-1  Started
+[22:20:29] UP: litellm+gateway after 32s
+[22:20:29] OK   litellm health = 200
+[22:20:29] OK   gateway health = 200
+{"data":[{"id":"rag-mizan","object":"model","created":1677610602,"owned_by":"openai"},{"id":"rag-fiqh","object":"model","created":1677610602,"owned_by":"openai"},{"id":"rag-general","object":"model","created":1677610602,"owned_by":"openai"},{"id":"portal-rag-mizan","object":"model","created":1677610602,"owned_by":"openai"},{"id":"portal-rag-fiqh","object":"model","created":1677610602,"owned_by":"openai"},{"id":"portal-rag-general","object":"model","created":1677610602,"owned_by":"openai"}],"obje
+[22:20:29] === [6] positive smokes through the forwarder
+{"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}}
+[22:20:30] FAIL rag-mizan 200+choices = {"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}} (want /"choices"/)
+[22:20:30] FAIL rag-mizan has citations = {"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}} (want /citation/)
+{"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-fiqh' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}}
+[22:20:30] FAIL rag-fiqh 200+choices = {"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-fiqh' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}} (want /"choices"/)
+{"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'portal-rag-mizan' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}}
+[22:20:30] FAIL portal-rag-mizan expected 404 unknown_model = {"error":{"message":"litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'portal-rag-mizan' failed with the error above. No fallback was attempted.","type":"authentication_error","param":null,"code":"401"}} (want /unknown_model/)
+[22:20:30] no-consumer-key probe (direct gateway, expect 401 consumer_key_required):
+HTTP 401
+{"error":{"code":"consumer_key_required","message":"x-consumer-key header is required","retryable":false,"type":"gateway_error"}}
+
+[22:20:30] === [7] rotate staging RADIO consumer key (atomic)
+[22:20:30] registry version before: {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:36:37.963Z"}
+rotate response fields: ['detail', 'error', 'ok'] key_ok: False
+[22:20:30] radio rotate extract rc=1
+[22:20:30] FATAL: radio rotate did not return a key

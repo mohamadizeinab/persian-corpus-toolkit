@@ -1,0 +1,263 @@
+=== [1] docker load registry image
+Loaded image: rag-registry:0.1.0
+=== [2] docker load gateway image
+Loaded image: rag-gateway:0.1.0
+=== [3] images now present
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+rag-gateway:0.1.0                                                                 ef9da642a15a        125MB             0B        
+rag-registry:0.1.0                                                                3701f33aed37        125MB             0B        
+rag2-staging-api:latest                                                           eb9278462bfb        215MB             0B   U    
+=== [4] litellm image availability
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+ghcr.io/berriai/litellm:main-latest                                               20adc4cc8239       1.22GB             0B   U    
+mock-litellm	ghcr.io/berriai/litellm:main-latest
+=== [5] bridge network gateways (staging UIs live here)
+--- net graph-rag_default gateway:
+15.15.12.1
+--- net rag2-staging_default gateway:
+15.15.19.1
+=== [6] s53 host IPs
+172.20.1.53 100.72.7.26 15.15.4.1 15.15.13.1 15.15.2.1 15.15.15.1 15.15.5.1 15.15.18.1 15.15.12.1 15.15.7.1 15.15.3.1 15.15.11.1 15.15.14.1 15.15.1.1 15.15.16.1 15.15.9.1 15.15.17.1 15.15.8.1 15.15.6.1 15.15.10.1 15.15.0.1 15.15.19.1 fd7a:115c:a1e0::ab35:71b 
+=== [7] radio2-staging rag_proxy.py: env usage (names only)
+68:RAG_MODEL_PREFIX = os.getenv("RAG_MODEL_PREFIX", "rag-")
+73:RAG_REGISTRY_URL = os.getenv("RAG_REGISTRY_URL", "").rstrip("/")
+74:RAG_REGISTRY_TOKEN = os.getenv("RAG_REGISTRY_TOKEN", "")
+75:RAG_CONSUMER_ID = os.getenv("RAG_CONSUMER_ID", "radio")
+76:RAG_LITELLM_URL = os.getenv("RAG_LITELLM_URL", "").rstrip("/")
+77:RAG_LITELLM_KEY = os.getenv("RAG_LITELLM_KEY", "")
+78:RAG_TIMEOUT_S = float(os.getenv("RAG_TIMEOUT_S", "120"))
+84:RAG_ADMIN_TOKEN = os.getenv("RAG_ADMIN_TOKEN", "")
+86:RAG_ADMIN_PROBE_TIMEOUT_S = float(os.getenv("RAG_ADMIN_PROBE_TIMEOUT_S", "5"))
+=== [8] radio2-staging rag_proxy.py head (60)
+# -*- coding: utf-8 -*-
+"""
+RAG Management proxy for the universal multi-RAG platform (E5).
+
+This router plugs the Radio Mar'ef frontend into the frozen E0 consumer flow:
+
+    browser  ->  this proxy (same origin; holds the secrets)  ->  LiteLLM
+    (Settings -> RAG Management / chat)                         (rag-* aliases)
+                                                                 |
+                                                                 v
+    Central RAG Registry  <-  RAG Gateway (:8210)  <-  Providers
+
+Rules (dedicated-rag: docs/contracts/CONSUMER_INTEGRATION_CONTRACT.md,
+docs/architecture/MULTI_RAG_CONSUMER_ARCHITECTURE.md section 6):
+
+  * consumers talk ONLY to the LiteLLM aliases ``rag-<rag_id>`` / ``rag-general``;
+    they never call providers or the registry directly;
+  * the Source Picker is fed by the registry's consumer-scoped
+    ``GET /api/rag-registry/consumers/<id>/rags`` endpoint (E5-prep);
+  * single selection  -> ``model = rag-<rag_id>``;
+    multi selection   -> ``model = rag-general`` + ``sources = [selected ids]``;
+  * the registry token and the consumer's LiteLLM virtual key are server-side
+    secrets: read from the environment, NEVER echoed to the browser (section 8).
+
+The module is INERT unless ``RAG_REGISTRY_URL`` + ``RAG_REGISTRY_TOKEN`` are
+set; when inert, ``GET /api/rag/status`` reports ``configured: false`` and the
+picker/chat endpoints answer 503 ``registry_unconfigured``. The legacy Neo4j
+pipeline in api.py is untouched.
+
+Upstream note: the gateway's own "streaming" is non-stream generation plus
+sliced chunks (see drag/gateway/api.py), and LiteLLM relays OpenAI-shaped
+chunks only — the gateway's final ``{citations, rag}`` meta event is not an
+OpenAI chunk. The proxy therefore requests ``stream: false`` from LiteLLM and
+re-emits the answer as SSE slices locally, preserving the radio frontend's
+existing ``delta`` / ``sources`` / ``done`` / ``error`` SSE contract without
+depending on unverified LiteLLM pass-through behaviour. Citations are always
+taken from the gateway response — never fabricated.
+
+E6.1 (Phase 3): a second, token-gated admin surface (``/api/rag/admin/*``)
+lets an authorized operator — from the Radio's own admin panel — manage the
+sources this consumer sees: provider list (with a live per-provider
+``source_names`` book-title probe), enable/disable, priority/weight/top_k/
+timeout edits with ``If-Match`` optimistic locking, connection/auth/
+retrieval test probes, health, and master-prompt versioning. The admin
+token is the ``RAG_ADMIN_TOKEN`` env var (separate from the registry
+token, which never reaches the browser); the UI presents it in the
+``x-rag-admin-token`` header. A wrong token yields 404 (no existence
+leak); an unset token yields 503 ``admin_not_configured``. Every call is
+forwarded to the central registry with the server-side registry token —
+nothing is stored in the radio service.
+"""
+import hmac
+import json
+import os
+import time
+import uuid
+
+import httpx
+from concurrent.futures import ThreadPoolExecutor
+from fastapi import APIRouter, Header, HTTPException
+=== [9] .env.radio2 key NAMES only (values masked)
+# E6.1 Phase 6 STAGING (radio2) — copy of production .env.radio with the
+# radio2.ai.ismc.ir metadata overrides. NEVER commit. The RAG section is
+# identical to production on purpose: staging uses the SAME registry
+# consumer "radio" (read-mostly; admin actions from staging mutate the
+# shared registry, which is documented in the Phase 6 report).
+NEO4J_PASSWORD=<set>
+LITELLM_API_KEY=<set>
+
+SITE_NAME=<set>
+SITE_TAGLINE=<set>
+SITE_EXAMPLES=<set>
+
+# OpenAI-compatible /api/v1 guard (shared product credential). NEVER commit.
+RAG_SERVICE_TOKEN=<set>
+
+# P0.4: Metadata (server-side HTML injection) — staging domain
+SITE_URL=<set>
+SITE_OG_IMAGE=<set>
+SITE_CANONICAL=<set>
+SITE_TITLE=<set>
+RAG_EIIS_TOKEN=<set>
+RAG_TAGHRIR_TOKEN=<set>
+NEO4J_USERNAME=<set>
+
+# E5/E6.1: multi-RAG platform (Central Registry on s52 + LiteLLM :4101 +
+# admin token). RAG_LITELLM_KEY =<set>
+# (scopes to rag-mizan/rag-fiqh/rag-general only). RAG_ADMIN_TOKEN is the
+# browser-side admin token (x-rag-admin-token header), separate from
+# RAG_REGISTRY_TOKEN.
+RAG_REGISTRY_URL=<set>
+RAG_REGISTRY_TOKEN=<set>
+RAG_CONSUMER_ID=<set>
+RAG_LITELLM_URL=<set>
+RAG_LITELLM_KEY=<set>
+# Historical behaviour: the radio consumer keeps the "rag-*" aliases.
+RAG_MODEL_PREFIX=<set>
+RAG_TIMEOUT_S=<set>
+RAG_ADMIN_TOKEN=<set>
+=== [10] rag2-staging .env key NAMES only (values masked)
+# E6.1 Phase 6 STAGING (rag2) — copy of production rag-portal .env (the
+# filled extract version, incl. the E6.1 Phase 5 RAG_* block). NEVER commit.
+LITELLM_BASE=<set>
+LITELLM_KEY=<set>
+ADMIN_EMAILS=<set>
+JWT_SECRET=<set>
+MAX_ANSWERS=<set>
+GPU_IDLE_MAX_UTIL=<set>
+GPU_IDLE_MAX_MEM_FRAC=<set>
+
+GOOGLE_CLIENT_ID=<set>
+
+GOOGLE_CLIENT_SECRET=<set>
+
+GOOGLE_REDIRECT_URI=<set>
+QA_CORPUS_NEO4J_PW=<set>
+QA_CORPUS_NEO4J_URI=<set>
+QA_CORPUS_NEO4J_DB=<set>
+BALE_BOT_ENABLED=<set>
+BALE_WEBHOOK_SECRET=<set>
+BALE_BOT_URL=<set>
+# P1 (2026-11-03): live streaming relay (1=<set>
+STREAM_ANSWERS=<set>
+RAG_SERVICE_TOKEN_rag-mesbah=<set>
+RAG_SERVICE_TOKEN_rag-eiis=<set>
+RAG_SERVICE_TOKEN_rag-taghrir=<set>
+RAG_SERVICE_TOKEN_rag-taghrir-100=<set>
+RAG_SERVICE_TOKEN_rag-radio=<set>
+RAGTOK_MESBAH=<set>
+RAGTOK_EIIS=<set>
+RAGTOK_TAGHRIR=<set>
+RAGTOK_TAGHRIR100=<set>
+RAGTOK_RADIO=<set>
+# PCM-20.7D: tasnim instance service token
+RAGTOK_TASNIM=<set>
+# E5/E6.1: universal multi-RAG platform proxy. RAG_LITELLM_URL/KEY is the
+# portal-rag-* alias endpoint on the s52 LiteLLM (:4101) with the PORTAL
+# consumer's virtual key vk-portal — NOT LITELLM_BASE/LITELLM_KEY above
+# (legacy corpora).
+RAG_REGISTRY_URL=<set>
+RAG_REGISTRY_TOKEN=<set>
+RAG_CONSUMER_ID=<set>
+RAG_LITELLM_URL=<set>
+RAG_LITELLM_KEY=<set>
+# E6.1 Phase 5: portal consumer gets its own "portal-rag-*" alias set.
+RAG_MODEL_PREFIX=<set>
+RAG_TIMEOUT_S=<set>
+=== [11] vLLM sanity (model name, no auth assumed)
+{"object":"list","data":[{"id":"/models/Qwen3.8-27B-FP8","object":"model","created":1794850720,"owned_by":"vllm","root":"/models/Qwen3.8-27B-FP8","parent":null,"max_model_len":200000,"permission":[{"id":"modelperm-bc8ca3e7a593f44a","object":"model_permission","created":1794850720,"allow_create_engine":false,"allow_sampling":true,"allow_logprobs":true,"allow_search_indices":false,"allow_view":true,"allow_fine_tuning":false,"organization":"*","group":null,"is_blocking":false}]}]}
+=== [12] staging-core port free check
+PORT 18101 FREE
+PORT 18200 FREE
+PORT 18210 FREE
+PORT 14101 FREE
+=== [13] rag2-staging-api image: model naming peek
+rag2 image tag: rag2-staging-api:latest
+--- /app listing:
+total 16
+drwxr-xr-x 1 root root 4096 Nov 14 15:09 .
+drwxr-xr-x 1 root root 4096 Nov 16 17:38 ..
+-rw-rw-r-- 1 root root   78 Oct 21 19:00 requirements.txt
+drwxr-xr-x 3 root root 4096 Nov 14 15:06 server
+--- RAG_MODEL_PREFIX / model usage:
+/app/server/app.py:703:                     model = EXCLUDED.model,
+/app/server/app.py:980:    if model == "rag-taghrir-100":
+/app/server/app.py:1984:        citation_count=body.citation_count, model=body.model,
+/app/server/app.py:2046:                "model=EXCLUDED.model, description=EXCLUDED.description",
+/app/server/app.py:2148:            model = corpus_model(cid)
+/app/server/app.py:2156:                             model=model)
+/app/server/app.py:2178:                answer_id=aid, lang=lang, model=model,
+/app/server/app.py:2297:            model = _corpus_model(cid)
+/app/server/app.py:2463:    model = _corpus_model(c["corpus_id"])
+/app/server/app.py:2707:            id2model = {r[0]: r[1] for r in cur.fetchall()}
+/app/server/rag_api.py:16:  * consumers talk ONLY to the LiteLLM aliases ``rag-<rag_id>`` / ``rag-general``;
+/app/server/rag_api.py:20:  * single selection  -> ``model = rag-<rag_id>``;
+/app/server/rag_api.py:21:    multi selection   -> ``model = rag-general`` + ``sources = [selected ids]``;
+/app/server/rag_api.py:51:# the historical "rag-" set). Set RAG_MODEL_PREFIX in the portal env.
+/app/server/rag_api.py:52:RAG_MODEL_PREFIX = os.getenv("RAG_MODEL_PREFIX", "rag-")
+/app/server/rag_api.py:53:GENERAL_MODEL = RAG_MODEL_PREFIX + "general"
+/app/server/rag_api.py:127:    model: str = Field("", description="Override: rag-<id> or rag-general")
+/app/server/rag_api.py:207:    # explicit model wins; 1 source -> rag-<id>; otherwise rag-general + sources.
+/app/server/rag_api.py:208:    model = (req.model or "").strip()
+/app/server/rag_api.py:213:            model = RAG_MODEL_PREFIX + sources[0]
+/app/server/rag_api.py:216:            model = GENERAL_MODEL
+/app/server/rag_api.py:217:    if model == GENERAL_MODEL and not sources:
+/app/server/rag_api.py:219:                            detail="sources required with rag-general")
+/app/server/rag_api.py:233:            # for rag-general — keeping the wire payload minimal.
+/app/server/rag_api.py:234:            if model == GENERAL_MODEL:
+--- env usage:
+/app/server/app.py:51:DB_URI = os.environ.get("RAGPORTAL_DB_URI", "postgresql://ragportal:ragportal@ragportal_db:5432/ragportal")
+/app/server/app.py:54:AUTH_DB_URI = os.environ.get("AUTH_DB_URI", "postgresql://auth:auth@auth_db:5432/auth")
+/app/server/app.py:55:LITELLM_BASE = os.environ.get("LITELLM_BASE", "http://172.30.0.133:4000/v1")
+/app/server/app.py:56:LITELLM_KEY = os.environ.get("LITELLM_KEY", "")
+/app/server/app.py:57:ADMIN_EMAILS = {e.strip().lower() for e in os.environ.get("ADMIN_EMAILS", "").split(",") if e.strip()}
+/app/server/app.py:58:JWT_SECRET = os.environ.get("JWT_SECRET", secrets.token_hex(32))
+/app/server/app.py:59:JWT_TTL_SECONDS = int(os.environ.get("JWT_TTL_SECONDS", str(60 * 60 * 24 * 30)))  # 30 days
+/app/server/app.py:62:GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+/app/server/app.py:63:GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+/app/server/app.py:64:GOOGLE_REDIRECT_URI = os.environ.get(
+/app/server/app.py:71:    for o in os.environ.get("GOOGLE_ALLOWED_ORIGINS", "").split(",")
+/app/server/app.py:77:GPU_IDLE_MAX_UTIL = int(os.environ.get("GPU_IDLE_MAX_UTIL", "30"))   # % per-GPU
+/app/server/app.py:80:GPU_IDLE_MAX_MEM_FRAC = float(os.environ.get("GPU_IDLE_MAX_MEM_FRAC", "0.99"))
+/app/server/app.py:84:QA_JOB_WINDOW_OPEN_H = float(os.environ.get("QA_JOB_WINDOW_OPEN_H", "0.0"))    # Tehran hour
+/app/server/app.py:85:QA_JOB_WINDOW_CLOSE_H = float(os.environ.get("QA_JOB_WINDOW_CLOSE_H", "5.0"))  # Tehran hour
+/app/server/app.py:91:QA_JOB_GEN_MODEL = os.environ.get("QA_JOB_GEN_MODEL", "qwen38-sglang")
+/app/server/app.py:94:QA_JOB_MAX_TICKS_NIGHT = int(os.environ.get("QA_JOB_MAX_TICKS_NIGHT", "30"))
+/app/server/app.py:95:MAX_ANSWERS = int(os.environ.get("MAX_ANSWERS", "3"))
+/app/server/app.py:96:LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "240"))
+/app/server/app.py:105:QA_CORPUS_CHUNKS_NIGHT = int(os.environ.get("QA_CORPUS_CHUNKS_NIGHT", "20"))
+/app/server/app.py:106:QA_CORPUS_CORPUS = os.environ.get("QA_CORPUS_CORPUS", "taghrir")
+/app/server/app.py:107:QA_CORPUS_LLM_MODEL = os.environ.get("QA_CORPUS_LLM_MODEL", "rag-taghrir")
+/app/server/app.py:108:QA_CORPUS_NEO4J_URI = os.environ.get("QA_CORPUS_NEO4J_URI", "bolt://172.20.1.53:7687")
+/app/server/app.py:109:QA_CORPUS_NEO4J_USER = os.environ.get("QA_CORPUS_NEO4J_USER", "neo4j")
+/app/server/app.py:110:QA_CORPUS_NEO4J_PW = os.environ.get("QA_CORPUS_NEO4J_PW", "")
+/app/server/app.py:111:QA_CORPUS_NEO4J_DB = os.environ.get("QA_CORPUS_NEO4J_DB", "taghrir")
+/app/server/app.py:112:QA_CORPUS_STALE_S = int(os.environ.get("QA_CORPUS_STALE_S", "1800"))
+/app/server/app.py:118:QA_RADIO_NEO4J_URI = os.environ.get("QA_RADIO_NEO4J_URI", "bolt://172.20.1.53:7687")
+/app/server/app.py:119:QA_RADIO_NEO4J_USER = os.environ.get("QA_RADIO_NEO4J_USER", "neo4j")
+/app/server/app.py:120:QA_RADIO_NEO4J_PW = os.environ.get("QA_RADIO_NEO4J_PW", "")
+/app/server/app.py:121:QA_RADIO_NEO4J_DB = os.environ.get("QA_RADIO_NEO4J_DB", "radio")
+/app/server/app.py:122:QA_RADIO_CHUNKS_NIGHT = int(os.environ.get("QA_RADIO_CHUNKS_NIGHT", "10"))
+/app/server/app.py:133:GATE_CORPUS_POINTS = os.environ.get("GATE_CORPUS_POINTS", "0").strip() == "1"
+/app/server/app.py:136:DAILY_QA_LIMIT = int(os.environ.get("DAILY_QA_LIMIT", "30"))
+/app/server/app.py:141:STREAM_ANSWERS = os.environ.get("STREAM_ANSWERS", "0").strip() == "1"
+/app/server/app.py:151:V3_CAMPAIGNS = os.environ.get("V3_CAMPAIGNS", "1").strip() == "1"
+/app/server/app.py:152:V3_ONBOARDING = os.environ.get("V3_ONBOARDING", "1").strip() == "1"
+/app/server/app.py:153:V3_CONSENT = os.environ.get("V3_CONSENT", "1").strip() == "1"
+/app/server/app.py:155:BALE_BOT_ENABLED = os.environ.get("BALE_BOT_ENABLED", "0").strip() == "1"
+/app/server/app.py:156:BALE_BOT_URL = os.environ.get("BALE_BOT_URL", "")
+LOAD_DONE
+--- LOG: /home/saber/e63-c5c-load-20261116-173838.log
+cat: /home/saber/e63-c5c-load-20261116-173838.log: input file is output file

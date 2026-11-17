@@ -1,0 +1,76 @@
+=== B2 PROD PROBE-4 TS=20261117-000548 (read-only) ===
+
+## 1) FULL litellm_params key set per model:
+portal-rag-fiqh|allow_client_keepalive_override,api_base,api_key,extra_headers,merge_reasoning_content_in_choices,model,timeout,use_in_pass_through,use_litellm_proxy,use_xai_oauth
+portal-rag-general|allow_client_keepalive_override,api_base,api_key,extra_headers,merge_reasoning_content_in_choices,model,timeout,use_in_pass_through,use_litellm_proxy,use_xai_oauth
+portal-rag-mizan|allow_client_keepalive_override,api_base,api_key,extra_headers,merge_reasoning_content_in_choices,model,timeout,use_in_pass_through,use_litellm_proxy,use_xai_oauth
+rag-fiqh|allow_client_keepalive_override,api_base,api_key,extra_headers,merge_reasoning_content_in_choices,model,timeout,use_in_pass_through,use_litellm_proxy,use_xai_oauth
+rag-general|allow_client_keepalive_override,api_base,api_key,extra_headers,merge_reasoning_content_in_choices,model,timeout,use_in_pass_through,use_litellm_proxy,use_xai_oauth
+rag-mizan|allow_client_keepalive_override,api_base,api_key,extra_headers,merge_reasoning_content_in_choices,model,timeout,use_in_pass_through,use_litellm_proxy,use_xai_oauth
+
+## 2) rag-gateway container runtime env (digests only):
+  GATEWAY_CONTEXT_MAX_CHARS=12000
+  MIZAN_PROVIDER_TOKEN len=48 sha256-16=c884b7b6d73e5cf0
+  GATEWAY_AUDIT_PATH=
+  GATEWAY_LLM_ENDPOINT=http://127.0.0.1:4101/v1/chat/completions
+  GATEWAY_SERVICE_KEY len=51 sha256-16=7205ed208ee8d6ea
+  GATEWAY_DEFAULT_TIMEOUT_MS=30000
+  GATEWAY_PROVIDER_CACHE_TTL_S=15
+  GATEWAY_MAX_HOPS=1
+  GATEWAY_LLM_API_KEY len=67 sha256-16=8aad12d40c26d89a
+  GATEWAY_REGISTRY_URL=http://127.0.0.1:8200
+  GATEWAY_MODEL_ONLY_ALIASES=qwen38-hub
+  FIQH_PROVIDER_TOKEN len=48 sha256-16=f17d2b7a701ca3bc
+  GATEWAY_CONSUMER_VERIFY_TIMEOUT_MS=2000
+  GATEWAY_REQUIRE_CONSUMER_KEY len=4 sha256-16=b5bea41b6c623f7c
+  GATEWAY_LLM_API_KEY_REF len=23 sha256-16=3fe170077dee2ac6
+  GATEWAY_LLM_MODEL=qwen38-hub
+  GATEWAY_LLM_TIMEOUT_S=120
+  GATEWAY_REGISTRY_TIMEOUT_MS=3000
+  GATEWAY_RETRIEVAL_TOP_K=5
+  GATEWAY_REQUEST_TIMEOUT_MS=60000
+  GATEWAY_REGISTRY_ADMIN_TOKEN len=43 sha256-16=0a31e5a69338a0a5
+  GATEWAY_FUSION_TOP_K=5
+  GATEWAY_AUDIT_RING=500
+  PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  LANG=C.UTF-8
+  GPG_KEY len=40 sha256-16=6c3b7674b58d9f72
+  PYTHON_VERSION=3.12.15
+  PYTHON_SHA256=c2c4321961fab0fb999d66e0cecf521c2ab3994c7992873ea99e306c1094fd5a
+  PYTHONDONTWRITEBYTECODE=1
+  PYTHONUNBUFFERED=1
+
+  how rag-gateway is started (compose file location + service env_file):
+/rag-gateway
+  compose working_dir: /home/saber/dedicated-rag-gateway
+total 24
+-rw-rw-r-- 1 saber saber 1212 Nov 13 18:25 compose.gateway.yml
+-rw-rw-r-- 1 saber saber  765 Nov 13 18:25 Dockerfile.gateway
+drwxrwxr-x 5 saber saber 4096 Nov 13 17:53 drag
+drwxrwxr-x 2 saber saber 4096 Nov 13 18:40 env
+drwxrwxr-x 2 saber saber 4096 Nov 13 18:31 openapi
+-rw-rw-r-- 1 saber saber   17 Nov 12 14:56 requirements.txt
+--- compose file(s) env_file / environment sections (rag-gateway service):
+  FILE: /home/saber/dedicated-rag-gateway/compose.gateway.yml
+3:# network_mode: host is REQUIRED: the gateway talks to the central registry
+10:  rag-gateway:
+14:    image: rag-gateway:0.1.0
+15:    container_name: rag-gateway
+17:    network_mode: host
+24:    volumes:
+26:    env_file:
+
+  gateway container working dir + entrypoint:
+Entrypoint=null Cmd=["python","-m","drag.gateway","serve","--host","0.0.0.0","--port","8210"] WorkDir=/app
+  env files referenced in container (mounts):
+/home/saber/dedicated-rag-gateway/openapi -> /app/openapi
+
+
+## 3) gateway log boot line (shows llm + registry wiring, no secrets):
+rag-gateway e2 listening on 0.0.0.0:8210 (registry=http://127.0.0.1:8200, llm=qwen38-hub)
+ * Serving Flask app 'drag.gateway.api'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+=== PROBE-4 DONE ===
+LOG=/home/saber/e63-b2-prod-probe4-20261117-000548.log

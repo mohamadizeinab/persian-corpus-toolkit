@@ -1,0 +1,120 @@
+=== B2 PROD PROBE-2 TS=20261117-000134 (read-only) ===
+
+## 1) live OpenAPI: PATCH model update route present?
+  update routes: ['/model/{model_id}/update', '/model/update', '/model_hub/update_useful_links']
+   methods: ['patch']
+   methods: ['post']
+   methods: ['post']
+
+## 2) updateLiteLLMParams: extra_headers field + how update_db_model merges it
+547:class updateLiteLLMParams(GenericLiteLLMParams):
+--- update_db_model merge region:
+975:def update_db_model(
+def update_db_model(
+    db_model: Deployment,
+    updated_patch: updateDeployment,
+    loaded_catalog: LoadedCatalog = GetModelCostMap.loaded_model_cost_map,
+) -> PrismaCompatibleUpdateDBModel:
+    if updated_patch.model_info is not None:
+        _raise_if_ptu_cost_attribution_disabled(updated_patch.model_info.model_dump(exclude_none=True))
+    merged_model_name: Final = updated_patch.model_name or db_model.model_name
+    merged_litellm_params: Final = db_model.litellm_params.model_dump(exclude_none=True)
+    stored_model_info: Final = db_model.model_info.model_dump(exclude_none=True)
+    echoed_pricing: Final = echoed_cost_map_pricing_fields(stored_model_info)
+    merged_model_info: Final[dict[str, object]] = {
+        k: v for k, v in stored_model_info.items() if k not in echoed_pricing
+    }
+
+    # update litellm params
+    if updated_patch.litellm_params:
+        # Encrypt any sensitive values
+        encrypted_params: Final = {
+            k: (
+                _effective_complexity_router_config(updated_patch.litellm_params, db_model.litellm_params)
+                if k == "complexity_router_config"
+                else encrypt_value_helper(v)
+            )
+            for k, v in updated_patch.litellm_params.model_dump(exclude_none=True).items()
+        }
+
+        merged_litellm_params.update(encrypted_params)
+
+    # update model info
+    if updated_patch.model_info:
+        incoming_model_info: Final = updated_patch.model_info.model_dump(exclude_none=True)
+        echoed_fields: Final = echoed_cost_map_fields(
+            incoming_model_info,
+            _cost_map_entry(db_model, incoming_model_info),
+            _loaded_catalog_entry(incoming_model_info, loaded_catalog),
+        )
+        merged_model_info.update(
+            MappingProxyType(
+                dict(
+                    (k, v)
+                    for k, v in without_server_derived_pricing(incoming_model_info).items()
+                    if k not in echoed_fields
+                )
+            )
+        )
+        for k in echoed_fields:
+            if k in merged_model_info and merged_model_info[k] != incoming_model_info[k]:
+                del merged_model_info[k]
+
+    # Honor explicit-null clears LAST, after both merges, so a model_info blob a client
+    # passes through cannot silently undo a litellm_params clear via .update().
+    #
+    # Restricted to SPECIAL_MODEL_INFO_PARAMS (input/output cost per token/character
+    # and cache read/write costs) so this path cannot be used to null out privileged
+    # model_info fields like team_id or access groups. SPECIAL_MODEL_INFO_PARAMS are
+    # mirrored between litellm_params and model_info by Deployment.__init__, so the
+    # clear propagates to both blobs.
+    if updated_patch.litellm_params:
+        for field in updated_patch.litellm_params.model_fields_set:
+            if getattr(updated_patch.litellm_params, field) is None and field in NULL_CLEARABLE_LITELLM_PARAMS:
+                merged_litellm_params.pop(field, None)
+                merged_model_info.pop(field, None)
+            elif (
+                field
+                in (
+                    "auto_router_routing_compression",
+                    "auto_router_model_compression",
+                )
+                and getattr(updated_patch.litellm_params, field) is None
+            ):
+                merged_litellm_params.pop(field, None)
+    if updated_patch.model_info:
+        for field in updated_patch.model_info.model_fields_set:
+            if field in SPECIAL_MODEL_INFO_PARAMS and getattr(updated_patch.model_info, field) is None:
+                merged_model_info.pop(field, None)
+                merged_litellm_params.pop(field, None)
+        for field in _explicitly_cleared_ptu_fields(updated_patch.model_info):
+            merged_model_info.pop(field, None)
+
+
+## 3) router invalidation on PATCH update (post-update tail):
+  handler at line 8
+80:from litellm.proxy.management_helpers.auto_router_permissions import (
+83:    authorize_member_auto_router_dependencies,
+84:    authorize_member_auto_router_team,
+85:    authorize_member_auto_router_write,
+98:from litellm.router import Router
+99:from litellm.router_strategy.complexity_router import (
+111:from litellm.router_utils.auto_router_model_naming import (
+115:    carries_complexity_router_settings,
+116:    count_capability_routers,
+118:    is_complexity_router_model,
+119:    validate_complexity_router_config_placement,
+120:    validate_complexity_router_config_write,
+121:    validate_strategy_router_model_write,
+
+## 4) NULL_CLEARABLE / special param lists (does extra_headers appear?):
+
+## 5) model table updated_at freshness (proves DB rows are actively used):
+portal-rag-fiqh|2026-11-14 14:42:40.033|2026-11-14 14:42:40.033
+portal-rag-general|2026-11-14 14:42:40.093|2026-11-14 14:42:40.093
+portal-rag-mizan|2026-11-14 14:42:39.976|2026-11-14 14:42:39.976
+rag-fiqh|2026-11-13 18:55:24.975|2026-11-13 18:55:24.975
+rag-general|2026-11-13 18:55:25.068|2026-11-13 18:55:25.068
+rag-mizan|2026-11-13 18:55:24.878|2026-11-13 18:55:24.878
+=== PROBE-2 DONE ===
+LOG=/home/saber/e63-b2-prod-probe2-20261117-000134.log

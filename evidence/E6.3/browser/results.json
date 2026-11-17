@@ -1,0 +1,133 @@
+{
+ "date": "2026-11-16T16:53:35Z",
+ "results": [
+  {
+   "id": "T01",
+   "name": "prod radio loads",
+   "status": "PASS",
+   "note": "prod radio loads: site='دستیار صوتی رادیو معارف'; rag-btn='🧩 منابع پاسخ'; admin-btn OK; product chips=3; #input/#send OK",
+   "secs": 1.2,
+   "api_calls": 0
+  },
+  {
+   "id": "T02",
+   "name": "prod radio picker (P6-1 502)",
+   "status": "PASS",
+   "note": "P6-1 EVIDENCE: picker /sources 502 settled (class='rag-status err'): 'دریافت منابع ناموفق.'; provider rows rendered=0",
+   "secs": 16.0,
+   "api_calls": 2
+  },
+  {
+   "id": "T03",
+   "name": "prod radio admin gate wrong token",
+   "status": "PASS",
+   "note": "admin gate rejects wrong token (no leak): 'رمز نادرست است.'; status=''",
+   "secs": 21.9,
+   "api_calls": 1
+  },
+  {
+   "id": "T04",
+   "name": "prod radio admin gate + master-prompt UI (A5)",
+   "status": "PASS",
+   "note": "A5 UI surface: gate accepted, panel shows registry 502 (P6-1): 'ارتباط با Registry برقرار نیست (سرور در دسترس نیست یا خطای شبکه).'; panel_hidden=True; master-prompt section={'sel': 'scan', 'has': False, 'txt': ''}",
+   "secs": 51.8,
+   "api_calls": 3
+  },
+  {
+   "id": "T05",
+   "name": "prod radio RAG ask Q_FA (mandated)",
+   "status": "NOTE",
+   "note": "RAG ask Q_FA: '📻بر اساس منابع ارائه\\u200cشده، مضمون سوره حمد'",
+   "secs": 10.2,
+   "api_calls": 1
+  },
+  {
+   "id": "T06",
+   "name": "prod radio RAG ask Q_WUDU (mandated)",
+   "status": "PASS",
+   "note": "RAG ask Q_WUDU LIVE with citations: 5 src(s); '📻این موضوع در آرشیو رادیو یافت نشد.منابع پاسخ1 كلام امام 1404-02-21 (2025-05-11) · 0:06:18 تا 0:07:37 · radio-maaref 78%اما در مورد پاییزم، آنچه که در مورد خواب گفتم، خواب شب است دوستان و عزیزان. زودت'",
+   "secs": 22.6,
+   "api_calls": 1
+  },
+  {
+   "id": "T07",
+   "name": "prod radio legacy A6 question",
+   "status": "NOTE",
+   "note": "legacy A6: no archive hit (honest empty): '📻بر اساس منابع آرشیو رادیو معارف، نقش خانواده و ترب'",
+   "secs": 22.6,
+   "api_calls": 1
+  },
+  {
+   "id": "T08",
+   "name": "prod radio direct fetch (A4)",
+   "status": "PASS",
+   "note": "A4 prod radio direct fetch: /status=200 /sources=502 /admin-nok=404 /admin+tok=200 (expected 200/502/*/* under P6-1)",
+   "secs": 36.7,
+   "api_calls": 4
+  },
+  {
+   "id": "T10",
+   "name": "prod portal guest state",
+   "status": "PASS",
+   "note": "prod portal guest state OK: accTxt='مهمان'; btnAuth='ورود / عضویت'; navAdmin hidden; RAG entry visible",
+   "secs": 1.4,
+   "api_calls": 3
+  },
+  {
+   "id": "T11",
+   "name": "prod portal RAG entry (P6-1)",
+   "status": "PASS",
+   "note": "P6-1 EVIDENCE: portal picker 502 graceful: '⚙️ مدیریت RAG✕منبع(ها)ی که پاسخ از آن\\u200cها می\\u200cگیرد را انتخاب کنید. انتخاب یک منبع → پاسخ مستقیم از همان منبع؛ انتخاب چند منبع → ادغام پاسخ\\u200cها (rag-general + sources).دریافت منابع ناموفق.پرسش🔄 بروزرسانیاعمال'",
+   "secs": 20.9,
+   "api_calls": 5
+  },
+  {
+   "id": "T12",
+   "name": "stg radio2 loads + fetch",
+   "status": "PASS",
+   "note": "stg radio2 loads + fetch: /status=200 /sources=502 /admin-nok=404 /admin+tok=200 (staging token = E6.1 token)",
+   "secs": 36.5,
+   "api_calls": 4
+  },
+  {
+   "id": "T13",
+   "name": "stg radio2 admin gate + fetch",
+   "status": "PASS",
+   "note": "stg radio2 admin: gate OK; status='ارتباط با Registry برقرار نیست (سرور در دسترس نیست یا خطای شبکه).'; mp={'sel': 'scan', 'has': False, 'txt': ''}; fetch /status=200 /sources=502",
+   "secs": 66.7,
+   "api_calls": 7
+  },
+  {
+   "id": "T14",
+   "name": "stg rag2 loads",
+   "status": "PASS",
+   "note": "stg rag2 loads (guest)",
+   "secs": 1.2,
+   "api_calls": 3
+  },
+  {
+   "id": "T15",
+   "name": "A4 stg rag2 direct fetch",
+   "status": "PASS",
+   "note": "A4 stg rag2 direct fetch: /status=200 /sources=502 (consistency with stg radio2 = same registry upstream)",
+   "secs": 15.9,
+   "api_calls": 5
+  },
+  {
+   "id": "T16",
+   "name": "A4 prod consistency summary",
+   "status": "PASS",
+   "note": "A4 consistency: prod radio /status=200 /sources=502; compare with T10 (portal) — same 502 = shared registry, change would reflect on both (TTL/gateway cache). Live-list comparison BLOCKED by P6-1.",
+   "secs": 36.8,
+   "api_calls": 4
+  },
+  {
+   "id": "T17",
+   "name": "prod radio RAG chat path direct probe (P6-1)",
+   "status": "PASS",
+   "note": "P6-1 EVIDENCE (definitive): RAG chat path dead in prod UI: SSE opened (HTTP 200) then error event after upstream timeout; body='data: {\"error\": \"timed out\", \"code\": \"upstream_unreachable\", \"type\": \"error\"}'; legacy /api/chat/stream answers in 2-6s (T05/T06/T07 = 200) — two paths, two fates",
+   "secs": 121.5,
+   "api_calls": 1
+  }
+ ]
+}

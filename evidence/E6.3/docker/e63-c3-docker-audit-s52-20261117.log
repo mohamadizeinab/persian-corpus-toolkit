@@ -1,0 +1,85 @@
+== E6.3 C3 docker audit s52 ΓÇö 2026-11-17T02:04:02Z ==
+---- rag-gateway
+NET=host RESTART=unless-stopped STATE=running/healthy PID=3188997
+IMAGE=sha256:ef9da642a15adfffca2eb602cb23846a33d2a59d53b584557fae36c4a9176987
+CMD=[python -m drag.gateway serve --host 0.0.0.0 --port 8210]
+
+
+template parsing error: template: :1:94: executing "" at <.ReadOnly>: map has no entry for key "ReadOnly"
+---- rag-registry
+NET=host RESTART=unless-stopped STATE=running/healthy PID=92415
+IMAGE=sha256:3701f33aed376aaf177bcb5f66d21fe82c79b9020f827e62822428dd27d62978
+CMD=[python -m drag.registry serve --host 0.0.0.0 --port 8200]
+
+
+template parsing error: template: :1:94: executing "" at <.ReadOnly>: map has no entry for key "ReadOnly"
+---- rag-keyfwd
+
+template parsing error: template: :1:107: executing "" at <.State.Health.Status>: map has no entry for key "Health"
+IMAGE=sha256:979e5a8a56846771598d47ebf1f8a75b46155104e168a0b237c0783c1dedff8a
+CMD=[python3 /opt/keyfwd/rag_keyfwd.py --listen 0.0.0.0:8211 --consumer radio --listen 0.0.0.0:8212 --consumer portal --keyfile /opt/keyfwd/keys.json --upstream http://10.240.17.1:8210 --timeout 300]
+
+
+template parsing error: template: :1:94: executing "" at <.ReadOnly>: map has no entry for key "ReadOnly"
+---- litellm-personal
+
+template parsing error: template: :1:107: executing "" at <.State.Health.Status>: map has no entry for key "Health"
+IMAGE=sha256:c2eea0ab9754c1d8460fd140c36daa3139020cffa2f671e9f0dc4cc25ee18393
+CMD=[--port 4000]
+
+
+---- litellm-personal-db
+
+template parsing error: template: :1:107: executing "" at <.State.Health.Status>: map has no entry for key "Health"
+IMAGE=sha256:264e9dea325c61b96546c4065848e3ecaa85333b750506f783eced0a1830e37e
+CMD=[postgres]
+
+
+template parsing error: template: :1:94: executing "" at <.ReadOnly>: map has no entry for key "ReadOnly"
+---- mizan-rag
+NET=dedicated-rag_default RESTART=unless-stopped STATE=running/healthy PID=3097149
+IMAGE=sha256:230c333c1a5a92f723390ba238cbe889802bf0764fd2bc3ede04ea4135df6121
+CMD=[python -m drag.cli serve --host 0.0.0.0 --port 8100]
+
+
+template parsing error: template: :1:94: executing "" at <.ReadOnly>: map has no entry for key "ReadOnly"
+---- fiqh-rag
+NET=dedicated-rag_default RESTART=unless-stopped STATE=running/healthy PID=3127659
+IMAGE=sha256:3045c62a782cb8bb1fdd20aa6451e44b9ef291bdc5daed0f8f9b6fa115f292bf
+CMD=[python -m drag.cli serve --host 0.0.0.0 --port 8100]
+
+
+template parsing error: template: :1:94: executing "" at <.ReadOnly>: map has no entry for key "ReadOnly"
+== metrics endpoints (read-only GET) ==
+gateway8210_metrics: 404 <!doctype html> <html lang=en> <title>404 Not Found</title> <h1>Not Found</h1> <p>The requested URL was not found on the
+registry8200_metrics: 200 # HELP rag_up Service liveness # TYPE rag_up gauge rag_up 1 # HELP rag_providers_total Registered RAG providers (incl. a
+== registry DB perms (B3 finding recheck) ==
+/home/saber/dedicated-rag-registry/data/registry -> /data
+/home/saber/dedicated-rag-registry/openapi -> /app/openapi
+
+/home/saber/dedicated-rag-registry/data/registry/rag-registry.db 644 380928
+/home/saber/backups/e63-20261116-153338/registry-data-20261116-153338/rag-registry.db 644 335872
+/home/saber/backups/e63-b2-20261117-000829/rag-registry.db 600 368640
+== litellm-personal restart + health ==
+NET=litellm-personal-net RESTART=unless-stopped
+== images (tag vs digest pinning) ==
+rag-gateway:0.1.0 ef9da642a15a
+rag-gateway:0.2.0-e61-da40c4d ef9da642a15a
+drag-ingest:0.1.0 0d5af37b6a18
+rag-registry:0.1.0 3701f33aed37
+dedicated-rag:0.1.0 3045c62a782c
+postgres:15-alpine 24084862c6bc
+python:latest 4547a58e79e7
+python:3.12-slim a33c10a97f11
+ghcr.io/berriai/litellm:latest c2eea0ab9754
+python:3.13-slim ce3ff9524414
+python:3.12-alpine 979e5a8a5684
+postgres:14 e8316dc7ad10
+postgres:14-alpine 0df736b1752d
+postgres:16-alpine 81bd698b4594
+ghcr.io/berriai/litellm:main-stable 4f7d3bcac0f7
+postgres:13 264e9dea325c
+postgres:16.6-alpine 5c773214aed7
+prometheuscommunity/postgres-exporter:v0.16.0 590e4b5e33ca
+DONE
+EXIT=0

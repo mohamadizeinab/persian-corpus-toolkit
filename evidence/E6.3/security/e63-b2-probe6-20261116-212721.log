@@ -1,0 +1,155 @@
+=== B2 PROBE6 TS=20261116-212721 (read-only) ===
+
+## 1) DB: model_id / updated_at / blocked (quoted identifier):
+9093791d-e1c2-447e-abe0-6d26bb796f1b|portal-rag-fiqh|2026-11-14 14:42:40.033|f
+a3c058eb-12d1-4376-8c3d-7f69059680e1|portal-rag-general|2026-11-14 14:42:40.093|f
+e6f9ac8f-7480-44c5-b11e-f5d1578c32b4|portal-rag-mizan|2026-11-14 14:42:39.976|f
+1be5d423-2583-4ae8-906c-ffa0a513bdc1|rag-fiqh|2026-11-13 18:55:24.975|f
+55114adc-08e3-43a0-a4ee-8fc5c022be0c|rag-general|2026-11-13 18:55:25.068|f
+486e6444-261d-49fd-990e-aeae6cc30794|rag-mizan|2026-11-13 18:55:24.878|f
+
+## 2) encrypt_decrypt_utils.py: decrypt_value + helper source:
+    return prefix + base64.urlsafe_b64encode(sealed).decode("ascii").rstrip("=")
+
+
+def decrypt_bearer_token(token: str, prefix: str) -> str | None:
+    """None unless ``token`` came from :func:`encrypt_bearer_token` with the same ``prefix``."""
+    salt_key: Final = _get_salt_key()
+    if not isinstance(salt_key, str) or not token.startswith(prefix):
+        return None
+    encoded: Final = token.removeprefix(prefix)
+    try:
+        sealed: Final = base64.b64decode(encoded + "=" * (-len(encoded) % 4), altchars=b"-_", validate=True)
+        return _open_aes_gcm(sealed=sealed, signing_key=salt_key, aad=prefix.encode("utf-8"))
+    except Exception:  # noqa: BLE001  # base64 and AES-GCM each raise their own "not a token" type
+        return None
+
+
+def encrypt_value_helper(value: str, new_encryption_key: str | None = None):
+    signing_key: Final = new_encryption_key or _get_salt_key()
+
+    try:
+        if isinstance(value, str):
+            if _get_encryption_algorithm() == _ALGO_AES_GCM:
+                # AES path: the v2:gcm: output is already a base64url string, so it
+                # is returned directly with no extra base64 wrapper.
+                return _encrypt_aes_gcm(value=value, signing_key=cast(str, signing_key))
+
+            encrypted_value = encrypt_value(value=value, signing_key=signing_key)
+            # Use urlsafe_b64encode for URL-safe base64 encoding (replaces + with - and / with _)
+            encrypted_value = base64.urlsafe_b64encode(encrypted_value).decode("utf-8")
+
+            return encrypted_value
+
+        verbose_proxy_logger.debug(
+            "Invalid value type passed to encrypt_value: %s for Value: %s\n Value must be a string", type(value), value
+        )
+        # if it's not a string - do not encrypt it and return the value
+        return value
+    except Exception as e:
+        raise e
+
+
+def _legacy_ciphertext_bytes(value: str) -> bytes:
+    # Try URL-safe base64 decoding first (new format)
+    # Fall back to standard base64 decoding for backwards compatibility (old format)
+    try:
+        return base64.urlsafe_b64decode(value)
+    except Exception:
+        return base64.b64decode(value)
+
+
+def _decrypt_with_signing_key(value: str, signing_key: str) -> str:
+    # Versioned AES-256-GCM values are detected before any base64 decode.
+    # The prefix is the algorithm tag the legacy nacl format never carried.
+    if value.startswith(_V2_GCM_PREFIX):
+        return _decrypt_aes_gcm(value=value, signing_key=signing_key)
+
+    return decrypt_value(value=_legacy_ciphertext_bytes(value), signing_key=signing_key)
+
+
+def decrypt_if_encrypted_with(value: str, signing_key: str) -> str | None:
+    """None unless value is a ciphertext under signing_key."""
+    try:
+        # base64 decoding skips characters outside its alphabet, so "" and "*" decode to no bytes,
+        # which decrypt_value reads as an empty plaintext under any key.
+        decodes_to_nothing: Final = not value.startswith(_V2_GCM_PREFIX) and not _legacy_ciphertext_bytes(value)
+        return None if decodes_to_nothing else _decrypt_with_signing_key(value=value, signing_key=signing_key)
+    except Exception:  # noqa: BLE001  # base64, nacl and AES-GCM each raise their own "not a ciphertext" type
+        return None
+
+
+def decrypt_value_helper(
+    value: str,
+    key: str,  # this is just for debug purposes, showing the k,v pair that's invalid. not a signing key.
+    exception_type: Literal["debug", "error"] = "error",
+    return_original_value: bool = False,
+) -> str | None:
+    signing_key: Final = _get_salt_key()
+
+    try:
+        if isinstance(value, str):
+            return _decrypt_with_signing_key(value=value, signing_key=cast(str, signing_key))
+
+        # if it's not str - do not decrypt it, return the value
+        return value
+    except Exception as e:
+        error_message = f"Error decrypting value for key: {key}, Did your master_key/salt key change recently? \nError: {e}\nSet permanent salt key - https://docs.litellm.ai/docs/proxy/prod#5-set-litellm-salt-key"
+        if exception_type == "debug":
+            verbose_proxy_logger.debug(error_message)
+            return value if return_original_value else None
+
+        verbose_proxy_logger.debug("Unable to decrypt value for key: %s, returning None", key)
+        if return_original_value:
+            return value
+        else:
+            verbose_proxy_logger.exception(error_message)
+            # [Non-Blocking Exception. - this should not block decrypting other values]
+            return None
+
+
+def encrypt_value(value: str, signing_key: str):
+    import hashlib
+
+    import nacl.secret
+    import nacl.utils
+
+    # get 32 byte master key #
+    hash_object: Final = hashlib.sha256(signing_key.encode())
+    hash_bytes: Final = hash_object.digest()
+
+    # initialize secret box #
+    box: Final = nacl.secret.SecretBox(hash_bytes)
+
+    # encode message #
+    value_bytes: Final = value.encode("utf-8")
+
+    encrypted: Final = box.encrypt(value_bytes)
+
+    return encrypted
+
+
+
+## 3) where the proxy decrypts api_key on model load (call sites):
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/model_management_endpoints.py:347:    return decrypt_value_helper(
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/model_management_endpoints.py:450:    decrypted: Final = decrypt_value_helper(
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/model_management_endpoints.py:493:    decrypted: Final = decrypt_value_helper(
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/roi_calculator_endpoints.py:181:    token: Final = decrypt_value_helper(stored.github_token, _SETTINGS_KEY) if stored.github_token else ""
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/roi_calculator_endpoints.py:186:            estimator_key=SecretStr(decrypt_value_helper(stored.estimator_key, _SETTINGS_KEY) or "")
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/mcp_management_endpoints.py:554:        decrypted_json: Final = decrypt_value_helper(
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/credential_migration.py:149:    decrypted: Final = decrypt_value_helper(value=value, key=key, exception_type="debug", return_original_value=False)
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/management_endpoints/credential_migration.py:168:    decrypted: Final = decrypt_value_helper(value=value, key=key, exception_type="debug", return_original_value=False)
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/config_resolvers/sso.py:66:            decrypt_value_helper(value=value, key=key, return_original_value=True) if isinstance(value, str) else value
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/proxy_server.py:7368:        decrypted_value: Final = decrypt_value_helper(value=value, key=key, return_original_value=True)
+--- signing-key derivation near decrypt:
+72:    return hashlib.sha256(signing_key.encode()).digest()
+216:    hash_object: Final = hashlib.sha256(signing_key.encode())
+237:    hash_object: Final = hashlib.sha256(signing_key.encode())
+
+## 4) PATCH /model/{model_id}/update handler (fixed pattern):
+handler at line: 
+
+## 5) POST /model/update handler (body merge path):
+handler at line: 
+
+=== B2 PROBE6 DONE log=/home/saber/e63-b2-probe6-20261116-212721.log ===

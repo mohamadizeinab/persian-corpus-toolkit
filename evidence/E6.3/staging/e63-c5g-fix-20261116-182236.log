@@ -1,0 +1,124 @@
+=== C5G FIX 20261116-182236
+=== [1] compose: add synth-provider healthcheck (idempotent)
+=== [1] compose: add synth-provider healthcheck (idempotent)
+healthcheck inserted for synth-provider
+compose valid
+ Container rag2-staging-core-synth-provider-1  Recreated
+ Container rag2-staging-core-synth-provider-1  Starting
+ Container rag2-staging-core-synth-provider-1  Started
+synth-provider healthy after 6s
+synth health: healthy
+=== [2] rotate consumer keys via registry API (host-owned key files)
+=== [2] rotate consumer keys via registry API (host-owned key files)
+secrets/radio-key: rotated (len 46, prefix rc_h…)
+secrets/portal-key: rotated (len 46, prefix rc_2…)
+unknown flag: --chown
+
+Usage:  docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
+	docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+
+Run 'docker cp --help' for more information
+unknown flag: --chown
+
+Usage:  docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
+	docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+
+Run 'docker cp --help' for more information
+old-key death check: verify endpoint accepts NEW key:
+verify new radio key: radio status: True
+=== [3] regenerate litellm.yaml with real keys + restart litellm
+=== [3] regenerate litellm.yaml with real keys + restart litellm
+litellm.yaml rewritten: 48 lines, mode 600
+ Container rag2-staging-core-litellm-1  Restarting
+ Container rag2-staging-core-litellm-1  Started
+--- litellm /v1/models:
+
+!!! litellm not healthy; last 30 log lines:
+    result = f.filter(record)
+  File "/app/.venv/lib/python3.13/site-packages/litellm/_logging.py", line 559, in filter
+    return _process_record(
+        record,
+    ...<2 lines>...
+        redact=_ENABLE_SECRET_REDACTION,
+    )
+  File "<frozen importlib._bootstrap_external>", line 1529, in _get_spec
+  File "/app/.venv/lib/python3.13/site-packages/litellm/_logging.py", line 463, in _process_record
+    candidate: Final = diagnostics.run(
+                       ~~~~~~~~~~~~~~~^
+        lambda native: native.process_diagnostic(message, exception, stack, leaves, (redact, base64_limit, text_limit)),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        lambda: _python_process_diagnostic(message, exception, stack, leaves, redact, base64_limit, text_limit),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "<frozen importlib._bootstrap_external>", line 1400, in __iter__
+  File "/app/.venv/lib/python3.13/site-packages/litellm/rust_bridge/diagnostics.py", line 47, in run
+    from litellm.rust_bridge.catalog import LoggerContext, decision
+ImportError: cannot import name 'LoggerContext' from partially initialized module 'litellm.rust_bridge.catalog' (most likely due to a circular import) (/app/.venv/lib/python3.13/site-packages/litellm/rust_bridge/catalog.py)
+  File "<frozen importlib._bootstrap_external>", line 1387, in _recalculate
+Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedWriter name='<stderr>'> at interpreter shutdown, possibly due to daemon threads
+Python runtime state: finalizing (tstate=0x000072ce888bbe08)
+
+Current thread 0x000072ce87fb6b80 (most recent call first):
+  <no Python frame>
+18:25:40 - LiteLLM:WARNING: get_model_cost_map.py:315 - LiteLLM: model cost map fetch attempt 1/3 failed (ConnectError fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: [Errno -3] Temporary failure in name resolution); retrying in 2.8s
+18:25:40 - LiteLLM:WARNING: get_model_cost_map.py:672 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: ConnectError fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: [Errno -3] Temporary failure in name resolution. Falling back to local backup.
+[1;31mLiteLLM Proxy: DATABASE_URL uses unsupported scheme '<missing scheme>'. LiteLLM's database features (virtual keys, store_model_in_db, spend tracking) require PostgreSQL; use a 'postgresql://' connection string. SQLite and other engines are not supported. See https://docs.litellm.ai/docs/proxy/virtual_keys[0m
+=== [4] full chain: litellm -> gateway -> provider -> vLLM (rag-mizan)
+=== [4] full chain: litellm -> gateway -> provider -> vLLM (rag-mizan)
+
+
+=== [4b] portal-rag-mizan (expected structural 404 unknown_model)
+=== [4b] portal-rag-mizan (expected structural 404 unknown_model)
+
+=== [5] re-point staging UIs (backup + edit + rotate admin token + recreate)
+=== [5] re-point staging UIs (backup + edit + rotate admin token + recreate)
+original-env backups in place
+/home/saber/saberprojects/radio2-staging/.env.radio2 -> RAG_REGISTRY_URL=http://15.15.12.1:18200
+/home/saber/saberprojects/radio2-staging/.env.radio2 -> RAG_LITELLM_URL=http://15.15.12.1:14101/v1
+/home/saber/saberprojects/rag2-staging/.env -> RAG_REGISTRY_URL=http://15.15.19.1:18200
+/home/saber/saberprojects/rag2-staging/.env -> RAG_LITELLM_URL=http://15.15.19.1:14101/v1
+radio2 RAG_ADMIN_TOKEN rotated (prefix r7TyNM…, len 43; value only in .env.radio2)
+services: radio2_api->'api'  rag2_api->'api'
+time="2026-11-16T18:26:06Z" level=warning msg="The \"RAG_SERVICE_TOKEN\" variable is not set. Defaulting to a blank string."
+ Container radio2_api  Starting
+ Container radio2_api  Started
+ Container rag2_db  Healthy
+ Container rag2_api  Starting
+ Container rag2_api  Started
+rag2_api	Up 8 seconds
+rag2-staging-core-synth-provider-1	Up 3 minutes (healthy)
+radio2_api	Restarting (1) 29 seconds ago
+rag2-staging-core-litellm-1	Up 2 seconds (health: starting)
+rag2-staging-core-gateway-1	Up 19 minutes (healthy)
+rag2-staging-core-registry-1	Up 19 minutes (healthy)
+rag2_frontend	Up 2 days
+rag2_auth_db	Up 2 days (healthy)
+=== [5b] UI verification (from s53 localhost)
+=== [5b] UI verification (from s53 localhost)
+--- radio2 /api/rag/status:
+
+--- radio2 /api/rag/sources (picker; expect mizan+fiqh STAGING providers):
+
+--- rag2 /api/rag/status:
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"portal"}
+--- rag2 /api/rag/sources:
+{"detail":"consumer 'portal' not found in registry"}
+=== [6] final state
+=== [6] final state
+rag2-staging-core-synth-provider-1	Up 3 minutes (healthy)
+rag2-staging-core-litellm-1	Up 2 seconds (health: starting)
+rag2-staging-core-gateway-1	Up 19 minutes (healthy)
+rag2-staging-core-registry-1	Up 19 minutes (healthy)
+total 40
+drwxrwxr-x 6 saber saber 4096 Nov 16 18:18 .
+drwxrwxr-x 28 saber saber 4096 Nov 16 18:07 ..
+drwxrwxrwx 2 saber saber 4096 Nov 16 18:07 audit
+-rw-rw-r-- 1 saber saber 3530 Nov 16 18:22 compose.yml
+drwxrwxrwx 2 saber saber 4096 Nov 16 18:26 data
+-rw------- 1 saber saber 2076 Nov 16 18:22 litellm.yaml
+drwxrwxrwx 2 saber saber 4096 Nov 16 18:22 secrets
+-rw-rw-r-- 1 saber saber 1 Nov 16 18:26 smoke-rag-mizan.json
+-rw------- 1 saber saber 516 Nov 16 18:07 stg.env
+drwxrwxr-x 2 saber saber 4096 Nov 16 18:07 synth
+C5G_DONE log=/home/saber/e63-c5g-fix-20261116-182236.log

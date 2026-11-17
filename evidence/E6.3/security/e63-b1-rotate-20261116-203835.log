@@ -1,0 +1,41 @@
+=== B1 ROTATE: LITELLM master key TS=20261116-203835 host=AI-TOOLS ===
+old master key: len=67 sha256=d6a88a9ce1acbe5bac68f2d54e2e59002436a79eaf286aebe5adcca0478f1eaf
+  socket: LISTEN 0      4096         0.0.0.0:4101       0.0.0.0:*          
+  socket: LISTEN 0      4096         0.0.0.0:4000       0.0.0.0:*          
+  socket: LISTEN 0      4096            [::]:4101          [::]:*          
+  socket: LISTEN 0      4096            [::]:4000          [::]:*          
+--- backup dir /home/saber/backups/e63-b1-20261116-203835 ---
+total 72192
+-rw-rw-r-- 1 saber saber     1212 Nov 13 18:25 compose.gateway.yml.old
+-rw------- 1 saber saber      404 Nov 14 14:43 e61_phase5_secrets.txt.old
+-rw------- 1 saber saber 73871795 Nov 16 20:38 litellm-dump-20261116-203835.sql
+-rw------- 1 saber saber      397 Nov 16 20:38 litellm-personal.env.old
+-rw------- 1 saber saber    11319 Nov 16 20:38 litellm-personal-inspect.json
+-rw------- 1 saber saber     1258 Nov 16 20:38 rag-gateway.env.old
+-rw------- 1 saber saber    12854 Nov 16 20:38 rag-gateway-inspect.json
+-rw-rw-r-- 1 saber saber      646 Nov 16 20:38 SHA256SUMS.txt
+BACKUP OK
+new master key: len=67 sha256=8aad12d40c26d89a51815cae91d629d4ddbe700ae29fffccd54519694441d8fa
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+litellm: image=ghcr.io/berriai/litellm net=litellm-personal-net hostport=4101 envcount=18 entrypoint=<image-default>
+litellm-personal
+litellm-personal
+70f73f45c7ed60a20c1cdba65b8fa5d7db5ff029e4958fdea0bfb8f91344f3d8
+litellm liveliness=200 after ~18s
+litellm /v1/models: new key=200 (expect 200)  old key=401 (expect 401/403)
+gateway GATEWAY_LLM_API_KEY before: len=67 matches_old=yes
+FATAL: old key literal not found in compose.gateway.yml
+FATAL: gateway key update failed

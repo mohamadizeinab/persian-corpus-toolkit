@@ -1,0 +1,92 @@
+S53-CONN-PROBE 2026-11-17T01:23:57Z host=llm
+== 1. s53 HOST -> s52 (expect 4000 OPEN per A2, 8200 CLOSED per P6-1) ==
+TCP_4000_HOST=OPEN
+TCP_8200_HOST=FAIL
+HOST_HTTP_4000 status=200 time=0.005564
+
+== 2. containers holding RAG env (UI API containers) ==
+-- radio2_api
+RAG_LITELLM_URL=http://15.15.12.1:14101/v1
+RAG_TIMEOUT_S=120
+RAG_REGISTRY_URL=http://15.15.12.1:18200
+RAG_MODEL_PREFIX=rag-
+RAG_CONSUMER_ID=radio
+   cni_pids=3287879
+   container_ip=15.15.12.19
+   networks: graph-rag_default 
+-- rag2_api
+RAG_TIMEOUT_S=120
+RAG_REGISTRY_URL=http://15.15.19.1:18200
+RAG_MODEL_PREFIX=portal-rag-
+RAG_CONSUMER_ID=portal
+RAG_LITELLM_URL=http://15.15.19.1:14101/v1
+   cni_pids=3050978
+   container_ip=15.15.19.4
+   networks: rag2-staging_default 
+-- ragportal_api
+RAG_CONSUMER_ID=portal
+RAG_TIMEOUT_S=120
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+RAG_MODEL_PREFIX=portal-rag-
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+   cni_pids=3033227
+   container_ip=15.15.15.5
+   networks: rag-portal_default 
+-- radio_api
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+RAG_TIMEOUT_S=120
+RAG_MODEL_PREFIX=rag-
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+RAG_CONSUMER_ID=radio
+   cni_pids=3007005
+   container_ip=15.15.12.18
+   networks: graph-rag_default 
+RAG_CONTAINERS: radio2_api rag2_api ragportal_api radio_api
+
+== 3. in-container probes (TCP + HTTP timing to s52) ==
+-- container: radio2_api
+-- container: rag2_api
+-- container: ragportal_api
+-- container: radio_api
+
+== 4. s53 NAT topology (host-side view) ==
+lo 127.0.0.1/8
+ens33 172.20.1.53/24
+tailscale0 100.72.7.26/32
+br-439139cc6b38 15.15.4.1/24
+br-77e7d87ce652 15.15.13.1/24
+br-03bb79d14d92 15.15.2.1/24
+br-4031bbdd4aca 15.15.15.1/24
+br-8248cc92ad30 15.15.5.1/24
+br-f83fd34c3f8a 15.15.18.1/24
+br-0e7e6ba6cf1f 15.15.12.1/24
+-- docker bridges:
+br-02cd061df0b6: 15.15.3.1/24
+br-03bb79d14d92: 15.15.2.1/24
+br-08af8c2c3a37: 15.15.8.1/24
+br-0e7e6ba6cf1f: 15.15.12.1/24
+br-0f95b43c18c9: 15.15.11.1/24
+br-150cb92e1b12: 15.15.14.1/24
+br-2366087c7d2a: 15.15.1.1/24
+br-2c279e5ebddf: 15.15.6.1/24
+br-31888f0fa314: 15.15.19.1/24
+br-39d257068ac4: 15.15.10.1/24
+br-4031bbdd4aca: 15.15.15.1/24
+br-439139cc6b38: 15.15.4.1/24
+br-77e7d87ce652: 15.15.13.1/24
+br-8248cc92ad30: 15.15.5.1/24
+br-928e7a15be6c: 15.15.16.1/24
+br-c98805b6d8be: 15.15.9.1/24
+br-e70979033586: 15.15.7.1/24
+br-f83fd34c3f8a: 15.15.18.1/24
+br-fef06cc4ad75: 15.15.17.1/24
+docker0: 15.15.0.1/24
+-- NAT MASQUERADE (may need root; non-fatal):
+
+== 5. radio UI local check (is the app itself up on s53?) ==
+LOCAL_127.0.0.1:8000=OPEN
+LOCAL_127.0.0.1:8001=OPEN
+LOCAL_127.0.0.1:8002=closed
+LOCAL_127.0.0.1:8080=OPEN
+S53-CONN-PROBE DONE
+EXIT=0

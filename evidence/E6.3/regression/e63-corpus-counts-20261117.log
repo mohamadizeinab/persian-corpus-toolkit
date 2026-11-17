@@ -1,0 +1,14 @@
+== E6.3 corpus counts probe — 2026-11-17T02:00:59Z ==
+MPT_LEN=48 FQT_LEN=48
+mizan/health: ok=True service=mizan collections=1 production_mode=True
+mizan: 1 collection(s)
+mizan collection: {"chunk_version": "ch-1", "collection_id": "c-29a205c5", "created_at": "2026-11-13T03:21:03Z", "edition_id": null, "embed_dim": 1024, "embed_model": "v1", "embed_version": "v1", "id": 1, "language": "fa", "name": "تفسیر المیزان", "source_id": "mizan", "status": "building", "updated_at": "2026-11-13T03:21:03Z", "work_id": "w-mizan"}
+mizan stats[c-29a205c5]: documents=20 chunks=15769 embedded=15769 chars=16708697 volumes=20
+fiqh/health: ok=True service=fiqh_main collections=2 production_mode=True
+fiqh: 2 collection(s)
+fiqh collection: {"chunk_version": "ch-1", "collection_id": "c-77bdcbe8-main", "created_at": "2026-11-13T04:15:43Z", "edition_id": null, "embed_dim": 2560, "embed_model": "qwen3-emb-4b-v1", "embed_version": "qwen3-emb-4b-v1", "id": 1, "language": "fa", "name": "من لا یحضره الفقیه", "source_id": "fiqh_main", "status": "building", "updated_at": "2026-11-13T04:15:43Z", "work_id": null}
+fiqh stats[c-77bdcbe8-main]: documents=4 chunks=7219 embedded=7219 chars=4318522 volumes=4
+fiqh collection: {"chunk_version": "ch-1", "collection_id": "c-77bdcbe8-sharh", "created_at": "2026-11-13T04:15:44Z", "edition_id": null, "embed_dim": 2560, "embed_model": "qwen3-emb-4b-v1", "embed_version": "qwen3-emb-4b-v1", "id": 2, "language": "fa", "name": "روضة المتقین فی شرح من لا یحضره الفقیه", "source_id": "fiqh_sharh", "status": "building", "updated_at": "2026-11-13T04:15:44Z", "work_id": null}
+fiqh stats[c-77bdcbe8-sharh]: documents=20 chunks=15274 embedded=15274 chars=13970780 volumes=20
+DONE
+EXIT=0

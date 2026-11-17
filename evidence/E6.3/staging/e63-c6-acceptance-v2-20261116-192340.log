@@ -1,0 +1,176 @@
+=== C6v2 20261116-192340 (2026-11-16T19:23:40Z)
+=== [0] prechecks
+=== [0] prechecks
+--- registry health:
+{"enabled":2,"ok":true,"providers":2,"service":"rag-registry","version":"e1"}
+
+--- baseline version:
+  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:19:09.113Z"}
+--- probe infra sanity: test-connection on existing mizan provider:
+{"ok":true,"result":{"detail":"health endpoint responded 200","latency_ms":2,"ok":true,"status":200}}
+
+HTTP=200--- existing providers:
+{"ok":true,"providers":[{"allowed_consumers":[],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T18:07:17.598Z","created_by":"admin","description":"Synthetic staging provider (E6.3 C5) \u2014 NOT the production Mizan RAG.","display_name":"\u062a\u0641\u0633\u06cc\u0631 \u0627\u0644\u0645\u06cc\u0632\u0627\u0646 (***LONGTOKEN*** \u0645\u0635\u0646\u0648\u0639\u06cc)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"mp-mizan-v1","priority":1,"provider_type":"rag_provider","rag_id":"mizan","rag_name":"mizan","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T18:07:17.598Z","vector_index":""},{"allowed_consumers":[],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T18:07:17.608Z","created_by":"admin","description":"Synthetic staging provider (E6.3 C5) \u2014 NOT the production Fiqh RAG.","display_name":"\u0641\u0642\u0647 (***LONGTOKEN*** \u0645\u0635\u0646\u0648\u0639\u06cc)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"mp-fiqh-v1","priority":2,"provider_type":"rag_provider","rag_id":"fiqh","rag_name":"fiqh","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T18:07:17.608Z","vector_index":""}]}
+
+HTTP=200=== [1] CREATE provider e6-acceptance
+=== [1] CREATE provider e6-acceptance
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (synthetic)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"","priority":5,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.411Z","vector_index":""}}
+
+HTTP=201  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.411Z"}
+--- persistence (GET):
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (synthetic)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"","priority":5,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config
+  [UI] e6-acceptance PRESENT in picker (as expected)
+=== [2] TEST-CONNECTION
+=== [2] TEST-CONNECTION
+{"ok":true,"result":{"detail":"health endpoint responded 200","latency_ms":2,"ok":true,"status":200}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.411Z"}
+=== [3] TEST-AUTH
+=== [3] TEST-AUTH
+{"ok":true,"result":{"detail":"service token accepted; /v1/models 200","latency_ms":2,"ok":true,"status":200}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.411Z"}
+=== [4] TEST-RETRIEVAL
+=== [4] TEST-RETRIEVAL
+{"ok":true,"result":{"detail":"retrieval ok (collection=mizan, hits=1)","latency_ms":2,"ok":true,"status":200}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.411Z"}
+=== [5] UPDATE-CFG (PATCH with If-Match; stale first -> expect 409)
+=== [5] UPDATE-CFG (PATCH with If-Match; stale first -> expect 409)
+  current updated_at=2026-11-16T19:23:40.411Z
+--- stale If-Match (expect 409):
+{"detail":"stale update: If-Match does not match current updated_at","error":"conflict","ok":false}
+
+HTTP=409--- no If-Match (expect 428):
+{"detail":"PATCH requires If-Match header with the current updated_at","error":"if_match_required","ok":false}
+
+HTTP=428--- fresh If-Match (expect 200):
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (renamed)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"","priority":5,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.618Z","vector_index":""}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.618Z"}
+--- persistence check (display_name must be the renamed value):
+"display_name":"E6.3 C6 acceptance (renamed)"
+"updated_at":"2026-11-16T19:23:40.618Z"
+=== [6] PRIORITY (5 -> 3)
+=== [6] PRIORITY (5 -> 3)
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (renamed)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"","priority":3,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.667Z","vector_index":""}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.667Z"}
+--- persistence (priority must be 3):
+"priority":3
+=== [7] ENABLE (idempotent re-enable)
+=== [7] ENABLE (idempotent re-enable)
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (renamed)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"","priority":3,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.706Z","vector_index":""}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.706Z"}
+"enabled":true
+=== [8] DISABLE
+=== [8] DISABLE
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (renamed)","embedding_model":"synth-embed-4b","enabled":false,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"","priority":3,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.745Z","vector_index":""}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:23:40.745Z"}
+"enabled":false
+  [UI] e6-acceptance ABSENT from picker (as expected)
+=== [9] CREATE-PROMPT (draft, on disabled provider — record behavior)
+=== [9] CREATE-PROMPT (draft, on disabled provider — record behavior)
+{"ok":true,"prompt_id":"mp-e6-acceptance-v1","rag_id":"e6-acceptance","status":"draft","version":1}
+
+HTTP=201  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:23:40.745Z"}
+=== [10] ACTIVATE prompt v1
+=== [10] ACTIVATE prompt v1
+{"audit_ref":"68","ok":true,"rag_id":"e6-acceptance","status":"active","version":1}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:23:40.844Z"}
+--- persistence (master_prompt_id must be mp-e6-acceptance-v1):
+"master_prompt_id":"mp-e6-acceptance-v1"
+=== [11] REACTIVATE (prompt v1 again = idempotent; provider re-enabled)
+=== [11] REACTIVATE (prompt v1 again = idempotent; provider re-enabled)
+{"audit_ref":"69","ok":true,"rag_id":"e6-acceptance","status":"active","version":1}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:23:40.880Z"}
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":false,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (renamed)","embedding_model":"synth-embed-4b","enabled":true,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"mp-e6-acceptance-v1","priority":3,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.905Z","vector_index":""}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":3,"version":"2026-11-16T19:23:40.905Z"}
+"enabled":true
+  [UI] e6-acceptance PRESENT in picker (as expected)
+=== [12] ARCHIVE
+=== [12] ARCHIVE
+{"ok":true,"provider":{"allowed_consumers":["radio"],"allowed_users":[],"api_contract_version":"v1","api_endpoint":"/v1","archived":true,"auth_ref":"env:STG_PROVIDER_TOKEN","base_url":"http://127.0.0.1:18101","created_at":"2026-11-16T19:23:40.411Z","created_by":"admin","description":"Temporary synthetic provider for the 12-step C6 acceptance. Points at the staging synthetic provider; NOT production data.","display_name":"E6.3 C6 acceptance (renamed)","embedding_model":"synth-embed-4b","enabled":false,"fallback_priority":100,"healthcheck_endpoint":"/health","master_prompt_id":"mp-e6-acceptance-v1","priority":3,"provider_type":"rag_provider","rag_id":"e6-acceptance","rag_name":"e6-acceptance","retrieval_config":{},"retrieval_weight":1.0,"retry_policy":{"backoff_ms":500,"max_retries":1},"similarity_threshold":0.05,"timeout_ms":8000,"top_k":5,"updated_at":"2026-11-16T19:23:40.987Z","vector_index":""}}
+
+HTTP=200  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:23:40.987Z"}
+--- persistence (archived must be true; GET may 404 if archived is filtered):
+"archived":true
+"enabled":false
+  [UI] e6-acceptance ABSENT from picker (as expected)
+--- provider list with archived=true must show it:
+--- provider list default (archived hidden):
+"rag_id":"mizan"
+"rag_id":"fiqh"
+=== [13] AUDIT trail for e6-acceptance
+=== [13] AUDIT trail for e6-acceptance
+{"audit":[{"action":"archive","actor":"admin","at":"2026-11-16T19:23:40.990Z","diff":{"archived":true,"enabled":false},"id":71,"rag_id":"e6-acceptance"},{"action":"enable","actor":"admin","at":"2026-11-16T19:23:40.908Z","diff":{"enabled":true},"id":70,"rag_id":"e6-acceptance"},{"action":"prompt_activate","actor":"admin","at":"2026-11-16T19:23:40.880Z","diff":{"replaced":1,"version":1},"id":69,"rag_id":"e6-acceptance"},{"action":"prompt_activate","actor":"admin","at":"2026-11-16T19:23:40.844Z","diff":{"replaced":null,"version":1},"id":68,"rag_id":"e6-acceptance"},{"action":"prompt_create","actor":"admin","at":"2026-11-16T19:23:40.820Z","diff":{"body_len":74,"status":"draft","version":1},"id":67,"rag_id":"e6-acceptance"},{"action":"disable","actor":"admin","at":"2026-11-16T19:23:40.748Z","diff":{"enabled":false},"id":66,"rag_id":"e6-acceptance"},{"action":"enable","actor":"admin","at":"2026-11-16T19:23:40.710Z","diff":{"enabled":true},"id":65,"rag_id":"e6-acceptance"},{"action":"set_priority","actor":"admin","at":"2026-11-16T19:23:40.670Z","diff":{"priority":3},"id":64,"rag_id":"e6-acceptance"},{"action":"update","actor":"admin","at":"2026-11-16T19:23:40.621Z","diff":{"display_name":"E6.3 C6 acceptance (renamed)"},"id":63,"rag_id":"e6-acceptance"},{"action":"conflict_denied","actor":"admin","at":"2026-11-16T19:23:40.596Z","diff":{"detail":"stale updated_at (optimistic concurrency)","method":"PATCH","path":"/api/rag-registry/e6-acceptance","status":409},"id":62,"rag_id":"e6-acceptance"},{"action":"test_retrieval","actor":"admin","at":"2026-11-16T19:23:40.549Z","diff":{"collection":"mizan","ok":true,"status":200},"id":61,"rag_id":"e6-acceptance"},{"action":"test_auth","actor":"admin","at":"2026-11-16T19:23:40.520Z","diff":{"auth_ref":"env:STG_PROVIDER_TOKEN","ok":true,"status":200},"id":60,"rag_id":"e6-acceptance"},{"action":"test_connection","actor":"admin","at":"2026-11-16T19:23:40.491Z","diff":{"ok":true,"status":200},"id":59,"rag_id":"e6-acceptance"},{"action":"create","actor":"admin","at":"2026-11-16T19:23:40.415Z","diff":{"enabled":true,"fallback_priority":100,"fields":["allowed_consumers","allowed_users","api_contract_version","api_endpoint","auth_ref","base_url","created_at","created_by","description","display_name","embedding_model","enabled","fallback_priority","healthcheck_endpoint","master_prompt_id","priority","provider_type","rag_id","rag_name","retrieval_config","retrieval_weight","retry_policy","similarity_threshold","timeout_ms","top_k","updat
+audit entries: 36
+   archive | 2026-11-16T19:23:40.990Z | {'archived': True, 'enabled': False}
+   enable | 2026-11-16T19:23:40.908Z | {'enabled': True}
+   prompt_activate | 2026-11-16T19:23:40.880Z | {'replaced': 1, 'version': 1}
+   prompt_activate | 2026-11-16T19:23:40.844Z | {'replaced': None, 'version': 1}
+   prompt_create | 2026-11-16T19:23:40.820Z | {'body_len': 74, 'status': 'draft', 'version': 1}
+   disable | 2026-11-16T19:23:40.748Z | {'enabled': False}
+   enable | 2026-11-16T19:23:40.710Z | {'enabled': True}
+   set_priority | 2026-11-16T19:23:40.670Z | {'priority': 3}
+   update | 2026-11-16T19:23:40.621Z | {'display_name': 'E6.3 C6 acceptance (renamed)'}
+   conflict_denied | 2026-11-16T19:23:40.596Z | {'detail': 'stale updated_at (optimistic concurrency)', 'method': 'PATCH', 'path
+   test_retrieval | 2026-11-16T19:23:40.549Z | {'collection': 'mizan', 'ok': True, 'status': 200}
+   test_auth | 2026-11-16T19:23:40.520Z | {'auth_ref': 'env:STG_PROVIDER_TOKEN', 'ok': True, 'status': 200}
+   test_connection | 2026-11-16T19:23:40.491Z | {'ok': True, 'status': 200}
+   create | 2026-11-16T19:23:40.415Z | {'enabled': True, 'fallback_priority': 100, 'fields': ['allowed_consumers', 'all
+   not_found_denied | 2026-11-16T19:23:40.393Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.958Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.935Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/archiv
+   not_found_denied | 2026-11-16T19:19:08.879Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.854Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/enable
+   not_found_denied | 2026-11-16T19:19:08.832Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/prompt
+   not_found_denied | 2026-11-16T19:19:08.808Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/prompt
+   not_found_denied | 2026-11-16T19:19:08.782Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/prompt
+   not_found_denied | 2026-11-16T19:19:08.730Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.706Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/disabl
+   not_found_denied | 2026-11-16T19:19:08.689Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.665Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/enable
+   not_found_denied | 2026-11-16T19:19:08.649Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.627Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/priori
+   not_found_denied | 2026-11-16T19:19:08.612Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.599Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.568Z | {'detail': '', 'method': 'PATCH', 'path': '/api/rag-registry/e6-acceptance', 'st
+   not_found_denied | 2026-11-16T19:19:08.547Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+   not_found_denied | 2026-11-16T19:19:08.520Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/test-r
+   not_found_denied | 2026-11-16T19:19:08.496Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/test-a
+   not_found_denied | 2026-11-16T19:19:08.472Z | {'detail': '', 'method': 'POST', 'path': '/api/rag-registry/e6-acceptance/test-c
+   not_found_denied | 2026-11-16T19:19:08.418Z | {'detail': '', 'method': 'GET', 'path': '/api/rag-registry/e6-acceptance', 'stat
+=== [14] temp-consumer lifecycle (create -> rags -> disable; left disabled = cleanup)
+=== [14] temp-consumer lifecycle (create -> rags -> disable; left disabled = cleanup)
+{"api_key":"***MASKED***","consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-c6-temp2","created_at":"2026-11-16T19:23:41.121Z","created_by":"admin","default_rag_id":"","description":"Temporary consumer for C6v2 consumer-lifecycle acceptance. Left disabled as cleanup.","display_name":"C6v2 temp consumer","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T19:23:41.121Z"},"key_notice":"store now; the key i
+--- temp consumer /rags (expect 200 with mizan):
+{"consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-c6-temp2","created_at":"2026-11-16T19:23:41.121Z","created_by":"admin","default_rag_id":"","description":"Temporary consumer for C6v2 consumer-lifecycle acceptance. Left disabled as cleanup.","display_name":"C6v2 temp consumer","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,
+--- disable temp consumer (PATCH If-Match):
+{"consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-c6-temp2","created_at":"2026-11-16T19:23:41.121Z","created_by":"admin","default_rag_id":"","description":"Temporary consumer for C6v2 consumer-lifecycle acceptance. Left disabled as cleanup.","display_name":"C6v2 temp consumer","enabled":false,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T19:23:41.166Z"},"ok":true}
+
+HTTP=200--- verify disabled:
+"enabled":false
+=== [15] sanitize v1 log (mask any api_key that v1 printed)
+=== [15] sanitize v1 log (mask any api_key that v1 printed)
+sanitized: /home/saber/e63-c6-acceptance-20261116-191908.log (api_key fields redacted)
+1
+=== [16] final state
+=== [16] final state
+--- final version:
+  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:23:41.166Z"}
+--- health:
+{"enabled":2,"ok":true,"providers":3,"service":"rag-registry","version":"e1"}
+
+radio2_api	Up 27 minutes (healthy)
+rag2-staging-core-litellm-1	Up 28 minutes (healthy)
+rag2_api	Up 57 minutes
+rag2-staging-core-synth-provider-1	Up About an hour (healthy)
+rag2-staging-core-gateway-1	Up About an hour (healthy)
+rag2-staging-core-registry-1	Up 8 minutes (healthy)
+C6v2_DONE log=/home/saber/e63-c6-acceptance-v2-20261116-192340.log

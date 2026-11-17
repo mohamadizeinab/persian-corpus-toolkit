@@ -1,0 +1,8 @@
+[
+ {
+  "m": "POST",
+  "u": "https://radio.ai.ismc.ir/api/chat/stream",
+  "s": 200,
+  "req": "{\"message\":\"نقش خانواده و تربیت فرزند چگونه بیان شده؟\",\"stream\":true,\"variant\":\"rrf\"}"
+ }
+]

@@ -1,0 +1,27 @@
+=== B1 FIX-GW TS=20261116-204725 host=AI-TOOLS ===
+litellm current master key: len=67 sha256=8aad12d40c26d89a51815cae91d629d4ddbe700ae29fffccd54519694441d8fa
+litellm /v1/models with its own key => 200 (expect 200)
+gateway.env GATEWAY_LLM_API_KEY before: len=67 sha256=d6a88a9ce1acbe5bac68f2d54e2e59002436a79eaf286aebe5adcca0478f1eaf
+old-gateway-key matches pre-rotation leaked digest d6a88a9ce1acbe5b? yes
+backed up gateway.env -> /home/saber/backups/e63-b1-20261116-203835/env-gateway.env.old-20261116-204725
+gateway.env updated: 1 occurrence of old key -> new key
+gateway.env GATEWAY_LLM_API_KEY after: len=67 sha256=8aad12d40c26d89a51815cae91d629d4ddbe700ae29fffccd54519694441d8fa
+ Container rag-gateway  Recreate
+ Container rag-gateway  Recreated
+ Container rag-gateway  Starting
+ Container rag-gateway  Started
+gateway /health=200 after ~4s (expect 200)
+rag-gateway container GATEWAY_LLM_API_KEY: len=67 sha256=8aad12d40c26d89a51815cae91d629d4ddbe700ae29fffccd54519694441d8fa matches_new=yes
+smoke: gateway service key len=51 portal consumer len=46
+gateway /v1/models=200 (expect 200)
+gateway chat/completions=200 bytes=12335 (expect 200 + non-trivial body)
+chat body head:
+{"choices":[{"finish_reason":"stop","index":0,"logprobs":null,"message":{"content":"\u0628\u0631 \u0627\u0633\u0627\u0633 \u0645\u0633\u062a\u0646\u062f\u0627\u062a \u0645\u0648\u062c\u0648\u062f \u067e\u0627\u0633\u062e \u0646\u0645\u06cc\u200c\u062f\u0647\u0645","role":"assistant"}}],"citations":[{"chunk_id":"ck-b50cea9cfac4626ac915","heading":"\u062a\u0641\u0633\u06cc\u0631 \u0627\u0644\u0645\u06cc\u0632\u0627\u0646 \u0627\u0644\u0645\u062c\u0644\u062f 1","rag_id":"mizan","snippet":"\u0642\u0
+registry /health=200 (expect 200)
+  NEW-HOLDER rag-gateway env=GATEWAY_LLM_API_KEY
+  NEW-HOLDER litellm-personal env=LITELLM_MASTER_KEY
+old-key holders remaining: 0 (expect 0)   new-key holders: 2 (expect 2)
+new master key recorded in /home/saber/e61_phase5_secrets.txt (pre-fix copy saved)
+
+FIXGW_OK new_sha=8aad12d40c26d89a51815cae91d629d4ddbe700ae29fffccd54519694441d8fa backup=/home/saber/backups/e63-b1-20261116-203835 log=/home/saber/e63-b1-fixgw-20261116-204725.log
+=== B1 FIX-GW DONE ===

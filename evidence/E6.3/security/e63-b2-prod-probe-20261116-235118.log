@@ -1,0 +1,51 @@
+=== B2 PROD PROBE TS=20261116-235118 (read-only + 600 temp artifacts) ===
+master key len=67 sha256-16=8aad12d40c26d89a
+
+## 1) raw consumer keys from DB extra_headers (digests only in log):
+  radio  trio sha256-16=a7e7b77a03898afb consistent=True
+  portal trio sha256-16=a9a63be6cb1cc007 consistent=True
+  wrote /home/saber/backups/e63-b2-pre/keys.raw.json (chmod 600)
+  radio  key len=46 sha256-16=a7e7b77a03898afb (expect a7e7b77a03898afb)
+  portal key len=46 sha256-16=a9a63be6cb1cc007 (expect a9a63be6cb1cc007)
+  registry verify RADIO key  -> code=200
+  registry verify PORTAL key -> code=200
+
+## 2) gateway + registry container placement (forwarder --upstream decision):
+  --- rag-gateway ---
+  Networks: host=invalid IP 
+  Ports:    {}
+  Exposed:  {"8210/tcp":{}}
+  User:     drag
+  Cmd:      ["python","-m","drag.gateway","serve","--host","0.0.0.0","--port","8210"]  Args=["-m","drag.gateway","serve","--host","0.0.0.0","--port","8210"]
+  on litellm-personal-net: NO
+  --- rag-registry ---
+  Networks: host=invalid IP 
+  Ports:    {}
+  Exposed:  {"8200/tcp":{}}
+  User:     1001:1001
+  Cmd:      ["python","-m","drag.registry","serve","--host","0.0.0.0","--port","8200"]  Args=["-m","drag.registry","serve","--host","0.0.0.0","--port","8200"]
+  on litellm-personal-net: NO
+  docker bridge gateway ip: 10.240.255.1
+
+## 3) REQUIRE_CONSUMER_KEY:
+  GATEWAY_REQUIRE_CONSUMER_KEY=true (explicit)
+
+## 4) /model/info snapshot (masked in log; raw 600 file kept for backup):
+-rw------- 1 saber saber 93641 Nov 16 23:51 /home/saber/backups/e63-b2-pre/model-info-pre.json
+  rag-mizan | api_base=http://172.30.0.133:8210/v1 | api_key16=- | xck len=46 16=cb7d2491fcfc985f
+  rag-fiqh | api_base=http://172.30.0.133:8210/v1 | api_key16=- | xck len=46 16=cb7d2491fcfc985f
+  rag-general | api_base=http://172.30.0.133:8210/v1 | api_key16=- | xck len=46 16=cb7d2491fcfc985f
+  portal-rag-mizan | api_base=http://172.30.0.133:8210/v1 | api_key16=- | xck len=46 16=a0a23788e06e42f6
+  portal-rag-fiqh | api_base=http://172.30.0.133:8210/v1 | api_key16=- | xck len=46 16=a0a23788e06e42f6
+  portal-rag-general | api_base=http://172.30.0.133:8210/v1 | api_key16=- | xck len=46 16=a0a23788e06e42f6
+  matched=6 (expect 6)
+
+## 5) baseline chat re-check (chain still green after read-only probing):
+  BASELINE2: choices=1 citations=5 content_len=344 err=-
+
+## stage dir contents (600 artifacts for backup/deploy):
+total 96
+-rw------- 1 saber saber   119 Nov 16 23:51 keys.raw.json
+-rw------- 1 saber saber 93641 Nov 16 23:51 model-info-pre.json
+=== PROBE DONE ===
+LOG=/home/saber/e63-b2-prod-probe-20261116-235118.log

@@ -1,0 +1,1198 @@
+=== B3 ENV/EXPOSURE AUDIT s52 (prod) 20261116-195354 ===
+
+--- containers ---
+rag-gateway | rag-gateway:0.1.0 | Up 2 days (healthy)
+node-exporter | prom/node-exporter:1.12.1 | Up 2 days
+t07-run1 | drag-ingest:0.1.0 | Exited (137) 2 days ago
+rag-registry | rag-registry:0.1.0 | Up 2 days (healthy)
+fiqh-rag | dedicated-rag:0.1.0 | Up 3 days (healthy)
+mizan-rag | 230c333c1a5a | Up 3 days (healthy)
+learn-lite-llm-litellm-1 | ghcr.io/berriai/litellm | Up 2 days
+persian-corpus-toolkit-backend-1 | persian-corpus-toolkit-backend | Up 6 days
+grafana | grafana/grafana:11.3.0 | Up 6 days
+prometheus | prom/prometheus:v2.55.0 | Up 6 days
+ocr-ismc-adapter | python:3.12-slim | Up 6 days
+tasnim-web | nginx:1.27-alpine | Up 9 days (healthy)
+tasnim-api | tasnim-api:pcm2064 | Up 9 days (healthy)
+asr-proxy-canary-18050 | asr-proxy-canary:v1-20261103 | Up 13 days (healthy)
+llmhub-api | llmhub-api-hub | Up 13 days
+q1-4get-bridge-lab | python:3.12-alpine | Up 2 weeks
+q1-4get-lab | luuul/4get:1.0.63 | Up 2 weeks
+q1-searxng-lab | searxng/searxng:latest | Up 2 weeks
+llmhub-litellm-public | ghcr.io/berriai/litellm | Up 2 weeks
+llmhub-openwebui | llmhub-openwebui:feedback-v0.12.3 | Up 2 weeks (healthy)
+bot-gateway | ai-bot-gateway-candidate:latest | Up 2 weeks (healthy)
+bot-gateway-candidate | bdc96c61432b | Up 2 weeks (healthy)
+9router | decolua/9router:0.5.109 | Up 2 weeks (healthy)
+vless-proxy | ghcr.io/sagernet/sing-box:v1.14.4 | Up 2 weeks (unhealthy)
+llmhub-header-test-proxy-1 | ghcr.io/berriai/litellm | Exited (255) 2 weeks ago
+llmhub-header-test-mock-1 | python:3.12-slim | Exited (255) 2 weeks ago
+llmhub-db | postgres:16-alpine | Up 2 weeks (healthy)
+llmhub-public-db-1 | postgres:16-alpine | Up 2 weeks (healthy)
+agno-agentos-repo | ai-product-orchestrator:latest | Up 2 weeks (healthy)
+kong-gw-manage-52 | python:3.12-alpine | Up 2 weeks
+kong-gw-panel | python:3.12-alpine | Up 2 weeks
+kong-admin-auth-52 | nginx:alpine | Up 2 weeks
+kong-gw-trial-kong | kong:3.9.4 | Up 2 weeks (healthy)
+kong-gw-trial-echo | 5858ef1f0730 | Up 2 weeks (healthy)
+kong-gw-trial-db | postgres:16.6-alpine | Up 2 weeks (healthy)
+litellm-personal | ghcr.io/berriai/litellm | Up 2 weeks
+litellm-personal-db | postgres:13 | Up 2 weeks
+open-webui | ghcr.io/open-webui/open-webui:main | Up 2 weeks (healthy)
+asr-proxy | asr-proxy:latest | Up 2 weeks (healthy)
+asr-exporter-a | ocr-asr-exporter | Up 2 weeks (healthy)
+pg-exporter-taghrir | prometheuscommunity/postgres-exporter:v0.16.0 | Up 2 weeks
+pg-exporter-eiis | prometheuscommunity/postgres-exporter:v0.16.0 | Up 2 weeks
+pg-exporter-mesbah | prometheuscommunity/postgres-exporter:v0.16.0 | Up 2 weeks
+persian-voice-lab | persian-voice-lab-app | Up 2 weeks (healthy)
+wikijs | requarks/wiki:2.5.307 | Up 2 weeks (healthy)
+agno-agentos | agno-agentos:latest | Up 2 weeks (healthy)
+wikijs-postgres | postgres:14-alpine | Up 2 weeks (healthy)
+taghrir-es | docker.elastic.co/elasticsearch/elasticsearch:8.13.4 | Exited (143) 3 weeks ago
+mock-service | mock-stream:v1 | Up 2 weeks (healthy)
+cms_backend | shahrbano-backend | Up 2 weeks (healthy)
+cms_site | shahrbano-site | Up 2 weeks
+cms_frontend | shahrbano-frontend | Up 2 weeks
+cms_nginx | shahrbano-nginx | Up 2 weeks
+litellm-postgres | postgres:13 | Up 2 days (healthy)
+cms_mysql | mysql:8.0 | Up 2 weeks (healthy)
+flowise | flowiseai/flowise:3.0.5 | Up 2 weeks (healthy)
+flowise-postgres | postgres:16-alpine | Up 2 weeks (healthy)
+loki | grafana/loki:3.2.0 | Up 2 weeks
+gitlab | gitlab/gitlab-ce:16.3.9-ce.0 | Up 2 weeks (healthy)
+gitlab-postgres | postgres:14 | Up 2 weeks
+gitlab-redis | redis:7 | Up 2 weeks
+homarr | ghcr.io/ajnart/homarr:latest | Up 2 weeks (unhealthy)
+n8n | n8nio/n8n:latest | Up 2 weeks
+postgres | postgres:13 | Up 2 weeks
+
+--- env var NAMES per container (name = <len> chars, no values) + bind mounts ---
+### rag-gateway
+  ENV FIQH_PROVIDER_TOKEN = <48 chars>
+  ENV GATEWAY_AUDIT_PATH = <0 chars>
+  ENV GATEWAY_AUDIT_RING = <3 chars>
+  ENV GATEWAY_CONSUMER_VERIFY_TIMEOUT_MS = <4 chars>
+  ENV GATEWAY_CONTEXT_MAX_CHARS = <5 chars>
+  ENV GATEWAY_DEFAULT_TIMEOUT_MS = <5 chars>
+  ENV GATEWAY_FUSION_TOP_K = <1 chars>
+  ENV GATEWAY_LLM_API_KEY = <67 chars>
+  ENV GATEWAY_LLM_API_KEY_REF = <23 chars>
+  ENV GATEWAY_LLM_ENDPOINT = <41 chars>
+  ENV GATEWAY_LLM_MODEL = <10 chars>
+  ENV GATEWAY_LLM_TIMEOUT_S = <3 chars>
+  ENV GATEWAY_MAX_HOPS = <1 chars>
+  ENV GATEWAY_MODEL_ONLY_ALIASES = <10 chars>
+  ENV GATEWAY_PROVIDER_CACHE_TTL_S = <2 chars>
+  ENV GATEWAY_REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV GATEWAY_REGISTRY_TIMEOUT_MS = <4 chars>
+  ENV GATEWAY_REGISTRY_URL = <21 chars>
+  ENV GATEWAY_REQUEST_TIMEOUT_MS = <5 chars>
+  ENV GATEWAY_REQUIRE_CONSUMER_KEY = <4 chars>
+  ENV GATEWAY_RETRIEVAL_TOP_K = <1 chars>
+  ENV GATEWAY_SERVICE_KEY = <51 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV MIZAN_PROVIDER_TOKEN = <48 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/dedicated-rag-gateway/openapi -> /app/openapi rw=False
+### node-exporter
+  ENV PATH = <60 chars>
+  BIND /var/lib/ssl-expiry/metrics -> /var/lib/ssl-expiry/metrics rw=False
+### t07-run1
+  ENV DRAG_DB_PATH = <36 chars>
+  ENV DRAG_EMBED_BATCH = <2 chars>
+  ENV DRAG_EMBED_DIM = <4 chars>
+  ENV DRAG_EMBED_ENDPOINTS = <45 chars>
+  ENV DRAG_EMBED_VERSION = <15 chars>
+  ENV DRAG_PRODUCTION_MODE = <1 chars>
+  ENV DRAG_SOURCE_ID = <6 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/e3-live -> /home/saber/e3-live rw=True
+### rag-registry
+  ENV FIQH_PROVIDER_TOKEN = <48 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV MIZAN_PROVIDER_TOKEN = <48 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV REGISTRY_ADMIN_TOKEN = <43 chars>
+  ENV REGISTRY_ALLOWED_HOSTS = <0 chars>
+  ENV REGISTRY_ALLOW_LOOPBACK = <4 chars>
+  ENV REGISTRY_CONSUMER_KEY_PREFIX = <3 chars>
+  ENV REGISTRY_DB_PATH = <21 chars>
+  ENV REGISTRY_HOST = <7 chars>
+  ENV REGISTRY_INTERNAL_NETS = <38 chars>
+  ENV REGISTRY_OPERATOR_TOKEN = <43 chars>
+  ENV REGISTRY_PORT = <4 chars>
+  ENV REGISTRY_VIEW_TOKEN = <43 chars>
+  BIND /home/saber/dedicated-rag-registry/data/registry -> /data rw=True
+  BIND /home/saber/dedicated-rag-registry/openapi -> /app/openapi rw=False
+### fiqh-rag
+  ENV DRAG_CHAT_ENDPOINT = <26 chars>
+  ENV DRAG_CHAT_MODEL = <23 chars>
+  ENV DRAG_DB_PATH = <13 chars>
+  ENV DRAG_EMBED_DIM = <4 chars>
+  ENV DRAG_EMBED_ENDPOINTS = <45 chars>
+  ENV DRAG_EMBED_VERSION = <15 chars>
+  ENV DRAG_PRODUCTION_MODE = <1 chars>
+  ENV DRAG_SERVICE_TOKEN = <48 chars>
+  ENV DRAG_SOURCE_ID = <9 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/dedicated-rag/data/fiqh -> /data rw=True
+  BIND /home/saber/dedicated-rag/openapi -> /app/openapi rw=False
+### mizan-rag
+  ENV DRAG_CHAT_ENDPOINT = <26 chars>
+  ENV DRAG_CHAT_MODEL = <23 chars>
+  ENV DRAG_DB_PATH = <13 chars>
+  ENV DRAG_DEFAULT_TOPK = <1 chars>
+  ENV DRAG_EMBED_BATCH = <2 chars>
+  ENV DRAG_EMBED_DIM = <4 chars>
+  ENV DRAG_EMBED_ENDPOINTS = <45 chars>
+  ENV DRAG_EMBED_VERSION = <15 chars>
+  ENV DRAG_HYBRID_ALPHA = <3 chars>
+  ENV DRAG_PRODUCTION_MODE = <1 chars>
+  ENV DRAG_SERVICE_TOKEN = <48 chars>
+  ENV DRAG_SOURCE_ID = <5 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/dedicated-rag/data/mizan -> /data rw=True
+  BIND /home/saber/dedicated-rag/openapi -> /app/openapi rw=False
+### learn-lite-llm-litellm-1
+  ENV DEEPSEEK_API_KEY = <35 chars>
+  ENV LITELLM_MASTER_KEY = <48 chars>
+  ENV LITELLM_SALT_KEY = <20 chars>
+  ENV OCR_ISMC_ADAPTER_API_KEY = <64 chars>
+  ENV OPENAI_API_KEY = <132 chars>
+  ENV PATH = <75 chars>
+  ENV PRISMA_BINARY_CACHE_DIR = <20 chars>
+  ENV PRISMA_CLI_PATH = <45 chars>
+  ENV PRISMA_CLI_QUERY_ENGINE_TYPE = <6 chars>
+  ENV PRISMA_OFFLINE_MODE = <4 chars>
+  ENV PROMETHEUS_MULTIPROC_DIR = <25 chars>
+  ENV REDIS_HOST = <12 chars>
+  ENV REDIS_PORT = <4 chars>
+  ENV REDIS_URL = <25 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV STORE_MODEL_IN_DB = <4 chars>
+  BIND /home/saber/saberprojects/litellm/litellm_config.yaml -> /app/config.yaml rw=True
+  BIND /home/saber/saberprojects/litellm/disable_thinking.py -> /app/disable_thinking.py rw=True
+### persian-corpus-toolkit-backend-1
+  ENV GPG_KEY = <40 chars>
+  ENV HOST = <7 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PCT_DASHBOARD_PASSWORD = <8 chars>
+  ENV PCT_DB = <18 chars>
+  ENV PCT_KNOWLEDGE_DATA_DIR = <21 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV STATIC_DIR = <10 chars>
+  BIND /home/saber/saberprojects/persian-corpus-toolkit/backend/thesaurus.db -> /data/thesaurus.db rw=True
+  BIND /home/saber/saberprojects/persian-corpus-toolkit/dashboard -> /dashboard rw=False
+  BIND /home/saber/saberprojects/persian-corpus-toolkit/data -> /data-files rw=True
+### grafana
+  ENV GF_PATHS_CONFIG = <24 chars>
+  ENV GF_PATHS_DATA = <16 chars>
+  ENV GF_PATHS_HOME = <18 chars>
+  ENV GF_PATHS_LOGS = <16 chars>
+  ENV GF_PATHS_PLUGINS = <24 chars>
+  ENV GF_PATHS_PROVISIONING = <25 chars>
+  ENV GF_SECURITY_ADMIN_PASSWORD = <12 chars>
+  ENV GF_SECURITY_ADMIN_USER = <5 chars>
+  ENV GF_SERVER_ROOT_URL = <24 chars>
+  ENV GF_USERS_ALLOW_SIGN_UP = <5 chars>
+  ENV PATH = <83 chars>
+  BIND /home/saber/saberprojects/observability/grafana/provisioning -> /etc/grafana/provisioning rw=False
+  BIND /home/saber/saberprojects/observability/grafana/dashboards -> /var/lib/grafana/dashboards rw=False
+  VOL  observability_grafana_data -> /var/lib/grafana
+### prometheus
+  ENV PATH = <60 chars>
+  VOL  observability_prometheus_data -> /prometheus
+  BIND /home/saber/saberprojects/observability/prometheus/prometheus.yml -> /etc/prometheus/prometheus.yml rw=False
+  BIND /home/saber/saberprojects/observability/prometheus/rules -> /etc/prometheus/rules rw=False
+### ocr-ismc-adapter
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/saberprojects/ocr-asr/ocr-adapter/main.py -> /app/main.py rw=False
+  BIND /home/saber/saberprojects/ocr-asr/ocr-adapter/private/alefba_token -> /run/secrets/alefba_token rw=False
+  BIND /home/saber/saberprojects/ocr-asr/ocr-adapter/private/adapter_api_key -> /run/secrets/adapter_api_key rw=False
+### tasnim-web
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <6 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  BIND /home/saber/tasnim-deploy/pct/tasnim/nginx/tasnim.conf -> /etc/nginx/conf.d/tasnim.conf rw=False
+### tasnim-api
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_DISABLE_PIP_VERSION_CHECK = <1 chars>
+  ENV PIP_INDEX_URL = <40 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV TASNIM_DB_PATH = <35 chars>
+  BIND /home/saber/tasnim-deploy/pct/tasnim/data/readmodel/v0003 -> /data/readmodel rw=False
+  VOL  tasnim_runtime -> /var/tasnim
+### asr-proxy-canary-18050
+  ENV ASR_PROXY_BACKEND = <25 chars>
+  ENV ASR_PROXY_MAX_CONCURRENT = <1 chars>
+  ENV ASR_PROXY_TIMEOUT = <3 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### llmhub-api
+  ENV BACKEND_LITELLM_API_KEY = <25 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HUB_BACKEND_MODEL = <10 chars>
+  ENV HUB_BACKEND_URL = <44 chars>
+  ENV HUB_DASHBOARD_BROWSER_ENABLED = <4 chars>
+  ENV HUB_DASHBOARD_PROXY_SECRET = <64 chars>
+  ENV HUB_DATABASE_URL = <96 chars>
+  ENV HUB_DB_PASSWORD = <64 chars>
+  ENV HUB_IDENTITY_JWT_SECRET = <64 chars>
+  ENV HUB_IDENTITY_MODE = <7 chars>
+  ENV HUB_MOCK_AD_USERS_JSON = <59 chars>
+  ENV HUB_OPENWEBUI_SESSION_URL = <38 chars>
+  ENV HUB_QUOTA_MODE = <7 chars>
+  ENV HUB_RBAC_MODE = <8 chars>
+  ENV HUB_UPSTREAM_KEY = <67 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### q1-4get-bridge-lab
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/q1-4get-bridge/bridge.py -> /app/bridge.py rw=False
+  BIND /home/saber/q1-4get-bridge/token -> /run/secrets/bridge_token rw=False
+### q1-4get-lab
+  ENV CURL_IMPERSONATE = <5 chars>
+  ENV CURL_IMPERSONATE_HEADERS = <2 chars>
+  ENV FOURGET_API_ENABLED = <4 chars>
+  ENV FOURGET_BOT_PROTECTION = <1 chars>
+  ENV FOURGET_PROTO = <4 chars>
+  ENV FOURGET_SERVER_NAME = <13 chars>
+  ENV LD_PRELOAD = <40 chars>
+  ENV PATH = <60 chars>
+### q1-searxng-lab
+  ENV GRANIAN_BLOCKING_THREADS = <1 chars>
+  ENV GRANIAN_BLOCKING_THREADS_IDLE_TIMEOUT = <2 chars>
+  ENV GRANIAN_HOST = <2 chars>
+  ENV GRANIAN_INTERFACE = <4 chars>
+  ENV GRANIAN_PORT = <4 chars>
+  ENV GRANIAN_PROCESS_NAME = <7 chars>
+  ENV GRANIAN_WEBSOCKETS = <5 chars>
+  ENV GRANIAN_WORKERS_KILL_TIMEOUT = <3 chars>
+  ENV HISTFILE = <9 chars>
+  ENV PATH = <60 chars>
+  ENV SEARXNG_BASE_URL = <23 chars>
+  ENV SSL_CERT_DIR = <14 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV __SEARXNG_CONFIG_PATH = <12 chars>
+  ENV __SEARXNG_DATA_PATH = <18 chars>
+  ENV __SEARXNG_SETTINGS_PATH = <25 chars>
+  ENV __SEARXNG_VERSION = <19 chars>
+  BIND /home/saber/q1-searxng-lab/config -> /etc/searxng rw=True
+  BIND /home/saber/q1-searxng-lab/data -> /var/cache/searxng rw=True
+### llmhub-litellm-public
+  ENV DATABASE_URL = <101 chars>
+  ENV HUB_UPSTREAM_KEY = <67 chars>
+  ENV LITELLM_MASTER_KEY = <67 chars>
+  ENV LITELLM_SALT_KEY = <64 chars>
+  ENV OPENWEBUI_LITELLM_API_KEY = <25 chars>
+  ENV PATH = <75 chars>
+  ENV PRISMA_BINARY_CACHE_DIR = <20 chars>
+  ENV PRISMA_CLI_PATH = <45 chars>
+  ENV PRISMA_CLI_QUERY_ENGINE_TYPE = <6 chars>
+  ENV PRISMA_OFFLINE_MODE = <4 chars>
+  ENV PUBLIC_DB_PASSWORD = <64 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  BIND /home/saber/llm-management-hub/litellm-public/config.yaml -> /app/config.yaml rw=False
+### llmhub-openwebui
+  ENV ANONYMIZED_TELEMETRY = <5 chars>
+  ENV AUXILIARY_EMBEDDING_MODEL = <21 chars>
+  ENV DEFAULT_USER_ROLE = <4 chars>
+  ENV DOCKER = <4 chars>
+  ENV DO_NOT_TRACK = <4 chars>
+  ENV ENABLE_FORWARD_USER_INFO_HEADERS = <4 chars>
+  ENV ENABLE_OLLAMA_API = <5 chars>
+  ENV ENABLE_SIGNUP = <4 chars>
+  ENV ENV = <4 chars>
+  ENV FORWARD_USER_INFO_HEADER_JWT_EXPIRES_SECONDS = <3 chars>
+  ENV FORWARD_USER_INFO_HEADER_JWT_SECRET = <64 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HOME = <40 chars>
+  ENV HOME = <5 chars>
+  ENV LANG = <7 chars>
+  ENV OLLAMA_BASE_URL = <7 chars>
+  ENV OPENAI_API_BASE_URL = <0 chars>
+  ENV OPENAI_API_KEY = <0 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV RAG_EMBEDDING_MODEL = <38 chars>
+  ENV RAG_RERANKING_MODEL = <0 chars>
+  ENV SCARF_NO_ANALYTICS = <4 chars>
+  ENV SENTENCE_TRANSFORMERS_HOME = <40 chars>
+  ENV TIKTOKEN_CACHE_DIR = <32 chars>
+  ENV TIKTOKEN_ENCODING_NAME = <11 chars>
+  ENV USE_AUXILIARY_EMBEDDING_MODEL_DOCKER = <21 chars>
+  ENV USE_CUDA_DOCKER = <5 chars>
+  ENV USE_CUDA_DOCKER_VER = <5 chars>
+  ENV USE_EMBEDDING_MODEL_DOCKER = <38 chars>
+  ENV USE_OLLAMA_DOCKER = <5 chars>
+  ENV USE_RERANKING_MODEL_DOCKER = <0 chars>
+  ENV USE_SLIM_DOCKER = <5 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV WEBUI_AUTH = <4 chars>
+  ENV WEBUI_BUILD_HASH = <9 chars>
+  ENV WEBUI_SECRET_KEY = <64 chars>
+  ENV WHISPER_MODEL = <4 chars>
+  ENV WHISPER_MODEL_DIR = <38 chars>
+  VOL  llm-management-hub_llmhub_openwebui_data -> /app/backend/data
+### bot-gateway
+  ENV AGENTOS_AGENT_ID = <14 chars>
+  ENV AGENTOS_BASE_URL = <23 chars>
+  ENV AGENTOS_MAX_RETRIES = <1 chars>
+  ENV AGENTOS_STREAM = <5 chars>
+  ENV AGENTOS_TIMEOUT = <3 chars>
+  ENV ALLOW_USERS = <9 chars>
+  ENV BALE_API_BASE = <20 chars>
+  ENV BALE_BOT_TOKEN = <46 chars>
+  ENV BALE_ENABLED = <4 chars>
+  ENV BALE_WEBHOOK_SECRET = <64 chars>
+  ENV BALE_WEBHOOK_SOURCE_IPS = <0 chars>
+  ENV DATABASE_URL = <40 chars>
+  ENV DATA_DIR = <5 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV INLINE_KEYBOARD_ENABLED = <5 chars>
+  ENV LANG = <7 chars>
+  ENV LINK_TOKEN_TTL_SECONDS = <3 chars>
+  ENV LOG_LEVEL = <4 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PORTAL_BASE_URL = <23 chars>
+  ENV PUBLIC_BASE_URL = <22 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV RAG_API_KEY = <25 chars>
+  ENV RAG_BASE_URL = <23 chars>
+  ENV RAG_ENABLED = <4 chars>
+  ENV SERVICE_NAME = <11 chars>
+  ENV TELEGRAM_BOT_TOKEN = <46 chars>
+  ENV TELEGRAM_ENABLED = <4 chars>
+  ENV TELEGRAM_WEBHOOK_SECRET_TOKEN = <32 chars>
+  ENV WEB_API_KEY = <0 chars>
+  ENV WEB_ENABLED = <4 chars>
+  VOL  ai-bot-gateway_bot-gateway-data -> /data
+### bot-gateway-candidate
+  ENV AGENTOS_AGENT_ID = <14 chars>
+  ENV AGENTOS_API_KEY = <0 chars>
+  ENV AGENTOS_BASE_URL = <23 chars>
+  ENV AGENTOS_MAX_RETRIES = <1 chars>
+  ENV AGENTOS_STREAM = <5 chars>
+  ENV AGENTOS_TIMEOUT = <3 chars>
+  ENV ALLOW_USERS = <0 chars>
+  ENV BALE_API_KEY = <0 chars>
+  ENV BALE_BOT_TOKEN = <46 chars>
+  ENV BALE_ENABLED = <4 chars>
+  ENV BALE_WEBHOOK_SECRET = <64 chars>
+  ENV BALE_WEBHOOK_SOURCE_IPS = <0 chars>
+  ENV DATABASE_URL = <40 chars>
+  ENV DATA_DIR = <5 chars>
+  ENV DEBUG = <5 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV INLINE_KEYBOARD_ENABLED = <5 chars>
+  ENV LANG = <7 chars>
+  ENV LOG_LEVEL = <4 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PORT = <4 chars>
+  ENV PORTAL_BASE_URL = <23 chars>
+  ENV PUBLIC_BASE_URL = <22 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV RAG_API_KEY = <25 chars>
+  ENV RAG_BASE_URL = <23 chars>
+  ENV RAG_ENABLED = <4 chars>
+  ENV SERVICE_NAME = <11 chars>
+  ENV TELEGRAM_BOT_TOKEN = <46 chars>
+  ENV TELEGRAM_ENABLED = <4 chars>
+  ENV TELEGRAM_WEBHOOK_SECRET_TOKEN = <32 chars>
+  ENV WEB_API_KEY = <0 chars>
+  VOL  ai-bot-gateway-candidate_bot-gateway-data-candidate -> /data
+### 9router
+  ENV API_KEY_SECRET = <96 chars>
+  ENV AUTH_COOKIE_SECURE = <5 chars>
+  ENV BASE_URL = <24 chars>
+  ENV DATA_DIR = <9 chars>
+  ENV ENABLE_REQUEST_LOGS = <5 chars>
+  ENV HOSTNAME = <7 chars>
+  ENV INITIAL_PASSWORD = <10 chars>
+  ENV JWT_SECRET = <96 chars>
+  ENV MACHINE_ID_SALT = <96 chars>
+  ENV NEXT_PUBLIC_BASE_URL = <24 chars>
+  ENV NEXT_TELEMETRY_DISABLED = <1 chars>
+  ENV NINE_ROUTER_IMAGE_TAG = <7 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV OBSERVABILITY_ENABLED = <4 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <5 chars>
+  ENV YARN_VERSION = <7 chars>
+  BIND /home/saber/saberprojects/9router/data -> /app/data rw=True
+### vless-proxy
+  ENV PATH = <60 chars>
+  BIND /home/saber/saberprojects/9router-proxy/singbox/config.json -> /etc/sing-box/config.json rw=False
+  VOL  vless-proxy-cache -> /var/lib/sing-box
+### llmhub-header-test-proxy-1
+  ENV PATH = <75 chars>
+  ENV PRISMA_BINARY_CACHE_DIR = <20 chars>
+  ENV PRISMA_CLI_PATH = <45 chars>
+  ENV PRISMA_CLI_QUERY_ENGINE_TYPE = <6 chars>
+  ENV PRISMA_OFFLINE_MODE = <4 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV TEST_MASTER_KEY = <51 chars>
+  BIND /home/saber/llm-management-hub/header-test/config.yaml -> /app/config.yaml rw=False
+### llmhub-header-test-mock-1
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/llm-management-hub/header-test/mock.py -> /app/mock.py rw=False
+### llmhub-db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <6 chars>
+  ENV POSTGRES_PASSWORD = <64 chars>
+  ENV POSTGRES_USER = <3 chars>
+  VOL  llmhub-api_hub_db_data -> /var/lib/postgresql/data
+### llmhub-public-db-1
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <7 chars>
+  ENV POSTGRES_PASSWORD = <64 chars>
+  ENV POSTGRES_USER = <7 chars>
+  VOL  llmhub-public_public_db_data -> /var/lib/postgresql/data
+### agno-agentos-repo
+  ENV AGENT_MODEL_ALT = <13 chars>
+  ENV AGENT_MODEL_DEEP = <6 chars>
+  ENV AGENT_MODEL_FAST = <17 chars>
+  ENV AGENT_MODEL_ID = <17 chars>
+  ENV AGENT_MODEL_STUB = <13 chars>
+  ENV CONTAINER_NAME = <17 chars>
+  ENV DATA_DIR = <5 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LITELLM_API_KEY = <20 chars>
+  ENV LITELLM_BASE_URL = <26 chars>
+  ENV OPENAI_API_KEY = <20 chars>
+  ENV OPENAI_BASE_URL = <26 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV UV_COMPILE_BYTECODE = <1 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV WORKFLOW_DOCUMENTS_DIR = <15 chars>
+  ENV WORKFLOW_RUNS_DIR = <10 chars>
+  VOL  ai-product-orchestrator_agentos-data -> /data
+### kong-gw-manage-52
+  ENV BASE = <6 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV KONG_ADMIN = <30 chars>
+  ENV LANG = <7 chars>
+  ENV MANAGE_AUDIT_LOG = <27 chars>
+  ENV MANAGE_BACKUP_DIR = <19 chars>
+  ENV MANAGE_USERS_FILE = <19 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/kong-manage-52/backups -> /var/backups/manage rw=True
+  BIND /home/saber/kong-manage-52/audit -> /var/log/manage rw=True
+  BIND /home/saber/kong-api-gateway-oss/panel/manage.py -> /app/manage.py rw=False
+  BIND /home/saber/kong-manage-52/manage-users -> /users/manage-users rw=False
+### kong-gw-panel
+  ENV GPG_KEY = <40 chars>
+  ENV KONG_ADMIN = <30 chars>
+  ENV KONG_LOG_DIR = <3 chars>
+  ENV LANG = <7 chars>
+  ENV NGINX_LOG = <13 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /www/server/nginx/logs -> /nl rw=False
+  BIND /home/saber/kong-panel/app.py -> /app/app.py rw=False
+  BIND /var/lib/docker/containers -> /dc rw=False
+### kong-admin-auth-52
+  ENV ACME_VERSION = <5 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  BIND /home/saber/kong-admin-auth -> /etc/nginx rw=False
+### kong-gw-trial-kong
+  ENV ASSET = <2 chars>
+  ENV KONG_ADMIN_ACCESS_LOG = <11 chars>
+  ENV KONG_ADMIN_ERROR_LOG = <11 chars>
+  ENV KONG_ADMIN_LISTEN = <12 chars>
+  ENV KONG_DATABASE = <8 chars>
+  ENV KONG_LOG_LEVEL = <6 chars>
+  ENV KONG_PG_DATABASE = <4 chars>
+  ENV KONG_PG_HOST = <10 chars>
+  ENV KONG_PG_PASSWORD = <32 chars>
+  ENV KONG_PG_USER = <4 chars>
+  ENV KONG_PROXY_ACCESS_LOG = <11 chars>
+  ENV KONG_PROXY_ERROR_LOG = <11 chars>
+  ENV KONG_PROXY_LISTEN = <12 chars>
+  ENV KONG_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+### kong-gw-trial-echo
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### kong-gw-trial-db
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <4 chars>
+  ENV POSTGRES_DB = <4 chars>
+  ENV POSTGRES_HOST_AUTH_METHOD = <5 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV POSTGRES_USER = <4 chars>
+  VOL  kong-gw-trial_kong-gw-trial-pgdata -> /var/lib/postgresql/data
+### litellm-personal
+  ENV DATABASE_URL = <102 chars>
+  ENV LITELLM_MASTER_KEY = <67 chars>
+  ENV LITELLM_SALT_KEY = <64 chars>
+  ENV PATH = <75 chars>
+  ENV PRISMA_BINARY_CACHE_DIR = <20 chars>
+  ENV PRISMA_CLI_PATH = <45 chars>
+  ENV PRISMA_CLI_QUERY_ENGINE_TYPE = <6 chars>
+  ENV PRISMA_OFFLINE_MODE = <4 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  ENV STORE_MODEL_IN_DB = <4 chars>
+### litellm-personal-db
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <87 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_VERSION = <16 chars>
+  ENV POSTGRES_DB = <7 chars>
+  ENV POSTGRES_PASSWORD = <48 chars>
+  ENV POSTGRES_USER = <7 chars>
+  VOL  litellm-personal-db-data -> /var/lib/postgresql/data
+### open-webui
+  ENV ANONYMIZED_TELEMETRY = <5 chars>
+  ENV AUXILIARY_EMBEDDING_MODEL = <21 chars>
+  ENV DOCKER = <4 chars>
+  ENV DO_NOT_TRACK = <4 chars>
+  ENV ENV = <4 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV HF_HOME = <40 chars>
+  ENV HOME = <5 chars>
+  ENV LANG = <7 chars>
+  ENV OLLAMA_BASE_URL = <26 chars>
+  ENV OPENAI_API_BASE_URL = <26 chars>
+  ENV OPENAI_API_KEY = <20 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV RAG_EMBEDDING_MODEL = <38 chars>
+  ENV RAG_RERANKING_MODEL = <0 chars>
+  ENV SCARF_NO_ANALYTICS = <4 chars>
+  ENV SENTENCE_TRANSFORMERS_HOME = <40 chars>
+  ENV TIKTOKEN_CACHE_DIR = <32 chars>
+  ENV TIKTOKEN_ENCODING_NAME = <11 chars>
+  ENV USE_AUXILIARY_EMBEDDING_MODEL_DOCKER = <21 chars>
+  ENV USE_CUDA_DOCKER = <5 chars>
+  ENV USE_CUDA_DOCKER_VER = <5 chars>
+  ENV USE_EMBEDDING_MODEL_DOCKER = <38 chars>
+  ENV USE_OLLAMA_DOCKER = <5 chars>
+  ENV USE_RERANKING_MODEL_DOCKER = <0 chars>
+  ENV USE_SLIM_DOCKER = <5 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  ENV WEBUI_BUILD_VERSION = <40 chars>
+  ENV WEBUI_SECRET_KEY = <0 chars>
+  ENV WHISPER_MODEL = <4 chars>
+  ENV WHISPER_MODEL_DIR = <38 chars>
+  BIND /home/saber/saberprojects/Automated-Multi-Step-Content-Processing-and-SEO-Optimization-System/tools/open-web-ui/open-webui -> /app/backend/data rw=True
+### asr-proxy
+  ENV ASR_LANG = <2 chars>
+  ENV ASR_TIMEOUT_SEC = <3 chars>
+  ENV ASR_TOKENS = <40 chars>
+  ENV ASR_URL = <41 chars>
+  ENV DEBIAN_FRONTEND = <14 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### asr-exporter-a
+  ENV ASR_BASE = <19 chars>
+  ENV ASR_INTERVAL_HOURS = <1 chars>
+  ENV ASR_LANG = <2 chars>
+  ENV ASR_TOKENS = <40 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <75 chars>
+  ENV PORT = <4 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV SAMPLE_FILE = <16 chars>
+  BIND /home/saber/saberprojects/ocr-asr/examples/tone_2s.wav -> /app/tone_2s.wav rw=False
+### pg-exporter-taghrir
+  ENV DATA_SOURCE_NAME = <70 chars>
+  ENV EXTEND_DATA_SOURCE_NAME = <4 chars>
+  ENV HOST = <11 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV PROJECT = <7 chars>
+### pg-exporter-eiis
+  ENV DATA_SOURCE_NAME = <82 chars>
+  ENV EXTEND_DATA_SOURCE_NAME = <4 chars>
+  ENV HOST = <11 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV PROJECT = <4 chars>
+### pg-exporter-mesbah
+  ENV DATA_SOURCE_NAME = <68 chars>
+  ENV EXTEND_DATA_SOURCE_NAME = <4 chars>
+  ENV HOST = <11 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV PROJECT = <6 chars>
+### persian-voice-lab
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV MAX_UPLOAD_SECONDS = <3 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PORT = <4 chars>
+  ENV PVL_DATA_DIR = <5 chars>
+  ENV PVL_GID = <4 chars>
+  ENV PVL_HOST_DATA_DIR = <22 chars>
+  ENV PVL_HOST_MODEL_DIR = <23 chars>
+  ENV PVL_LOG_DIR = <10 chars>
+  ENV PVL_MODEL_DIR = <7 chars>
+  ENV PVL_UID = <4 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  BIND /home/saber/pvlab/data -> /data rw=True
+  BIND /home/saber/pvlab/model -> /models rw=True
+### wikijs
+  ENV DB_HOST = <8 chars>
+  ENV DB_NAME = <6 chars>
+  ENV DB_PASS = <22 chars>
+  ENV DB_PORT = <4 chars>
+  ENV DB_TYPE = <8 chars>
+  ENV DB_USER = <6 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <60 chars>
+  ENV YARN_VERSION = <7 chars>
+  VOL  wikijs-damon_wikijs_data -> /var/wiki
+  VOL  4257bd2c9c0d7ce68bec1bdf01841a8e857d048e6e640c46bc30cf24e2771334 -> /wiki/data/content
+### agno-agentos
+  ENV AGENT_MODEL_ID = <17 chars>
+  ENV DATA_DIR = <5 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV OPENAI_API_KEY = <20 chars>
+  ENV OPENAI_BASE_URL = <26 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+  ENV UV_COMPILE_BYTECODE = <1 chars>
+  ENV UV_LINK_MODE = <4 chars>
+  BIND /home/saber/agentos/workflow -> /app/workflow rw=True
+  VOL  agentos_agentos-data -> /data
+### wikijs-postgres
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <6 chars>
+  ENV POSTGRES_PASSWORD = <22 chars>
+  ENV POSTGRES_USER = <6 chars>
+  VOL  wikijs-damon_postgres_data -> /var/lib/postgresql/data
+### taghrir-es
+  ENV ELASTIC_CONTAINER = <4 chars>
+  ENV ES_JAVA_OPTS = <13 chars>
+  ENV PATH = <89 chars>
+  ENV cluster.name = <10 chars>
+  ENV discovery.type = <11 chars>
+  ENV xpack.security.enabled = <5 chars>
+  ENV xpack.security.enrollment.enabled = <5 chars>
+  VOL  taghrir-es-data -> /usr/share/elasticsearch/data
+### mock-service
+  ENV CORS_ORIGINS = <1 chars>
+  ENV GPG_KEY = <40 chars>
+  ENV LANG = <7 chars>
+  ENV MOCK_ALLOW_DEV_KEY = <1 chars>
+  ENV MOCK_API_KEYS = <21 chars>
+  ENV MOCK_MODEL_NAME = <13 chars>
+  ENV MOCK_RATE_LIMIT_PER_MIN = <2 chars>
+  ENV MOCK_TEXT_CHUNK_MS = <2 chars>
+  ENV MOCK_THINK_DELAY_MS = <3 chars>
+  ENV PATH = <75 chars>
+  ENV PIP_DISABLE_PIP_VERSION_CHECK = <1 chars>
+  ENV PIP_NO_CACHE_DIR = <1 chars>
+  ENV PYTHONDONTWRITEBYTECODE = <1 chars>
+  ENV PYTHONUNBUFFERED = <1 chars>
+  ENV PYTHON_SHA256 = <64 chars>
+  ENV PYTHON_VERSION = <7 chars>
+### cms_backend
+  ENV APP_DEBUG = <5 chars>
+  ENV APP_ENV = <10 chars>
+  ENV APP_KEY = <51 chars>
+  ENV APP_LOCALE = <2 chars>
+  ENV APP_URL = <21 chars>
+  ENV COMPOSER_ALLOW_SUPERUSER = <1 chars>
+  ENV DB_CONNECTION = <5 chars>
+  ENV DB_DATABASE = <3 chars>
+  ENV DB_HOST = <5 chars>
+  ENV DB_PASSWORD = <6 chars>
+  ENV DB_PORT = <4 chars>
+  ENV DB_USERNAME = <8 chars>
+  ENV FILESYSTEM_DISK = <6 chars>
+  ENV FRONTEND_PORT = <4 chars>
+  ENV FRONTEND_URL = <23 chars>
+  ENV GPG_KEYS = <122 chars>
+  ENV NEXT_REVALIDATE_SECRET = <32 chars>
+  ENV NEXT_REVALIDATE_URL = <31 chars>
+  ENV PATH = <60 chars>
+  ENV PHPIZE_DEPS = <78 chars>
+  ENV PHP_ASC_URL = <55 chars>
+  ENV PHP_CFLAGS = <83 chars>
+  ENV PHP_CPPFLAGS = <83 chars>
+  ENV PHP_INI_DIR = <18 chars>
+  ENV PHP_LDFLAGS = <12 chars>
+  ENV PHP_SHA256 = <64 chars>
+  ENV PHP_URL = <51 chars>
+  ENV PHP_VERSION = <6 chars>
+  ENV RUN_MIGRATIONS = <4 chars>
+  ENV SERVER_PORT = <4 chars>
+  ENV SITE_PORT = <4 chars>
+  ENV SITE_URL = <23 chars>
+  VOL  shahrbano_uploads_data -> /var/www/html/storage/app/public
+  VOL  shahrbano_laravel_logs -> /var/www/html/storage/logs
+### cms_site
+  ENV ADMIN_URL = <23 chars>
+  ENV NEXT_PUBLIC_SITE_API_URL = <30 chars>
+  ENV NEXT_TELEMETRY_DISABLED = <1 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV SITE_API_URL = <24 chars>
+  ENV SITE_URL = <23 chars>
+  ENV YARN_VERSION = <7 chars>
+### cms_frontend
+  ENV NEXT_TELEMETRY_DISABLED = <1 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV YARN_VERSION = <7 chars>
+### cms_nginx
+  ENV ACME_VERSION = <5 chars>
+  ENV DYNPKG_RELEASE = <1 chars>
+  ENV NGINX_VERSION = <6 chars>
+  ENV NJS_RELEASE = <1 chars>
+  ENV NJS_VERSION = <5 chars>
+  ENV PATH = <60 chars>
+  ENV PKG_RELEASE = <1 chars>
+  VOL  shahrbano_uploads_data -> /var/www/html/storage/app/public
+### litellm-postgres
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <87 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_VERSION = <16 chars>
+  ENV POSTGRES_DB = <8 chars>
+  ENV POSTGRES_PASSWORD = <7 chars>
+  ENV POSTGRES_USER = <7 chars>
+  VOL  litellm_postgres_data -> /var/lib/postgresql/data
+### cms_mysql
+  ENV GOSU_VERSION = <4 chars>
+  ENV MYSQL_DATABASE = <3 chars>
+  ENV MYSQL_MAJOR = <3 chars>
+  ENV MYSQL_PASSWORD = <6 chars>
+  ENV MYSQL_ROOT_PASSWORD = <6 chars>
+  ENV MYSQL_SHELL_VERSION = <12 chars>
+  ENV MYSQL_USER = <8 chars>
+  ENV MYSQL_VERSION = <12 chars>
+  ENV PATH = <60 chars>
+  VOL  shahrbano_mysql_data -> /var/lib/mysql
+### flowise
+  ENV BLOB_STORAGE_PATH = <27 chars>
+  ENV DATABASE_HOST = <8 chars>
+  ENV DATABASE_NAME = <7 chars>
+  ENV DATABASE_PASSWORD = <32 chars>
+  ENV DATABASE_PORT = <4 chars>
+  ENV DATABASE_TYPE = <8 chars>
+  ENV DATABASE_USER = <7 chars>
+  ENV LOG_PATH = <24 chars>
+  ENV NODE_VERSION = <7 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV PUPPETEER_EXECUTABLE_PATH = <25 chars>
+  ENV SECRETKEY_PATH = <19 chars>
+  ENV YARN_VERSION = <7 chars>
+  VOL  flowise-deployment_flowise_data -> /home/node/.flowise
+### flowise-postgres
+  ENV DOCKER_PG_LLVM_DEPS = <20 chars>
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <60 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_SHA256 = <64 chars>
+  ENV PG_VERSION = <5 chars>
+  ENV POSTGRES_DB = <7 chars>
+  ENV POSTGRES_PASSWORD = <32 chars>
+  ENV POSTGRES_USER = <7 chars>
+  VOL  flowise-deployment_postgres_data -> /var/lib/postgresql/data
+### loki
+  ENV PATH = <69 chars>
+  ENV SSL_CERT_FILE = <34 chars>
+  VOL  observability_loki_data -> /loki
+### gitlab
+  ENV EDITOR = <7 chars>
+  ENV GITLAB_ALLOW_SHA1_RSA = <5 chars>
+  ENV GITLAB_OMNIBUS_CONFIG = <780 chars>
+  ENV GITLAB_ROOT_PASSWORD = <20 chars>
+  ENV LANG = <7 chars>
+  ENV PATH = <109 chars>
+  ENV TERM = <5 chars>
+  VOL  gitlab_gitlab_config -> /etc/gitlab
+  VOL  gitlab_gitlab_logs -> /var/log/gitlab
+  VOL  gitlab_gitlab_data -> /var/opt/gitlab
+### gitlab-postgres
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <87 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_VERSION = <16 chars>
+  ENV POSTGRES_DB = <19 chars>
+  ENV POSTGRES_PASSWORD = <6 chars>
+  ENV POSTGRES_USER = <6 chars>
+  VOL  gitlab_postgres_data -> /var/lib/postgresql/data
+### gitlab-redis
+  ENV PATH = <60 chars>
+  ENV REDIS_VERSION = <6 chars>
+  VOL  gitlab_redis_data -> /data
+### homarr
+  ENV AUTH_TRUST_HOST = <4 chars>
+  ENV DATABASE_URL = <20 chars>
+  ENV NEXTAUTH_SECRET = <34 chars>
+  ENV NEXT_TELEMETRY_DISABLED = <1 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_OPTIONS = <23 chars>
+  ENV NODE_VERSION = <6 chars>
+  ENV PATH = <60 chars>
+  ENV PORT = <4 chars>
+  ENV TZ = <11 chars>
+  ENV YARN_VERSION = <7 chars>
+  BIND /home/saber/saberprojects/homarr/configs -> /app/data/configs rw=True
+  BIND /home/saber/saberprojects/homarr/icons -> /app/public/icons rw=True
+  BIND /home/saber/saberprojects/homarr/data -> /data rw=True
+  BIND /var/run/docker.sock -> /var/run/docker.sock rw=False
+### n8n
+  ENV DB_POSTGRESDB_DATABASE = <3 chars>
+  ENV DB_POSTGRESDB_HOST = <8 chars>
+  ENV DB_POSTGRESDB_PASSWORD = <3 chars>
+  ENV DB_POSTGRESDB_PORT = <4 chars>
+  ENV DB_POSTGRESDB_USER = <3 chars>
+  ENV DB_TYPE = <10 chars>
+  ENV GENERIC_TIMEZONE = <11 chars>
+  ENV N8N_BASIC_AUTH_ACTIVE = <5 chars>
+  ENV N8N_BASIC_AUTH_PASSWORD = <14 chars>
+  ENV N8N_BASIC_AUTH_USER = <15 chars>
+  ENV N8N_HOST = <9 chars>
+  ENV N8N_PORT = <4 chars>
+  ENV N8N_PROTOCOL = <4 chars>
+  ENV N8N_RELEASE_TYPE = <6 chars>
+  ENV N8N_SECURE_COOKIE = <5 chars>
+  ENV NODE_ENV = <10 chars>
+  ENV NODE_PATH = <27 chars>
+  ENV NODE_VERSION = <10 chars>
+  ENV NPM_CONFIG_UPDATE_NOTIFIER = <5 chars>
+  ENV PATH = <60 chars>
+  ENV SHELL = <7 chars>
+  BIND /home/saber/saberprojects/Automated-Multi-Step-Content-Processing-and-SEO-Optimization-System/tools/n8n/shared -> /data/shared rw=True
+  VOL  n8n_n8n_storage -> /home/node/.n8n
+### postgres
+  ENV GOSU_VERSION = <4 chars>
+  ENV LANG = <10 chars>
+  ENV PATH = <87 chars>
+  ENV PGDATA = <24 chars>
+  ENV PG_MAJOR = <2 chars>
+  ENV PG_VERSION = <16 chars>
+  ENV POSTGRES_DB = <3 chars>
+  ENV POSTGRES_PASSWORD = <3 chars>
+  ENV POSTGRES_USER = <3 chars>
+  VOL  n8n_postgres_data -> /var/lib/postgresql/data
+
+--- .env / secret files on host (perms + size only, NO contents) ---
+  FILE -rw-rw-r-- 200B /home/saber/kong-gateway/.env
+  FILE -rw-rw-r-- 163B /home/saber/kong-gateway/.env.example
+  FILE -rw------- 1198B /home/saber/kong-gateway-release/.env
+  FILE -rw-rw-r-- 1182B /home/saber/kong-gateway-release/.env.example
+  FILE -rw-rw-r-- 200B /home/saber/kong-gateway-backup-20261016-050145/.env
+  FILE -rw-rw-r-- 163B /home/saber/kong-gateway-backup-20261016-050145/.env.example
+  FILE -rw-rw-r-- 160B /home/saber/kong-gateway-step46/.env.example
+  DIR  /home/saber/.9router-secrets
+    ENTRY drwx------ 4096B .
+    ENTRY drwxr-xr-x 4096B ..
+    ENTRY -rw------- 33B admin-password.txt
+    ENTRY -rw-rw-r-- 335B commission-cookies.txt
+    ENTRY -rw------- 33B initial-admin-password.txt
+  FILE -rw------- 425B /home/saber/amin-llm-benchmark/litellm-db-smoke/.env
+  FILE -rw-rw-r-- 112B /home/saber/agentos/.env
+  FILE -rw-r--r-- 147B /home/saber/saberprojects/flowise-deployment/.env
+  FILE -rw-r--r-- 140B /home/saber/saberprojects/flowise-deployment/.env.example
+  FILE -rw------- 548B /home/saber/saberprojects/litellm/.env
+  FILE -rw------- 302B /home/saber/saberprojects/litellm/.env.dbmode-candidate
+  FILE -rw------- 241B /home/saber/saberprojects/litellm/.env.20260926-pre-dbmode
+  FILE -rw------- 452B /home/saber/saberprojects/litellm/dbmode-rehearsal/.env.rehearsal
+  FILE -rw------- 295B /home/saber/saberprojects/benchmarks/.env
+  FILE -rw-r--r-- 119B /home/saber/saberprojects/benchmarks/.env.example
+  FILE -rw------- 3059B /home/saber/saberprojects/9router/.env
+  FILE -rw-rw-r-- 2877B /home/saber/saberprojects/9router/.env.example
+  FILE -rw------- 981B /home/saber/saberprojects/persian-voice-lab/.env
+  FILE -rw-r--r-- 1140B /home/saber/saberprojects/persian-voice-lab/.env.example
+  FILE -rw-rw-r-- 246B /home/saber/saberprojects/graph-rag/.env
+  FILE -rw-rw-r-- 246B /home/saber/saberprojects/graph-rag/.env.example
+  FILE -rw------- 244B /home/saber/saberprojects/ai-product-orchestrator/.env
+  FILE -rw-r--r-- 5219B /home/saber/saberprojects/ai-product-orchestrator/.env.example
+  FILE -rw------- 51B /home/saber/saberprojects/wikijs-damon/.env
+  FILE -rw------- 1048B /home/saber/saberprojects/ai-bot-gateway/.env
+  FILE -rw------- 375B /home/saber/saberprojects/ai-bot-gateway/.env.bak-20261022-105412
+  FILE -rw------- 801B /home/saber/saberprojects/ai-bot-gateway/.env.bak-20261026-174525
+  FILE -rw-r--r-- 3081B /home/saber/saberprojects/ai-bot-gateway/.env.example
+  FILE -rw------- 847B /home/saber/saberprojects/ai-bot-gateway/.env.bak-preportal-20261027-143611
+  FILE -rw-r--r-- 124B /home/saber/saberprojects/benchmark/.env
+  FILE -rw-r--r-- 119B /home/saber/saberprojects/benchmark/.env.example
+  FILE -rw-rw-r-- 204B /home/saber/saberprojects/automated/WordPress-Category-Crawler-and-Processor/.env
+  FILE -rw-rw-r-- 993B /home/saber/saberprojects/automated/export-sql-chromadb/.env.example
+  FILE -rw-rw-r-- 479B /home/saber/saberprojects/automated/export-sql-chromadb/.env.dev
+  FILE -rw-rw-r-- 93B /home/saber/saberprojects/automated/ai_benchmarker/.env.example
+  FILE -rw-rw-r-- 662B /home/saber/saberprojects/automated/whisper-cron-worker/.env.example
+  FILE -rw-rw-r-- 626B /home/saber/saberprojects/automated/whisper-task-runner/.env.example
+  FILE -rw------- 171B /home/saber/saberprojects/persian-corpus-toolkit/.env
+  FILE -rw-r--r-- 1841B /home/saber/saberprojects/ai_ismc_ir/backend/.env.example
+  FILE -rw-r--r-- 770B /home/saber/saberprojects/ai_ismc_ir/.env
+  FILE -rw-r--r-- 5273B /home/saber/saberprojects/ai_ismc_ir/.env.example
+  DIR  /home/saber/saberprojects/notebooklm-orchestrator/data/secrets
+    ENTRY drwxrwxr-x 4096B .
+    ENTRY drwxrwxr-x 4096B ..
+    ENTRY drwx------ 4096B p3
+  FILE -rw------- 502B /home/saber/saberprojects/notebooklm-orchestrator/.env
+  FILE -rw-rw-r-- 5812B /home/saber/saberprojects/notebooklm-orchestrator/.env.example
+  FILE -rw-r--r-- 11792B /home/saber/saberprojects/Flowise/docker/.env
+  FILE -rw-r--r-- 11513B /home/saber/saberprojects/Flowise/docker/.env.
+  FILE -rw-r--r-- 11513B /home/saber/saberprojects/Flowise/docker/.env.example
+  FILE -rw-rw-r-- 405B /home/saber/saberprojects/mesbah-meshkat-antology-knowledge/.env.example
+  FILE -rw-r--r-- 3081B /home/saber/saberprojects/_ai-bot-gateway-build/.env.example
+  FILE -rw-rw-r-- 502B /home/saber/saberprojects/ocr-asr/ocr-adapter/docker-compose.yml.before-secret.bak
+  FILE -rw-rw-r-- 2726B /home/saber/open-webui-custom-v0.12.3/.env.example
+  FILE -rw-rw-r-- 163B /home/saber/kong-api-gateway-oss-release/.env.example
+  FILE -rw------- 68B /home/saber/llm-management-hub/header-test/.env
+  FILE -rw------- 680B /home/saber/llm-management-hub/hub/.env.before-dashboard-fix-20261101-063318
+  FILE -rw------- 679B /home/saber/llm-management-hub/hub/.env.before-backend-fix-20261031-092202
+  FILE -rw------- 745B /home/saber/llm-management-hub/hub/.env
+  FILE -rw------- 270B /home/saber/llm-management-hub/openwebui/.env
+  FILE -rw------- 390B /home/saber/llm-management-hub/litellm-public/.env
+  FILE -rw------- 65B /home/saber/.config/llmhub/identity_jwt_secret
+  FILE -rw------- 236B /home/saber/litellm-personal/.env
+  FILE -rw-r--r-- 232B /home/saber/go/src/runtime/secret_asm.go
+  DIR  /home/saber/go/src/runtime/secret
+    ENTRY drwxr-xr-x 4096B .
+    ENTRY drwxr-xr-x 36864B ..
+    ENTRY -rw-r--r-- 914B alloc_test.go
+    ENTRY -rw-r--r-- 3836B asm_amd64.s
+    ENTRY -rw-r--r-- 2973B asm_arm64.s
+    ENTRY -rw-r--r-- 10881B crash_test.go
+    ENTRY -rw-r--r-- 644B doc.go
+    ENTRY -rw-r--r-- 416B export.go
+    ENTRY -rw-r--r-- 4951B secret.go
+    ENTRY -rw-r--r-- 7546B secret_test.go
+    ENTRY -rw-r--r-- 1030B stubs.go
+    ENTRY -rw-r--r-- 409B stubs_noasm.go
+    ENTRY drwxr-xr-x 4096B testdata
+  FILE -rw-r--r-- 2419B /home/saber/go/src/runtime/secret_amd64.s
+  FILE -rw-r--r-- 1796B /home/saber/go/src/runtime/secret_arm64.s
+  FILE -rw-r--r-- 284B /home/saber/go/src/runtime/secret_noasm.go
+  FILE -rw-r--r-- 804B /home/saber/go/src/runtime/secret_nosecret.go
+  FILE -rw-r--r-- 4417B /home/saber/go/src/runtime/secret.go
+  DIR  /home/saber/backups/m25_secret_backup
+    ENTRY drwxrwxr-x 4096B .
+    ENTRY drwxrwxr-x 4096B ..
+    ENTRY drwxrwxr-x 4096B 20261112T082537Z
+    ENTRY drwxrwxr-x 4096B 20261112T083859Z
+  FILE -rw------- 378B /home/saber/backups/m25_secret_backup/20261112T082537Z/.env.bak
+  FILE -rw------- 404B /home/saber/e61_phase5_secrets.txt
+  FILE -rw-r--r-- 1716B /home/saber/aio-ci-test/.env.example
+
+--- registry data dir perms (prod) ---
+  total B 
+  drwxrwxr-x 4096B .
+  drwxrwxr-x 4096B ..
+  -rw-r--r-- 352256B rag-registry.db
+
+--- listening sockets (local exposure surface) ---
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      128      10.240.17.1:18111      0.0.0.0:*          
+LISTEN 0      4096    172.30.0.133:4102       0.0.0.0:*          
+LISTEN 0      4096    172.30.0.133:8100       0.0.0.0:*          
+LISTEN 0      4096    172.30.0.133:3006       0.0.0.0:*          
+LISTEN 0      511          0.0.0.0:8443       0.0.0.0:*          
+LISTEN 0      128          0.0.0.0:8210       0.0.0.0:*          
+LISTEN 0      128          0.0.0.0:8200       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8888       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:9187       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:9188       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:9189       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:9090       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:9100       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:9001       0.0.0.0:*          
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:6379       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:7575       0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:35985      0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:7810       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:7779       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:7777       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8087       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8088       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8099       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8000       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8050       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:4101       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:5435       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:5433       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:5678       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:2222       0.0.0.0:*          
+LISTEN 0      4096    172.30.0.133:18060      0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:3002       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:3000       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:3001       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:3004       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:3005       0.0.0.0:*          
+LISTEN 0      150          0.0.0.0:3306       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:3100       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:4000       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:4010       0.0.0.0:*          
+LISTEN 0      511          0.0.0.0:80         0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:81         0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*          
+LISTEN 0      511          0.0.0.0:443        0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:444        0.0.0.0:*          
+LISTEN 0      511          0.0.0.0:888        0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:18790      0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:18789      0.0.0.0:*          
+
+--- unauthenticated probes (status + first 200B body) ---
+  [200] http://127.0.0.1:8200/health
+{"enabled":2,"ok":true,"providers":4,"service":"rag-registry","version":"e1"} 
+  [200] http://127.0.0.1:8200/metrics
+# HELP rag_up Service liveness # TYPE rag_up gauge rag_up 1 # HELP rag_providers_total Registered RAG providers (incl. archived) # TYPE rag_providers_total gauge rag_providers_total 4 # HELP rag_provi
+  [401] http://127.0.0.1:8200/api/rag-registry
+{"detail":"missing Authorization header","error":"unauthorized","ok":false} 
+  [401] http://127.0.0.1:8200/api/rag-registry/consumers
+{"detail":"missing Authorization header","error":"unauthorized","ok":false} 
+  [200] http://127.0.0.1:8210/health
+{"ok":true,"service":"rag-gateway","version":"e2"} 
+  [401] http://127.0.0.1:8210/v1/models
+{"error":{"code":"unauthorized","message":"invalid or missing service key","retryable":false,"type":"gateway_error"}} 
+  [200] http://127.0.0.1:4101/health/liveliness
+"I'm alive!"
+  [401] http://127.0.0.1:4101/v1/models
+{"error":{"message":"Authentication Error, No api key passed in.","type":"auth_error","param":"None","code":"401"}}
+
+=== B3 ENV AUDIT s52 DONE: log=/home/saber/e63-b3-envs-s52-20261116-195354.log ===

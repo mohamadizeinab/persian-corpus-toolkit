@@ -1,0 +1,30 @@
+﻿=== B2 public smoke 2026-11-17T04:53:08 ===
+--- radio /api/health
+{"status":"ok","service":"radio","neo4j_database":"radio","neo4j_online":true,"vector_index":"vector_index_chunk","embedding_model":"Qwen3-Embedding-0.6B","gen_model":"qwen38","litellm":"http://172.30.0.133:4000/v1","top_k":5,"ms":4}
+HTTP:200
+--- radio /api/rag/status
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+HTTP:200
+radio /api/rag/chat/stream : HTTP:200 time:120.133879
+--- radio chat : SSE bytes: 79
+SSE CONTAINS ERROR ENVELOPE!
+SSE contains citations: NO
+SSE tail (last 1200 chars):
+data: {"error": "timed out", "code": "upstream_unreachable", "type": "error"}
+
+
+--- rag /api/health
+{"ok":true,"gpu":{"available":false,"idle":true,"detail":"nvidia-smi unavailable: Command '['nvidia-smi', '--query-gpu=index,utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits']' returned non-zero exit status 255."},"v3":{"campaigns":true,"onboarding":true,"consent":true,"bale":true,"otp":false,"bots":{"bale":"active","telegram":"active"}}}
+HTTP:200
+--- rag /api/rag/status
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"portal"}
+HTTP:200
+rag /api/rag/chat/stream : HTTP:200 time:120.126249
+--- rag chat : SSE bytes: 79
+SSE CONTAINS ERROR ENVELOPE!
+SSE contains citations: NO
+SSE tail (last 1200 chars):
+data: {"error": "timed out", "code": "upstream_unreachable", "type": "error"}
+
+
+=== B2 public smoke done ===

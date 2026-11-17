@@ -1,0 +1,69 @@
+=== B2 PROD ROTATE TS=20261117-003100 ===
+
+## 0) pre-checks:
+  keyfwd healthz: radio:8211=200 portal:8212=200
+  admin token loaded from backup gateway.env (len=43)
+  service key loaded from backup gateway.env (len=51)
+  consumer ids: radio=radio portal=portal
+  keyfile pre-rotate: size=119 sha256-16=ebf86b4d935f9449 (expect ebf86b4d935f9449)
+
+## rotate radio (consumer_id=radio):
+  old key sha256-16=a7e7b77a03898afb (raw never printed)
+  rotate: radio NEW sha256-16=055bee99faa5b694 (len=46)
+  response keys: ['api_key', 'consumer', 'key_notice', 'ok']
+  VERIFY-OLD: radio -> 401 UNAUTHORIZED (expect 401)
+  KEYFILE-UPDATED radio: radio -> new (digest changed)
+  keyfile post-update: size=119 mode=600 sha256-16=d66aa6aa4ee7d055 (expect != ebf86b4d935f9449)
+  healthz digest now=a7e7b77a03898afb expected(new)=055bee99faa5b694
+NOTE: healthz STATE not yet reloaded (expected before first real request)
+
+## positive radio chain (4101 -> litellm -> keyfwd -> gateway):
+  radio post-rotate: RED choices=1 citations=0 content_len=0 err=401
+  err msg: litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled
+
+LiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.
+  healthz radio digest after real traffic: a7e7b77a03898afb (expect new=055bee99faa5b694)
+NOTE: healthz STATE radio digest does not match new key
+
+## negative: old radio key direct at gateway :8210 (expect 401 unknown_consumer_key):
+  gateway old radio key (sha256-16=a7e7b77a03898afb) -> http 401 ; body: {"error":{"code":"unknown_consumer_key","message":"consumer key is unknown or disabled","retryable":false,"type":"gateway_error"}}
+
+## rotate portal (consumer_id=portal):
+  old key sha256-16=a9a63be6cb1cc007 (raw never printed)
+  rotate: portal NEW sha256-16=90274064a3c833f9 (len=46)
+  response keys: ['api_key', 'consumer', 'key_notice', 'ok']
+  VERIFY-OLD: portal -> 401 UNAUTHORIZED (expect 401)
+  KEYFILE-UPDATED portal: portal -> new (digest changed)
+  keyfile post-update: size=119 mode=600 sha256-16=3a722005a288e298 (expect != ebf86b4d935f9449)
+  healthz digest now=a9a63be6cb1cc007 expected(new)=90274064a3c833f9
+NOTE: healthz STATE not yet reloaded (expected before first real request)
+
+## positive portal chain (4101 -> litellm -> keyfwd -> gateway):
+  portal post-rotate: RED choices=1 citations=0 content_len=0 err=401
+  err msg: litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled
+
+LiteLLM: model group 'portal-rag-mizan' failed with the error above. No fallback was attempted.
+  healthz portal digest after real traffic: a9a63be6cb1cc007 (expect new=90274064a3c833f9)
+NOTE: healthz STATE portal digest does not match new key
+
+## negative: old portal key direct at gateway :8210 (expect 401):
+  gateway old portal key (sha256-16=a9a63be6cb1cc007) -> http 401 ; body: {"error":{"code":"unknown_consumer_key","message":"consumer key is unknown or disabled","retryable":false,"type":"gateway_error"}}
+
+## record new keys in /home/saber/e61_phase5_secrets.txt:
+  e61 updated: PORTAL line replaced, RADIO line ensured, rotation note appended
+  e61 line names now: GATEWAY_SERVICE_KEY REGISTRY_ADMIN_TOKEN PORTAL_CONSUMER_KEY VK_RADIO VK_PORTAL LITELLM_MASTER_KEY RADIO_CONSUMER_KEY 
+
+## keyfwd log tail (traffic proof):
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=401 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 401 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=401 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 401 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+
+=== ROTATE DONE ===
+LOG=/home/saber/e63-b2-prod-rotate-20261117-003100.log

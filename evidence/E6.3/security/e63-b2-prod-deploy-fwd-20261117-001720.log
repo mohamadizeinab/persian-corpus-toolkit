@@ -1,0 +1,33 @@
+=== B2 PROD DEPLOY FORWARDER TS=20261117-001720 ===
+
+## 1) forwarder script + keyfile on s52:
+  py size=12435 sha256-16=064dbcf0d0bfc4ff
+  keyfile size=119 mode=600 sha256-16=ebf86b4d935f9449 (expect ebf86b4d935f9449)
+  FLAT-OK: consumers=portal, radio (46B each)
+
+## 2) idempotent container removal:
+  (no existing container)
+
+## 3) run rag-keyfwd (no published ports):
+4fb27123188fa333acd574b38a581025568a54dd0327ca9b1caabafbdf100fc2
+
+## 4) healthz wait (both listeners, via docker exec):
+  [try 2] radio:8211 -> 200 {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "a7e7b77a03898afb", "portal": "a9a63be6cb1cc007"}, "keyfile_error": null}
+  [try 2] portal:8212 -> 200 {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "a7e7b77a03898afb", "portal": "a9a63be6cb1cc007"}, "keyfile_error": null}
+
+## 5) container state + no-published-ports proof:
+rag-keyfwd	Up 2 seconds
+  published ports: [] (expect empty)
+  networks: litellm-personal-net=10.240.17.4 
+  container log tail:
+keyfwd: listening 0.0.0.0:8211 consumer=radio
+keyfwd: listening 0.0.0.0:8212 consumer=portal
+keyfwd: up listeners=2 upstream=http://10.240.17.1:8210
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+
+## 6) pre-PATCH sanity: litellm can still serve (forwarder not yet wired):
+  CHAIN-STILL-GREEN: choices=1 citations=5 content_len=764 err=-
+=== DEPLOY FWD DONE ===
+LOG=/home/saber/e63-b2-prod-deploy-fwd-20261117-001720.log

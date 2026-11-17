@@ -1,0 +1,83 @@
+=== [1] radio2-staging dir
+=== C5J s53 20261116-185108
+=== [1] radio2-staging dir
+total 116
+drwxrwxr-x  3 saber saber  4096 Nov 16 18:26 .
+drwxrwxr-x 28 saber saber  4096 Nov 16 18:07 ..
+-rw-rw-r--  1 saber saber 43348 Nov 14 15:06 api.py
+-rw-rw-r--  1 saber saber  4869 Nov 14 15:06 docker-compose.radio2.yml
+-rwxrwxr-x  1 saber saber  2521 Nov 14 15:06 entrypoint.sh
+-rw-------  1 saber saber  2316 Nov 16 18:26 .env.radio2
+-rw-------  1 saber saber  2341 Nov 14 15:06 .env.radio2.bak-e63-20261116-181459
+-rw-------  1 saber saber  2341 Nov 14 15:06 .env.radio2.bak-e63-20261116-182236
+drwxrwxr-x  3 saber saber  4096 Nov 14 15:05 frontend
+-rw-rw-r--  1 saber saber  3158 Nov 14 15:06 nginx.conf
+-rw-rw-r--  1 saber saber 28976 Nov 14 15:06 rag_proxy.py
+=== [2] radio2 compose.yml (full)
+=== [2] radio2 compose.yml (full)
+=== [3] radio2 env files: names only (no values)
+=== [3] radio2 env files: names only (no values)
+MISSING: /home/saber/saberprojects/radio2-staging/.env
+--- /home/saber/saberprojects/radio2-staging/.env.radio2:
+LITELLM_API_KEY
+NEO4J_PASSWORD
+NEO4J_USERNAME
+RAG_ADMIN_TOKEN
+RAG_CONSUMER_ID
+RAG_EIIS_TOKEN
+RAG_LITELLM_KEY
+RAG_LITELLM_URL
+RAG_MODEL_PREFIX
+RAG_REGISTRY_TOKEN
+RAG_REGISTRY_URL
+RAG_SERVICE_TOKEN
+RAG_TAGHRIR_TOKEN
+RAG_TIMEOUT_S
+SITE_CANONICAL
+SITE_EXAMPLES
+SITE_NAME
+SITE_OG_IMAGE
+SITE_TAGLINE
+SITE_TITLE
+SITE_URL
+=== [4] rag2-staging compose env_file / environment wiring
+=== [4] rag2-staging compose env_file / environment wiring
+=== [5] staging-core compose litellm block (after c5h edit)
+=== [5] staging-core compose litellm block (after c5h edit)
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    network_mode: host
+    command: ["--config", "/app/config.yaml", "--host", "0.0.0.0", "--port", "14101"]
+    env_file: /home/saber/saberprojects/rag2-staging-core/stg.env
+    environment:
+    volumes:
+      - /home/saber/saberprojects/rag2-staging-core/litellm.yaml:/app/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys\nfor u in ('http://127.0.0.1:14101/health/liveliness','http://127.0.0.1:14101/health'):\n    try:\n        sys.exit(0 if urllib.request.urlopen(u,timeout=4).status==200 else 1)\n    except Exception:\n        continue\nsys.exit(1)"]
+      interval: 15s
+      timeout: 8s
+      start_period: 25s
+      retries: 12
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+=== [6] litellm container current env (masked)
+=== [6] litellm container current env (masked)
+GATEWAY_REGISTRY_ADMIN_TOKEN=nNeS9f…(masked)
+REGISTRY_OPERATOR_TOKEN=EBn9NY…(masked)
+STORE_MODEL_IN_DB=False
+DATABASE_URL=
+SYNTH_TOKEN=e8qrbV…(masked)
+LITELLM_MASTER_KEY=RzpzIF…(masked)
+STG_PROVIDER_TOKEN=e8qrbV…(masked)
+REGISTRY_VIEW_TOKEN=bINRED…(masked)
+GATEWAY_SERVICE_KEY=ecVWjS…(masked)
+REGISTRY_ADMIN_TOKEN=nNeS9f…(masked)
+SSL_CERT_FILE=/etc/s…(masked)
+PRISMA_BINARY_CACHE_DIR=/opt/p…(masked)
+PRISMA_CLI_PATH=/opt/p…(masked)
+PRISMA_CLI_QUERY_ENGINE_TYPE=binary…(masked)
+PRISMA_OFFLINE_MODE=true
+C5J_DONE log=/home/saber/e63-c5j-probe-s53-20261116-185108.log

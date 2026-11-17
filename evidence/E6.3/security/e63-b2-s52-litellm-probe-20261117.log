@@ -1,0 +1,21 @@
+## chat rag-mizan #1 (from s52 host, fresh connection):
+http=200 time=21.363935
+  wall=21.4s head={"id":"chatcmpl-req-18906657b52e4358","created":1794879132,"model":"rag-mizan","object":"chat.completion","choices":[{"finish_reason":"stop","index":0,"message":{"content":"بر اساس مستندات موجود، «سلام» در مصادیقِ تفسیر المیزان به چند وجه آمد�
+## chat rag-mizan #2 (immediately again — pool reuse test):
+http=200 time=30.538218
+  wall=30.5s head={"id":"chatcmpl-req-f1e41b53c9ba40d4","created":1794879163,"model":"rag-mizan","object":"chat.completion","choices":[{"finish_reason":"stop","index":0,"message":{"content":"بر اساس مستندات موجود، «سلام» در تفسیر المیزان در چند سیاق آمده است:\n\n
+## keyfwd log tail:
+keyfwd: GET model=- status=200 stream=False
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+## litellm log tail (rag-mizan / error lines, last 15m):
+EXIT=0

@@ -1,0 +1,49 @@
+=== B2 stg fix2 20261116-230941 (2026-11-16T23:09:41Z)
+=== [1] pre-state
+/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db | uid=10001:10001 mode=644 size=73728 mtime=2026-11-16 21:06:01.334436048 +0000
+/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-wal | uid=1001:1001 mode=664 size=0 mtime=2026-11-16 21:09:35.667064614 +0000
+/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-shm | uid=1001:1001 mode=664 size=32768 mtime=2026-11-16 22:47:17.112131321 +0000
+wal size = 0 bytes (must be 0 to remove safely)
+=== [2] remove poisoned -wal/-shm (host owns them; dir is 777)
+removed -wal and -shm (host rm, no sudo needed)
+now: /home/saber/saberprojects/rag2-staging-core/data/rag-registry.db | uid=10001:10001 mode=644
+stat: cannot statx '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-wal': No such file or directory
+stat: cannot statx '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-shm': No such file or directory
+--- verify after removal (expect 200; first call recreates wal as 10001):
+verify radio: code=200 body={"consumer":{"allowed_rag_ids":["mizan","fiqh","e6-acceptance"],"citation_format":"standard","consumer_id":"radio","created_at":"2026-11-16T18:07:17.616Z","created_by":"admin","default_rag_id":"mizan"
+verify portal: code=200 body={"consumer":{"allowed_rag_ids":["mizan","fiqh"],"citation_format":"standard","consumer_id":"portal","created_at":"2026-11-16T18:07:17.623Z","created_by":"admin","default_rag_id":"mizan","description":
+after-verify: /home/saber/saberprojects/rag2-staging-core/data/rag-registry.db | uid=10001:10001 mode=644
+stat: cannot statx '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-wal': No such file or directory
+stat: cannot statx '/home/saber/saberprojects/rag2-staging-core/data/rag-registry.db-shm': No such file or directory
+=== [3] end-to-end proof (current keys must work)
+--- direct gateway (svc + radio key):
+direct: code=200 choices=1 citations=5 content_len=34
+--- via forwarder :18211 (svc only; consumer key injected):
+forwarder: code=200 choices=1 citations=5 content_len=34
+=== [4] post-state
+--- /version:
+{"ok":true,"providers_enabled":2,"version":"2026-11-16T19:36:37.963Z"}
+
+--- audit tail via API (must now contain rows past id 96):
+  id=66 at=2026-11-16T19:23:40.748Z action=disable rag=e6-acceptance actor=admin
+  id=65 at=2026-11-16T19:23:40.710Z action=enable rag=e6-acceptance actor=admin
+  id=64 at=2026-11-16T19:23:40.670Z action=set_priority rag=e6-acceptance actor=admin
+  id=63 at=2026-11-16T19:23:40.621Z action=update rag=e6-acceptance actor=admin
+  id=62 at=2026-11-16T19:23:40.596Z action=conflict_denied rag=e6-acceptance actor=admin
+  id=61 at=2026-11-16T19:23:40.549Z action=test_retrieval rag=e6-acceptance actor=admin
+--- consumers (API):
+  portal enabled=True allowed=['mizan', 'fiqh']
+  radio enabled=True allowed=['mizan', 'fiqh', 'e6-acceptance']
+--- forwarder healthz:
+{"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+--- registry container:
+rag2-staging-core-registry-1 Up 3 minutes (healthy)
+--- registry log tail (must be free of readonly errors):
+127.0.0.1 - - [16/Nov/2026 23:09:48] "POST /api/rag-registry/consumers/verify HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:09:48] "GET /api/rag-registry/mizan/prompts HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:09:49] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:09:59] "GET /api/rag-registry/version HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:09:59] "GET /api/rag-registry/audit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:09:59] "GET /api/rag-registry/consumers HTTP/1.1" 200 -
+=== B2 STG FIX2 DONE
+LOG=/home/saber/e63-b2-stg-fix2-20261116-230941.log

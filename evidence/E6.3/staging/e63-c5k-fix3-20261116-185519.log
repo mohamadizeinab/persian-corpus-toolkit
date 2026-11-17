@@ -1,0 +1,110 @@
+=== C5K 20261116-185519
+=== [1] litellm: remove empty 'environment:' from the litellm block
+=== [1] litellm: remove empty 'environment:' from the litellm block
+removed empty environment lines in litellm block: 1
+--- stg.env DATABASE/STORE check (expect no match):
+  (none — good)
+--- litellm.yaml: any database config? (expect none):
+  (none — good)
+--- current litellm block in compose:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    network_mode: host
+    command: ["--config", "/app/config.yaml", "--host", "0.0.0.0", "--port", "14101"]
+    env_file: /home/saber/saberprojects/rag2-staging-core/stg.env
+    volumes:
+      - /home/saber/saberprojects/rag2-staging-core/litellm.yaml:/app/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys\nfor u in ('http://127.0.0.1:14101/health/liveliness','http://127.0.0.1:14101/health'):\n    try:\n        sys.exit(0 if urllib.request.urlopen(u,timeout=4).status==200 else 1)\n    except Exception:\n        continue\nsys.exit(1)"]
+      interval: 15s
+      timeout: 8s
+      start_period: 25s
+      retries: 12
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+compose VALID
+ Container rag2-staging-core-litellm-1  Recreated
+ Container rag2-staging-core-litellm-1  Starting
+ Container rag2-staging-core-litellm-1  Started
+UP: litellm (14101) after 33s
+=== [2] staging registry: real image id + baked route + re-probe /rags
+=== [2] staging registry: real image id + baked route + re-probe /rags
+--- staging registry container image id:
+image=sha256:3701f33aed376aaf177bcb5f66d21fe82c79b9020f827e62822428dd27d62978 started=2026-11-16T18:07:16.110265862Z
+--- docker images on s53 (registry):
+3701f33aed37	rag-registry:0.1.0	125MB
+fd552e803ec8	opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsghq/omnibus-csghub:v1.10.0-ce	2.89GB
+--- baked api.py: does the route exist in the running image?
+--- re-probe /consumers/portal/rags on 18200:
+{"detail":"route not found","error":"not_found","ok":false}
+
+HTTP=404
+
+=== [3] /v1/models
+=== [3] /v1/models
+{"data":[{"id":"rag-mizan","object":"model","created":1677610602,"owned_by":"openai"},{"id":"rag-fiqh","object":"model","created":1677610602,"owned_by":"openai"},{"id":"rag-general","object":"model","created":1677610602,"owned_by":"openai"},{"id":"portal-rag-mizan","object":"model","created":1677610602,"owned_by":"openai"},{"id":"portal-rag-fiqh","object":"model","created":1677610602,"owned_by":"openai"},{"id":"portal-rag-general","object":"model","created":1677610602,"owned_by":"openai"}],"object":"list"}
+=== [3b] full chain rag-mizan (Persian question)
+=== [3b] full chain rag-mizan (Persian question)
+{"id":"chatcmpl-req-330e5224a2034b30","created":1794855376,"model":"rag-mizan","object":"chat.completion","choices":[{"finish_reason":"stop","index":0,"message":{"content":"این پیکره درباره‌ی تفسیر المیزان است [mizan:4]. آن پیکره‌ی مصنوعی، متن آزمایشی تفسیر آیات سوره‌ی حمد به زبان ساده است [mizan:4].","role":"assistant","provider_specific_fields":{"refusal":null}},"provider_specific_fields":{}}],"usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0},"citations":[{"chunk_id":"fiqh-ch-0001","collection_id":"fiqh","heading":"بخش fiqh","page_number":1,"rag_id":"mizan","snippet":"این متن آزمایشی از پیکره‌ی مصنوعی فقه است؛ درباره‌ی ارکان نماز و شرایط آن.","source_file":"fiqh-synthetic.txt","source_id":"mizan","volume_number":"j1","work_id":"فقه"},{"chunk_id":"fiqh-ch-0002","collection_id":"fiqh","heading":"بخش fiqh","page_number":2,"rag_id":"mizan","snippet":"بخش دوم پیکره‌ی مصنوعی فقه: شروط وضو و موارد رفع‌کننده‌ی وضو.","source_file":"fiqh-synthetic.txt","source_id":"mizan","volume_number":"j1","work_id":"فقه"},{"chunk_id":"fiqh-ch-0003","collection_id":"fiqh","heading":"بخش fiqh","page_number":1,"rag_id":"mizan","snippet":"فقه روزه در پیکره‌ی مصنوعی: مواقت، شُروع و انتهای ماه رمضان و مصادیق افطار.","source_file":"fiqh-synthetic.txt","source_id":"mizan","volume_number":"j2","work_id":"فقه"},{"chunk_id":"mizan-ch-0001","collection_id":"mizan","heading":"بخش mizan","page_number":1,"rag_id":"mizan","snippet":"این متن آزمایشی از پیکره‌ی مصنوعی تفسیر المیزان است؛ تفسیر آیات سوره‌ی حمد به زبان ساده.","source_file":"mizan-synthetic.txt","source_id":"mizan","volume_number":"j1","work_id":"میزان"},{"chunk_id"
+=== [3c] portal-rag-mizan (expect structural 404 unknown_model)
+=== [3c] portal-rag-mizan (expect structural 404 unknown_model)
+{"error":{"message":"litellm.NotFoundError: NotFoundError: OpenAIException - model 'portal-rag-mizan' is not a rag-* alias\n\nLiteLLM: model group 'portal-rag-mizan' failed with the error above. No fallback was attempted.","type":"invalid_request_error","param":null,"code":"404"}}
+=== [4] radio2_api: restore env (c5f recreate collapsed ${VAR} interpolation)
+=== [4] radio2_api: restore env (c5f recreate collapsed ${VAR} interpolation)
+--- docker-compose.radio2.yml env wiring:
+24:    image: mrbaqeri/qa_lang_neo4j_mesbah:1.0.0
+25:    container_name: radio2_api
+38:    environment:
+47:      - LITELLM_API_KEY=${LITELLM_API_KEY}
+48:      - RAG_SERVICE_TOKEN=${RAG_SERVICE_TOKEN}
+78:    image: nginx:alpine
+79:    container_name: radio2_frontend
+87:    environment:
+created .env from .env.radio2 (compose auto-loads .env for interpolation)
+ Container radio2_api  Recreated
+ Container radio2_api  Starting
+ Container radio2_api  Started
+--- after recreate:
+restarts=0 started=2026-11-16T18:56:16.983283068Z
+radio2_api	Up 10 seconds (health: starting)
+--- live RAG_/NEO4J env (masked):
+RAG_LITELLM_URL=http:/…(masked)
+NEO4J_DATABASE=radio
+RAG_TIMEOUT_S=120
+RAG_SERVICE_TOKEN=LQ2AgQ…(masked)
+RAG_ADMIN_TOKEN=r7TyNM…(masked)
+NEO4J_USERNAME=radio_…(masked)
+RAG_REGISTRY_TOKEN=nNeS9f…(masked)
+RAG_REGISTRY_URL=http:/…(masked)
+RAG_MODEL_PREFIX=rag-
+RAG_CONSUMER_ID=radio
+RAG_LITELLM_KEY=RzpzIF…(masked)
+NEO4J_URI=bolt:/…(masked)
+NEO4J_PASSWORD=59f1da…(masked)
+--- tail logs:
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8003 (Press CTRL+C to quit)
+=== [5] UI re-check
+=== [5] UI re-check
+--- radio2 /api/rag/status:
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+--- radio2 /api/rag/sources:
+{"detail":"consumer 'radio' not found in registry"}
+--- rag2 /api/rag/status:
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"portal"}
+--- rag2 /api/rag/sources:
+{"detail":"consumer 'portal' not found in registry"}
+=== [6] state
+=== [6] state
+radio2_api	Up 10 seconds (health: starting)
+rag2-staging-core-litellm-1	Up 58 seconds (healthy)
+rag2_api	Up 30 minutes
+rag2-staging-core-synth-provider-1	Up 33 minutes (healthy)
+rag2-staging-core-gateway-1	Up 49 minutes (healthy)
+rag2-staging-core-registry-1	Up 49 minutes (healthy)
+C5K_DONE log=/home/saber/e63-c5k-fix3-20261116-185519.log

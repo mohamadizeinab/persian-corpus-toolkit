@@ -1,0 +1,22 @@
+## keyfwd log (last 15m):
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: GET model=- status=200 stream=False
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: GET model=- status=200 stream=False
+keyfwd: "GET /v1/models HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+
+## litellm log (last 15m, rag-mizan lines):
+
+## litellm log (last 15m, error/timeout lines):
+EXIT=0

@@ -1,0 +1,77 @@
+=== STAGING FINISH 20261116-181459
+=== [6b] add healthcheck to synth-provider (image bakes one for :8200)
+=== [6b] add healthcheck to synth-provider (image bakes one for :8200)
+ Container rag2-staging-core-synth-provider-1  Running
+synth health now: unhealthy
+=== [7] registry probes (test-connection / test-auth / test-retrieval)
+=== [7] registry probes (test-connection / test-auth / test-retrieval)
+mizan/test-connection -> {"ok":true,"result":{"detail":"health endpoint responded 200","latency_ms":8,"ok":true,"status":200}}
+
+mizan/test-auth -> {"ok":true,"result":{"detail":"service token accepted; /v1/models 200","latency_ms":2,"ok":true,"status":200}}
+
+mizan/test-retrieval -> {"ok":true,"result":{"detail":"retrieval ok (collection=fiqh, hits=1)","latency_ms":4,"ok":true,"status":200}}
+
+=== [8] litellm config + start
+=== [8] litellm config + start
+cat: /home/saber/saberprojects/rag2-staging-core/secrets/radio-key: Permission denied
+cat: /home/saber/saberprojects/rag2-staging-core/secrets/portal-key: Permission denied
+ Container rag2-staging-core-litellm-1  Created
+ Container rag2-staging-core-litellm-1  Starting
+ Container rag2-staging-core-litellm-1  Started
+--- litellm /v1/models:
+
+=== [9] full chain: litellm -> gateway -> provider -> vLLM (rag-mizan)
+=== [9] full chain: litellm -> gateway -> provider -> vLLM (rag-mizan)
+
+
+=== [9b] portal-rag-mizan (expected structural 404 unknown_model)
+=== [9b] portal-rag-mizan (expected structural 404 unknown_model)
+
+=== [10] re-point staging UIs (backup + edit + recreate api)
+=== [10] re-point staging UIs (backup + edit + recreate api)
+backups: .env.radio2.bak-e63-20261116-181459, .env.bak-e63-20261116-181459
+services: radio2_api->'api'  rag2_api->'api'
+ Container radio2_api  Recreated
+ Container radio2_api  Starting
+ Container radio2_api  Started
+ Container rag2_db  Waiting
+ Container rag2_db  Healthy
+ Container rag2_auth_db  Healthy
+radio2_api	Up Less than a second (health: starting)
+rag2-staging-core-litellm-1	Up 27 seconds (health: starting)
+rag2-staging-core-synth-provider-1	Up 11 minutes (unhealthy)
+rag2-staging-core-gateway-1	Up 11 minutes (healthy)
+rag2-staging-core-registry-1	Up 11 minutes (healthy)
+rag2_frontend	Up 2 days
+rag2_api	Up 2 days
+rag2_auth_db	Up 2 days (healthy)
+=== [10b] UI verification (from s53 localhost)
+=== [10b] UI verification (from s53 localhost)
+--- radio2 /api/rag/status:
+
+--- radio2 /api/rag/sources:
+
+--- rag2 /api/rag/status:
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"portal"}
+--- rag2 /api/rag/sources:
+
+=== [11] final state
+=== [11] final state
+rag2-staging-core-litellm-1	Up 11 seconds (health: starting)
+rag2-staging-core-synth-provider-1	Up 11 minutes (unhealthy)
+rag2-staging-core-gateway-1	Up 11 minutes (healthy)
+rag2-staging-core-registry-1	Up 11 minutes (healthy)
+mock-litellm	Up 4 days
+STG state dir: /home/saber/saberprojects/rag2-staging-core
+total 40
+drwxrwxr-x 6 saber saber 4096 Nov 16 18:18 .
+drwxrwxr-x 28 saber saber 4096 Nov 16 18:07 ..
+drwxrwxrwx 2 saber saber 4096 Nov 16 18:07 audit
+-rw-rw-r-- 1 saber saber 3269 Nov 16 18:07 compose.yml
+drwxrwxrwx 2 saber saber 4096 Nov 16 18:18 data
+-rw------- 1 saber saber 1800 Nov 16 18:15 litellm.yaml
+drwxrwxrwx 2 saber saber 4096 Nov 16 18:07 secrets
+-rw-rw-r-- 1 saber saber 1 Nov 16 18:18 smoke-rag-mizan.json
+-rw------- 1 saber saber 516 Nov 16 18:07 stg.env
+drwxrwxr-x 2 saber saber 4096 Nov 16 18:07 synth
+FINISH_DONE log=/home/saber/e63-c5f-finish-20261116-181459.log

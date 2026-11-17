@@ -1,0 +1,17 @@
+S52-WHO4000 2026-11-17T01:18:36Z
+== all containers: ports (abridged; full list on s52) ==
+rag-keyfwd | python:3.12-alpine | Up 39 minutes | no-ports
+rag-gateway | rag-gateway:0.1.0 | Up 5 hours (healthy) | no-ports
+litellm-personal | ghcr.io/berriai/litellm | Up 5 hours | 4000/tcp -> 0.0.0.0:4101;4000/tcp -> [::]:4101;
+rag-registry | rag-registry:0.1.0 | Up 2 days (healthy) | no-ports
+fiqh-rag | dedicated-rag:0.1.0 | Up 3 days (healthy) | 8100/tcp -> 127.0.0.1:8102;
+mizan-rag | 230c333c1a5a | Up 3 days (healthy) | 8100/tcp -> 127.0.0.1:8101;
+learn-lite-llm-litellm-1 | ghcr.io/berriai/litellm | Up 2 days | 4000/tcp -> 0.0.0.0:4000;4000/tcp -> [::]:4000;4010/tcp -> 0.0.0.0:4010;4010/tcp -> [::]:4010;
+llmhub-litellm-public | ghcr.io/berriai/litellm | Up 2 weeks | 4000/tcp -> 172.30.0.133:4102;
+... (full docker ps -a output available on s52; all other containers unrelated to RAG)
+== per-container owner of 4000/4101 + env digests ==
+(awk-based port match produced no lines — docker port format; see port column above:
+ litellm-personal publishes 4101 (the RAG litellm, B2 chain);
+ learn-lite-llm-litellm-1 publishes 4000 (different product, different key))
+S52-WHO4000 DONE
+NOTE: captured from stdout of _e63_b2_who4000_s52.sh run at 01:18 UTC.

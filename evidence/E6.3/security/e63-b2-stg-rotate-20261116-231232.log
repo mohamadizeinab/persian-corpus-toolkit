@@ -1,0 +1,69 @@
+=== B2 stg rotate 20261116-231232 (2026-11-16T23:12:32Z)
+=== [0] pre-state
+version-before: {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:36:37.963Z"}
+healthz radio: {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+healthz portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+secrets/radio-key uid=1001:1001 mode=600 size=46
+secrets/portal-key uid=1001:1001 mode=600 size=46
+e63-b2/keys.json uid=1001:1001 mode=600 size=134
+=== [1] rotate radio
+--- [radio] old key digest: 013f5b3dfed51188
+--- [radio] rotate-key:
+[radio] new key: len=46 sha256-16=0713379552befc6b keys.json updated
+verify(new):    200
+forwarder(new): err=unknown_consumer_key msg=consumer key is unknown or disabled
+direct(new): choices=1 citations=5 content_len=34
+direct(OLD-key, expect unknown_consumer_key): err=unknown_consumer_key msg=consumer key is unknown or disabled
+healthz radio: {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+=== [2] rotate portal
+--- [portal] old key digest: ab7d2730414cbd78
+--- [portal] rotate-key:
+[portal] new key: len=46 sha256-16=6a170091ab7d54a8 keys.json updated
+verify(new):    200
+forwarder(new): err=unknown_consumer_key msg=consumer key is unknown or disabled
+direct(new): err=unknown_model msg=model 'portal-rag-mizan' is not a rag-* alias
+direct(OLD-key, expect unknown_consumer_key): err=unknown_consumer_key msg=consumer key is unknown or disabled
+healthz portal: {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+=== [3] radio2 UI smoke (:8045, full chain radio2->litellm->forwarder->gateway)
+status: {"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+data: {"error": "litellm.AuthenticationError: AuthenticationError: OpenAIException - consumer key is unknown or disabled\n\nLiteLLM: model group 'rag-mizan' failed with the error above. No fallback was attempted.", "code": "401", "status": 401, "type": "error"}
+[PASS] UI SSE stream
+=== [4] final state
+version-after: {"ok":true,"providers_enabled":2,"version":"2026-11-16T23:12:38.137Z"}
+[PASS] version token bumped (registry saw rotations)
+--- audit tail (expect consumer_key_rotate rows past id 96):
+  id=83 at=2026-11-16T19:36:01.317Z action=consumer_verify rag=None actor=admin
+  id=82 at=2026-11-16T19:36:01.316Z action=consumer_verify rag=None actor=admin
+  id=81 at=2026-11-16T19:36:01.308Z action=consumer_verify rag=None actor=admin
+  id=80 at=2026-11-16T19:26:01.319Z action=consumer_verify rag=None actor=admin
+  id=79 at=2026-11-16T19:26:01.319Z action=consumer_verify rag=None actor=admin
+  id=78 at=2026-11-16T19:26:01.319Z action=consumer_verify rag=None actor=admin
+--- forwarder healthz (digests must equal new key digests):
+{"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+{"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "013f5b3dfed51188", "portal": "ab7d2730414cbd78"}, "keyfile_error": null}
+--- litellm.yaml rc_ rescan (must be 0):
+  rc_ lines: 0
+--- key files:
+secrets/radio-key uid=1001:1001 mode=600 size=46
+secrets/portal-key uid=1001:1001 mode=600 size=46
+e63-b2/keys.json uid=1001:1001 mode=600 size=265
+--- digest record (written 600):
+rotation 20261116-231232
+radio sha256-16=0713379552befc6b
+portal sha256-16=6a170091ab7d54a8
+--- registry log tail (must be free of readonly errors):
+127.0.0.1 - - [16/Nov/2026 23:12:38] "POST /api/rag-registry/consumers/portal/rotate-key HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "POST /api/rag-registry/consumers/verify HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "[31m[1mPOST /api/rag-registry/consumers/verify HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "POST /api/rag-registry/consumers/verify HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "[31m[1mPOST /api/rag-registry/consumers/verify HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "[31m[1mPOST /api/rag-registry/consumers/verify HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "GET /api/rag-registry/version HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 23:12:39] "GET /api/rag-registry/audit HTTP/1.1" 200 -
+--- containers:
+rag2-staging-core-registry-1 Up 5 minutes (healthy)
+rag2-staging-core-gateway-1 Up 52 minutes (healthy)
+rag2-staging-core-litellm-1 Up 52 minutes (healthy)
+rag2-staging-core-synth-provider-1 Up 5 hours (healthy)
+=== B2 STG ROTATE DONE
+LOG=/home/saber/e63-b2-stg-rotate-20261116-231232.log

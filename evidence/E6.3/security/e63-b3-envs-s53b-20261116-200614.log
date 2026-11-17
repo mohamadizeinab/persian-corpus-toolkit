@@ -1,0 +1,156 @@
+=== B3 SUPPLEMENT s53: host .env inventory + .env.radio2 20261116-200614 ===
+
+--- host .env / secret-named files under /home/saber (perms+size only) ---
+  FILE -rw------- 249B /home/saber/asr-bot-test/.env.pre-m3hotfix-20261103
+  FILE -rw------- 115B /home/saber/asr-bot-test/.env.recovered
+  FILE -rw------- 118B /home/saber/asr-bot-test/.env.pre-stage2-20261028-213423
+  FILE -rw------- 1341B /home/saber/asr-bot-test/.env.bak.pre-mission3-20261105-082941
+  FILE -rw------- 249B /home/saber/asr-bot-test/.env.pre-stage0-20261029-130643
+  FILE -rw------- 250B /home/saber/asr-bot-test/.env.bak.m3pre-$TS
+  FILE -rw------- 1342B /home/saber/asr-bot-test/.env
+  FILE -rw------- 1341B /home/saber/asr-bot-test/.env.pre-bale2-20261105-154732
+  FILE -rw------- 118B /home/saber/asr-bot-test/.env.bak.pre-rbac
+  FILE -rw------- 1342B /home/saber/asr-bot-test/backups/recovery-20261116T065900Z/.env
+  FILE -rw------- 1342B /home/saber/asr-bot-test/backups/cutover-20261116T074439Z/.env
+  FILE -rw-rw-r-- 1236B /home/saber/m23_staging/.env.radio.example
+  FILE -rw------- 44B /home/saber/asr-bot-backups/panel-cutover-20261116T094251Z/.secret_key
+  FILE -rw------- 1198B /home/saber/asr-bot-backups/telegram-cutover-20261116T084857Z/.env
+  FILE -rw------- 1198B /home/saber/asr-bot-backups/telegram-20261116T083819Z/.env
+  FILE -rw------- 1643B /home/saber/asr-bot-backups/agent-20261116T090003Z/.env
+  FILE -rw------- 1189B /home/saber/asr-bot-telegram/.env.pre-tgadmin-20261105-143451
+  FILE -rw------- 1198B /home/saber/asr-bot-telegram/.env
+  FILE -rw-rw-r-- 2228B /home/saber/saberprojects/rag-template/.env.example
+  FILE -rw------- 2432B /home/saber/saberprojects/rag2-staging/.env.bak-e63-20261116-182236
+  FILE -rw------- 2401B /home/saber/saberprojects/rag2-staging/.env
+  FILE -rw-rw-r-- 466B /home/saber/saberprojects/rag2-staging/.env.new
+  FILE -rw------- 2432B /home/saber/saberprojects/rag2-staging/.env.bak-e63-20261116-181459
+  FILE -rw-rw-r-- 2440B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.v2kg2-20261017-175228.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2161B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.20261015-035943
+  FILE -rw-rw-r-- 2717B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.v2kg2-20261017-175228
+  FILE -rw-rw-r-- 2054B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.authdb-20261013-091622
+  FILE -rw------- 1709B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.persianfix.20261013-012823.bak-m2602-20261112T173128Z
+  FILE -rw------- 1511B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.20261012-215612
+  FILE -rw-rw-r-- 2209B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.v2kg2-20261017-175228
+  FILE -rw-rw-r-- 1903B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.persianfix.20261013-012823.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2333B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.authdb-20261013-091622
+  FILE -rw------- 2958B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah
+  FILE -rw------- 2482B /home/saber/saberprojects/langgraph-neo4j-qa/.env.tasnim
+  FILE -rw------- 1579B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.persianfix.20261013-012823
+  FILE -rw-rw-r-- 2440B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.v2kg2-20261017-175228
+  FILE -rw------- 1381B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.20261012-215612.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2054B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.authdb-20261013-091622.bak-m2602-20261112T173128Z
+  FILE -rw------- 388B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.20261012-215456.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 1705B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.20261012-215612
+  FILE -rw------- 1579B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.persianfix.20261013-012823.bak-m2602-20261112T173128Z
+  FILE -rw------- 2482B /home/saber/saberprojects/langgraph-neo4j-qa/.env.tasnim.bak-m2602-20261112T173128Z
+  FILE -rw------- 2734B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak-m2602-20261112T173128Z
+  FILE -rw------- 1381B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.20261012-215612
+  FILE -rw------- 1511B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.20261012-215612.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2830B /home/saber/saberprojects/langgraph-neo4j-qa/.env.example.bak.20261103-p01
+  FILE -rw-rw-r-- 2339B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.olama-20261013-035653
+  FILE -rw-rw-r-- 2926B /home/saber/saberprojects/langgraph-neo4j-qa/.env.example.bak-m2602-20261112T173128Z
+  FILE -rw------- 384B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.20261012-215456
+  FILE -rw------- 3134B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.p0-20261102-130753
+  FILE -rw------- 3371B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak-m2602-20261112T173128Z
+  FILE -rw------- 2485B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.p0-20261102-130753
+  FILE -rw------- 2984B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak-eiis1000-20261019-003650
+  FILE -rw-rw-r-- 2627B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.authdb-20261013-091622.bak-m2602-20261112T173128Z
+  FILE -rw------- 2734B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir
+  FILE -rw-rw-r-- 2210B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.100.20261015-170923
+  FILE -rw-rw-r-- 2209B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.v2kg2-20261017-175228.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 419B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.20261012-215456
+  FILE -rw------- 3371B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis
+  FILE -rw-rw-r-- 2717B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.v2kg2-20261017-175228.bak-m2602-20261112T173128Z
+  FILE -rw------- 3134B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.p0-20261102-130753.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2627B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.authdb-20261013-091622
+  FILE -rw------- 2984B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak-eiis1000-20261019-003650.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 1705B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.20261012-215612.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 1903B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.persianfix.20261013-012823
+  FILE -rw------- 2713B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.p0-20261102-130753.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2333B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.authdb-20261013-091622.bak-m2602-20261112T173128Z
+  FILE -rw------- 2713B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.p0-20261102-130753
+  FILE -rw------- 2485B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.p0-20261102-130753.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 419B /home/saber/saberprojects/langgraph-neo4j-qa/.env.eiis.bak.20261012-215456.bak-m2602-20261112T173128Z
+  FILE -rw------- 2958B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2830B /home/saber/saberprojects/langgraph-neo4j-qa/.env.example.bak.20261103-p01.bak-m2602-20261112T173128Z
+  FILE -rw------- 388B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.20261012-215456
+  FILE -rw-rw-r-- 2926B /home/saber/saberprojects/langgraph-neo4j-qa/.env.example
+  FILE -rw------- 1709B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.persianfix.20261013-012823
+  FILE -rw------- 384B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.20261012-215456.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2339B /home/saber/saberprojects/langgraph-neo4j-qa/.env.mesbah.bak.olama-20261013-035653.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2210B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.100.20261015-170923.bak-m2602-20261112T173128Z
+  FILE -rw-rw-r-- 2161B /home/saber/saberprojects/langgraph-neo4j-qa/.env.taghrir.bak.20261015-035943.bak-m2602-20261112T173128Z
+  DIR  /home/saber/saberprojects/rag2-staging-core/secrets
+    ENTRY drwxrwxrwx 4096B .
+    ENTRY drwxrwxr-x 4096B ..
+    ENTRY -rw------- 46B portal-key
+    ENTRY -rw------- 46B radio-key
+  FILE -rw-rw-r-- 1549B /home/saber/saberprojects/p04_staging/template/.env.NEWPROJECT.example
+  FILE -rw-rw-r-- 39B /home/saber/saberprojects/qa-knowledge-graph-pipeline/.env
+  FILE -rw-rw-r-- 139B /home/saber/saberprojects/qa-knowledge-graph-pipeline/.env.example
+  FILE -rw------- 2380B /home/saber/saberprojects/radio-rag-service/.env.radio
+  FILE -rw-rw-r-- 1432B /home/saber/saberprojects/radio-rag-service/.env.radio.example
+  FILE -rw-rw-r-- 254B /home/saber/saberprojects/graph-rag/.env
+  FILE -rw-rw-r-- 254B /home/saber/saberprojects/graph-rag/.env.example
+  FILE -rw------- 2697B /home/saber/saberprojects/tasnim-test/.env
+  FILE -rw-rw-r-- 2228B /home/saber/saberprojects/tasnim-test/.env.example
+  FILE -rw-rw-r-- 488B /home/saber/saberprojects/iranseda-crawler-golang-/.env
+  FILE -rw-rw-r-- 480B /home/saber/saberprojects/iranseda-crawler-golang-/.env.production
+  FILE -rw-rw-r-- 96B /home/saber/saberprojects/iranseda-crawler-golang-/web-viewer/.env
+  FILE -rw-rw-r-- 190B /home/saber/saberprojects/iranseda-crawler-golang-/.env.example
+  FILE -rw------- 2661B /home/saber/saberprojects/tasnim/.env
+  FILE -rw------- 2228B /home/saber/saberprojects/tasnim/.env.example
+  FILE -rw-rw-r-- 388B /home/saber/saberprojects/rag-portal/.env.bak.v2kg2-20261017-175228
+  FILE -rw------- 861B /home/saber/saberprojects/rag-portal/.env.bak.p0-20261102-130753
+  FILE -rw------- 1604B /home/saber/saberprojects/rag-portal/.env.bak-20261108-072329
+  FILE -rw------- 2083B /home/saber/saberprojects/rag-portal/.env
+  FILE -rw-rw-r-- 466B /home/saber/saberprojects/rag-portal/.env.new
+  FILE -rw------- 721B /home/saber/saberprojects/rag-portal/.env.bak-20261026-173251
+  FILE -rw------- 862B /home/saber/saberprojects/rag-portal/.env.bak.20261103-p01
+  FILE -rw------- 2316B /home/saber/saberprojects/radio2-staging/.env
+  FILE -rw------- 2341B /home/saber/saberprojects/radio2-staging/.env.radio2.bak-e63-20261116-182236
+  FILE -rw------- 2341B /home/saber/saberprojects/radio2-staging/.env.radio2.bak-e63-20261116-181459
+  FILE -rw------- 2316B /home/saber/saberprojects/radio2-staging/.env.radio2
+  FILE -rw-rw-r-- 52B /home/saber/saberprojects/sources-portal/.env.sources
+  FILE -rw-rw-r-- 483B /home/saber/saberprojects/ai-dump-builder/.env.example
+  FILE -rw------- 434B /home/saber/chatwoot-deploy/deploy/.env
+  FILE -rw-r--r-- 1768B /home/saber/chatwoot-deploy/deploy/.env.example
+  FILE -rw------- 1704B /home/saber/desktop-config/ssl/cert.key
+  FILE -rw-rw-r-- 530B /home/saber/amin-llm-training/repos/automatic-llm-finetuning-pipeline/.env.example
+  FILE -rw------- 1708B /home/saber/webtop/ssl/cert.key
+  FILE -rw-rw-r-- 327B /home/saber/apps/open-notebook/.env
+  FILE -rw-rw-r-- 3637B /home/saber/apps/open-notebook/.env.example
+  FILE -rw-rw-r-- 24105B /home/saber/apps/surfsense/.env
+  FILE -rw-rw-r-- 23751B /home/saber/apps/surfsense/.env.example
+  FILE -rw------- 44B /home/saber/asr-bot-platform/.secret_key
+  FILE -rw------- 44B /home/saber/asr-bot-platform/backups/recovery-20261116T081622Z/.secret_key
+  FILE -rw------- 1198B /home/saber/kong-api-gateway-oss/.env
+  FILE -rw-rw-r-- 1182B /home/saber/kong-api-gateway-oss/.env.example
+  FILE -rw------- 1174B /home/saber/backups/m25r_brand_20261112T100401Z/.env.radio
+  DIR  /home/saber/backups/m25_secret_backup
+    ENTRY drwxrwxr-x 4096B .
+    ENTRY drwxrwxr-x 4096B ..
+    ENTRY drwxrwxr-x 4096B 20261112T083230Z
+  FILE -rw-rw-r-- 388B /home/saber/backups/deploy-20261016/rag-portal/.env
+  FILE -rw-rw-r-- 396B /home/saber/backups/deploy-20261016/rag-portal/.env.new
+  FILE -rw-r--r-- 21B /home/saber/vllm-deployment-qwen3.8-27b/snapshot-20260912-140139/.env.missing
+  FILE -rw------- 1643B /home/saber/asr-bot-agent/.env
+  FILE -rw-rw-r-- 3110B /home/saber/miniconda3/conda-meta/secretstorage-3.5.0-py314h3e8c6aa_0.json
+  FILE -rw-rw-r-- 1984B /home/saber/miniconda3/lib/python3.14/secrets.py
+  FILE -rw-r--r-- 32772B /home/saber/miniconda3/pkgs/secretstorage-3.5.0-py314h3e8c6aa_0.conda
+  DIR  /home/saber/miniconda3/pkgs/secretstorage-3.5.0-py314h3e8c6aa_0
+    ENTRY drwxrwxr-x 4096B .
+    ENTRY drwxrwxr-x 24576B ..
+    ENTRY drwxrwxr-x 4096B info
+    ENTRY drwxrwxr-x 4096B lib
+  FILE -rw------- 1204B /home/saber/kong-final-accept/.env
+  FILE -rw-rw-r-- 1188B /home/saber/kong-final-accept/.env.example
+
+--- .env.radio2 candidate (locate + masked key check) ---
+  LOC: /home/saber/saberprojects/radio2-staging/.env.radio2
+  PERMS: -rw------- 2316B
+  --- masked lines containing key-like values (name = <len>) ---
+26:# admin token). RAG_LITELLM_KEY = per-consumer virtual key vk-radio
+28:# browser-side admin token (x-rag-admin-token header), separate from
+
+=== B3 SUPPLEMENT s53 DONE: log=/home/saber/e63-b3-envs-s53b-20261116-200614.log ===

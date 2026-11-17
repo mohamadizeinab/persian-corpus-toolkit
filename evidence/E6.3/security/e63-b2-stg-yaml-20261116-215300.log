@@ -1,0 +1,62 @@
+=== B2 STG YAML TS=20261116-215300 (read-only, masked) ===
+## 1) litellm.yaml (secret values masked):
+-rw------- 1 saber saber 2076 Nov 16 18:22 /home/saber/saberprojects/rag2-staging-core/litellm.yaml
+model_list:
+  # E6.3 staging: rag-* aliases -> staging gateway (18210) with per-consumer
+  # x-consumer-key (mirrors the production LiteLLM pattern). File chmod 600.
+  # Values double-quoted: token_urlsafe() output may start with '-'.
+  - model_name: rag-mizan
+    litellm_params:
+      model: openai/rag-mizan
+      api_base: http://127.0.0.1:18210/v1
+      api_key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+      extra_headers:
+        x-consumer-key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+  - model_name: rag-fiqh
+    litellm_params:
+      model: openai/rag-fiqh
+      api_base: http://127.0.0.1:18210/v1
+      api_key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+      extra_headers:
+        x-consumer-key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+  - model_name: rag-general
+    litellm_params:
+      model: openai/rag-general
+      api_base: http://127.0.0.1:18210/v1
+      api_key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+      extra_headers:
+        x-consumer-key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+  # portal-rag-* aliases: structural defect probe (gateway regex ^rag- cannot
+  # match) — expected 404 unknown_model; documented as the B/portal finding.
+  - model_name: portal-rag-mizan
+    litellm_params:
+      model: openai/portal-rag-mizan
+      api_base: http://127.0.0.1:18210/v1
+      api_key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+      extra_headers:
+        x-consumer-key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+  - model_name: portal-rag-fiqh
+    litellm_params:
+      model: openai/portal-rag-fiqh
+      api_base: http://127.0.0.1:18210/v1
+      api_key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+      extra_headers:
+        x-consumer-key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+  - model_name: portal-rag-general
+    litellm_params:
+      model: openai/portal-rag-general
+      api_base: http://127.0.0.1:18210/v1
+      api_key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+      extra_headers:
+        x-consumer-key: <len=$(printf "%s" "" | wc -c) sha256-16=$(printf "%s" "" | sha256sum | cut -c1-16)>"***REDACTED-ROTATED***"
+## 2) host python3:
+/usr/bin/python3
+Python 3.12.3
+## 3) staging key files (stat only):
+/home/saber/saberprojects/rag2-staging-core/secrets/radio-key 600 46
+/home/saber/saberprojects/rag2-staging-core/secrets/portal-key 600 46
+## 4) free ports 18211/18212 on s53:
+18211+18212 free
+## 5) staging gateway service key digest (for forwarder passthrough test):
+len=43 sha256-16=186d00b468507f9d
+=== DONE log=/home/saber/e63-b2-stg-yaml-20261116-215300.log ===

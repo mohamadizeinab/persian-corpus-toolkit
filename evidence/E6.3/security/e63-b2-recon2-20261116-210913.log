@@ -1,0 +1,97 @@
+=== B2 RECON2 TS=20261116-210913 (read-only) ===
+
+## 1) Gateway env var NAMES (non-secret flags shown, secrets digested):
+  GATEWAY_CONTEXT_MAX_CHARS = 12000
+  MIZAN_PROVIDER_TOKEN = <len=48 sha256-16=c884b7b6d73e5cf0>
+  GATEWAY_AUDIT_PATH = 
+  GATEWAY_LLM_ENDPOINT = http://127.0.0.1:4101/v1/chat/completions
+  GATEWAY_SERVICE_KEY = <len=51 sha256-16=7205ed208ee8d6ea>
+  GATEWAY_DEFAULT_TIMEOUT_MS = 30000
+  GATEWAY_PROVIDER_CACHE_TTL_S = 15
+  GATEWAY_MAX_HOPS = 1
+  GATEWAY_LLM_API_KEY = <len=67 sha256-16=8aad12d40c26d89a>
+  GATEWAY_REGISTRY_URL = http://127.0.0.1:8200
+  GATEWAY_MODEL_ONLY_ALIASES = qwen38-hub
+  FIQH_PROVIDER_TOKEN = <len=48 sha256-16=f17d2b7a701ca3bc>
+  GATEWAY_CONSUMER_VERIFY_TIMEOUT_MS = 2000
+  GATEWAY_REQUIRE_CONSUMER_KEY = <len=4 sha256-16=b5bea41b6c623f7c>
+  GATEWAY_LLM_API_KEY_REF = <len=23 sha256-16=3fe170077dee2ac6>
+  GATEWAY_LLM_MODEL = qwen38-hub
+  GATEWAY_LLM_TIMEOUT_S = 120
+  GATEWAY_REGISTRY_TIMEOUT_MS = 3000
+  GATEWAY_RETRIEVAL_TOP_K = 5
+  GATEWAY_REQUEST_TIMEOUT_MS = 60000
+  GATEWAY_REGISTRY_ADMIN_TOKEN = <len=43 sha256-16=0a31e5a69338a0a5>
+  GATEWAY_FUSION_TOP_K = 5
+  GATEWAY_AUDIT_RING = 500
+  PATH = /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  LANG = C.UTF-8
+  GPG_KEY = <len=40 sha256-16=6c3b7674b58d9f72>
+  PYTHON_VERSION = 3.12.15
+  PYTHON_SHA256 = c2c4321961fab0fb999d66e0cecf521c2ab3994c7992873ea99e306c1094fd5a
+  PYTHONDONTWRITEBYTECODE = 1
+  PYTHONUNBUFFERED = 1
+
+## 2) LiteLLM version + model list via API (names only):
+  model: bootstrap-do-not-use | litellm_model_name: None
+  model: qwen38-hub | litellm_model_name: None
+  model: q1-embedding-06b | litellm_model_name: None
+  model: q1-embedding-4b | litellm_model_name: None
+  model: gpt-oss-120b | litellm_model_name: None
+  model: rag-mizan | litellm_model_name: None
+  model: rag-fiqh | litellm_model_name: None
+  model: rag-general | litellm_model_name: None
+  model: portal-rag-mizan | litellm_model_name: None
+  model: portal-rag-fiqh | litellm_model_name: None
+  model: portal-rag-general | litellm_model_name: None
+
+## 3) LiteLLM model-management endpoints (from /openapi.json):
+  File "<string>", line 6
+    print(f"  {p}  [{\", \".join(methods)}]")
+                      ^
+SyntaxError: unexpected character after line continuation character
+
+## 4) Does litellm forward client custom headers to the provider?
+  litellm pkg: /app/.venv/lib/python3.13/site-packages/litellm
+/app/.venv/lib/python3.13/site-packages/litellm/types/router.py:140:        "forward_client_headers_by_model_group",
+/app/.venv/lib/python3.13/site-packages/litellm/types/router.py:1105:    forward_client_headers_to_llm_api: list[str] | None = None
+/app/.venv/lib/python3.13/site-packages/litellm/types/__pycache__/router.cpython-313.pyc:2005:)Úprompt_cachingÚrouter_budget_limitingÚresponses_api_deployment_checkÚdeployment_affinityÚsession_affinityÚ%forward_client_headers_by_model_groupÚenforce_model_rate_limitsÚencrypted_content_affinityc
+/app/.venv/lib/python3.13/site-packages/litellm/types/__pycache__/router.cpython-313.pyc:12878:NÚ!forward_client_headers_to_llm_apir1
+/app/.venv/lib/python3.13/site-packages/litellm/responses/utils.py:160:        `forward_client_headers_to_llm_api` is enabled) into `extra_headers`.
+
+## 5) Network layout (litellm-personal-net) for forwarder placement:
+  network id: b9391b947e0a3d50f968ed948fc93e5f1bbd16d8c0b3f30a4a235de637ab70a2
+  name: litellm-personal-net
+  drivers: bridge
+  container: 70f73f45c7ed60a20c1cdba65b8fa5d7db5ff029e4958fdea0bfb8f91344f3d8 ip=10.240.17.3 aliases=None
+  container: 90b336220f5851819e18e73d42a309be3187332e70914d4536a33c3ed1656f7d ip=10.240.17.2 aliases=None
+
+## 6) Candidate forwarder images available locally:
+rag-gateway:0.1.0  (125MB)
+rag-gateway:0.2.0-e61-da40c4d  (125MB)
+drag-ingest:0.1.0  (125MB)
+rag-registry:0.1.0  (125MB)
+python:latest  (1.13GB)
+python:3.12-slim  (119MB)
+nginx:alpine  (69.1MB)
+python:3.13-slim  (118MB)
+python:3.12-alpine  (55.2MB)
+shahrbano-nginx:latest  (62.9MB)
+  python3 in rag-gateway image:
+Python 3.12.15
+  nginx binary in any local image (skip slow scan; check nginx image only):
+WARNING: This output is designed for human readability. For machine-readable output, please use --format.
+2
+
+## 7) LiteLLM DB write path check: does proxy cache model_list in memory?
+/app/.venv/lib/python3.13/site-packages/litellm/proxy/client/cli/commands/models.py
+4390:    `model_list_healthy_only` reads the same cache to hide unhealthy models from
+11587:    global llm_model_list, general_settings, llm_router, prisma_client, user_api_key_cache, proxy_logging_obj
+11816:    global llm_model_list, general_settings, llm_router, prisma_client, user_api_key_cache, proxy_logging_obj
+
+## 8) Registry consumer rotate endpoint contract (source, read-only):
+  (from local repo ../dedicated-rag/drag/registry/api.py, verified earlier:)
+  POST /api/rag-registry/consumers/<id>/rotate-key -> {"api_key": "rc_..."} shown ONCE
+  old key invalid immediately; /version token bumps
+
+=== B2 RECON2 DONE log=/home/saber/e63-b2-recon2-20261116-210913.log ===

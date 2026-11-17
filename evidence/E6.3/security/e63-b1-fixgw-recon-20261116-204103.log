@@ -1,0 +1,39 @@
+=== B1 fixgw recon TS=20261116-204103 ===
+new master key digest(16) = dd35828889b32f59
+
+--- /home/saber/dedicated-rag-gateway listing:
+total 32
+drwxrwxr-x  5 saber saber 4096 Nov 13 18:40 .
+drwxr-xr-x 54 saber saber 4096 Nov 16 20:41 ..
+-rw-rw-r--  1 saber saber 1212 Nov 13 18:25 compose.gateway.yml
+-rw-rw-r--  1 saber saber  765 Nov 13 18:25 Dockerfile.gateway
+drwxrwxr-x  5 saber saber 4096 Nov 13 17:53 drag
+drwxrwxr-x  2 saber saber 4096 Nov 13 18:40 env
+drwxrwxr-x  2 saber saber 4096 Nov 13 18:31 openapi
+-rw-rw-r--  1 saber saber   17 Nov 12 14:56 requirements.txt
+
+--- compose.gateway.yml: structure lines (values masked):
+6:# also reaches LiteLLM on the host (GATEWAY_LLM_ENDPOINT, port 4101) and the
+14:    image: rag-gateway:0.1.0
+15:    container_name: rag-gateway
+26:    env_file:
+
+--- key-bearing lines per file (name / len / digest16):
+
+--- current rag-gateway env (GATEWAY_LLM_API_KEY digest):
+   GATEWAY_LLM_API_KEY len=67 digest=d6a88a9ce1acbe5b
+
+--- backup dir from failed rotate run:
+total 72196
+-rw-rw-r-- 1 saber saber     1212 Nov 13 18:25 compose.gateway.yml.old
+-rw------- 1 saber saber      404 Nov 14 14:43 e61_phase5_secrets.txt.old
+-rw------- 1 saber saber 73871795 Nov 16 20:38 litellm-dump-20261116-203835.sql
+-rw------- 1 saber saber      397 Nov 16 20:38 litellm-personal.env.old
+-rw------- 1 saber saber    11319 Nov 16 20:38 litellm-personal-inspect.json
+-rw------- 1 saber saber     1258 Nov 16 20:38 rag-gateway.env.old
+-rw------- 1 saber saber    12854 Nov 16 20:38 rag-gateway-inspect.json
+-rw-rw-r-- 1 saber saber      646 Nov 16 20:38 SHA256SUMS.txt
+
+--- gateway /health now:
+200
+=== done ===

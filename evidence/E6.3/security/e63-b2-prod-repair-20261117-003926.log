@@ -1,0 +1,37 @@
+=== B2 PROD REPAIR TS=20261117-003926 ===
+
+## 0) pre-checks:
+  keyfile: size=119 mode=600 sha256-16=3a722005a288e298 (expect 3a722005a288e298)
+  keyfile FLAT-OK
+
+## 1) recreate rag-keyfwd (directory bind-mount, no published ports):
+rag-keyfwd
+  removed stale rag-keyfwd
+0663d39ff58f0bb7c3798f8d638c8f2a3ec6c289103b711ea13cc6d5231e5885
+  [try 1] radio:8211 -> 200 {"ok": true, "consumer": "radio", "consumers": ["portal", "radio"], "key_digests": {"radio": "055bee99faa5b694", "portal": "90274064a3c833f9"}, "keyfile_error": null}
+  [try 1] portal:8212 -> 200 {"ok": true, "consumer": "portal", "consumers": ["portal", "radio"], "key_digests": {"radio": "055bee99faa5b694", "portal": "90274064a3c833f9"}, "keyfile_error": null}
+  healthz key digests: radio=055bee99faa5b694 (expect 055bee99faa5b694) portal=90274064a3c833f9 (expect 90274064a3c833f9)
+  published ports: [] (expect empty)
+
+## 2) positive chains (litellm -> keyfwd -> gateway, NEW keys):
+  radio post-repair: GREEN choices=1 citations=5 content_len=730 err=-
+  portal post-repair: GREEN choices=1 citations=5 content_len=508 err=-
+
+## 3) old keys still dead (direct gateway :8210):
+  old radio key  -> http 401 {"error":{"code":"unknown_consumer_key","message":"consumer key is unknown or disabled","retryable":false,"type":"gateway_error"}} (expect 401)
+  old portal key -> http 401 {"error":{"code":"unknown_consumer_key","message":"consumer key is unknown or disabled","retryable":false,"type":"gateway_error"}} (expect 401)
+
+## 4) fleet scan (no raw keys anywhere):
+  audit consumer_key_rotate: count=2 actions=[('consumer_key_rotate', None), ('consumer_verify', None), ('unknown_key_denied', None), ('validation_error_denied', None)]
+  DB extra_headers with x-consumer-key: 0 (expect 0)
+  raw rc_ key material in logs: keyfwd=0 litellm=0 gateway=0 registry=0 (all expect 0)
+  keyfwd log tail:
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: "GET /__healthz HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+keyfwd: POST model=rag-mizan status=200 stream=False
+keyfwd: "POST /v1/chat/completions HTTP/1.1" 200 -
+
+=== REPAIR DONE ===
+LOG=/home/saber/e63-b2-prod-repair-20261117-003926.log

@@ -1,0 +1,160 @@
+=== C6 20261116-191908 (2026-11-16T19:19:08Z)
+=== [0] prechecks
+=== [0] prechecks
+--- registry health:
+{"enabled":2,"ok":true,"providers":2,"service":"rag-registry","version":"e1"}
+
+--- baseline version:
+  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+--- registry container env NAMES (values not shown):
+
+GATEWAY_REGISTRY_ADMIN_TOKEN
+GATEWAY_SERVICE_KEY
+GPG_KEY
+LANG
+LITELLM_MASTER_KEY
+PATH
+PYTHONDONTWRITEBYTECODE
+PYTHON_SHA256
+PYTHONUNBUFFERED
+PYTHON_VERSION
+REGISTRY_ADMIN_TOKEN
+REGISTRY_DB_PATH
+REGISTRY_OPERATOR_TOKEN
+REGISTRY_VIEW_TOKEN
+STG_PROVIDER_TOKEN
+SYNTH_TOKEN
+--- probe infra sanity: test-connection on existing mizan provider:
+{"ok":true,"result":{"detail":"health endpoint responded 200","latency_ms":9,"ok":true,"status":200}}
+
+HTTP=200--- existing providers:
+{"detail":"route not found","error":"not_found","ok":false}
+
+HTTP=404=== [1] CREATE provider e6-acceptance
+=== [1] CREATE provider e6-acceptance
+{"detail":"route not found","error":"not_found","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [UI] !!! e6-acceptance MISSING from picker (expected present)
+{"ok":true,"consumer":{"consumer_id":"radio","display_name":"Radio Mar'ef (staging)","description":"E6.3 staging radio consumer (fresh key).","allowed_rag_ids":["mizan","fiqh","e6-acceptance"],"default_rag_id":"mizan","routing_policy":"priority","timeout_ms":60000,"stream_allowed":true,"citation_format":"standard","enabled":true},"providers":[{"rag_id":"mizan","display_name":"تفسیر المیزان (استیجینگ، مصنوعی)","description":"Synthetic staging provider (E6.3 C5) — NOT the production Mizan RAG.","priority":1,"retrieval_weight":1.0,"source_names":{}},{"rag_id":"fiqh","display_name":"فقه (استیجینگ، مصنوعی)","description":"Synthetic staging provider (=== [2] TEST-CONNECTION
+=== [2] TEST-CONNECTION
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+=== [3] TEST-AUTH
+=== [3] TEST-AUTH
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+=== [4] TEST-RETRIEVAL
+=== [4] TEST-RETRIEVAL
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+=== [5] UPDATE-CFG (PATCH with If-Match; stale first -> expect 409)
+=== [5] UPDATE-CFG (PATCH with If-Match; stale first -> expect 409)
+  current updated_at=
+--- stale If-Match (expect 409):
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404--- fresh If-Match (expect 200):
+{"detail":"PATCH requires If-Match header with the current updated_at","error":"if_match_required","ok":false}
+
+HTTP=428  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+--- persistence check (display_name must be the renamed value):
+=== [6] PRIORITY (5 -> 3)
+=== [6] PRIORITY (5 -> 3)
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+--- persistence (priority must be 3):
+=== [7] ENABLE (idempotent re-enable)
+=== [7] ENABLE (idempotent re-enable)
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+=== [8] DISABLE
+=== [8] DISABLE
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+  [UI] e6-acceptance ABSENT from picker (as expected)
+=== [9] CREATE-PROMPT (on disabled provider — record behavior)
+=== [9] CREATE-PROMPT (on disabled provider — record behavior)
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+=== [10] ACTIVATE prompt v1
+=== [10] ACTIVATE prompt v1
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+=== [11] REACTIVATE (prompt v1 again = idempotent; provider re-enabled)
+=== [11] REACTIVATE (prompt v1 again = idempotent; provider re-enabled)
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+  [UI] !!! e6-acceptance MISSING from picker (expected present)
+{"ok":true,"consumer":{"consumer_id":"radio","display_name":"Radio Mar'ef (staging)","description":"E6.3 staging radio consumer (fresh key).","allowed_rag_ids":["mizan","fiqh","e6-acceptance"],"default_rag_id":"mizan","routing_policy":"priority","timeout_ms":60000,"stream_allowed":true,"citation_format":"standard","enabled":true},"providers":[{"rag_id":"mizan","display_name":"تفسیر المیزان (استیجینگ، مصنوعی)","description":"Synthetic staging provider (E6.3 C5) — NOT the production Mizan RAG.","priority":1,"retrieval_weight":1.0,"source_names":{}},{"rag_id":"fiqh","display_name":"فقه (استیجینگ، مصنوعی)","description":"Synthetic staging provider (=== [12] ARCHIVE
+=== [12] ARCHIVE
+{"detail":"rag_id 'e6-acceptance' not in registry","error":"unknown_rag_id","ok":false}
+
+HTTP=404  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T18:22:52.877Z"}
+--- persistence (archived must be true):
+  [UI] e6-acceptance ABSENT from picker (as expected)
+--- provider list with archived=true must show it:
+--- provider list default (archived hidden):
+=== [13] AUDIT trail for e6-acceptance
+=== [13] AUDIT trail for e6-acceptance
+{"audit":[{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.958Z","diff":{"detail":"","method":"GET","path":"/api/rag-registry/e6-acceptance","status":404},"id":53,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.935Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/archive","status":404},"id":52,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.879Z","diff":{"detail":"","method":"GET","path":"/api/rag-registry/e6-acceptance","status":404},"id":51,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.854Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/enable","status":404},"id":50,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.832Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/prompts/1/activate","status":404},"id":49,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.808Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/prompts/1/activate","status":404},"id":48,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.782Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/prompts","status":404},"id":47,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.730Z","diff":{"detail":"","method":"GET","path":"/api/rag-registry/e6-acceptance","status":404},"id":46,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.706Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/disable","status":404},"id":45,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.689Z","diff":{"detail":"","method":"GET","path":"/api/rag-registry/e6-acceptance","status":404},"id":44,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.665Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/enable","status":404},"id":43,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.649Z","diff":{"detail":"","method":"GET","path":"/api/rag-registry/e6-acceptance","status":404},"id":42,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.627Z","diff":{"detail":"","method":"POST","path":"/api/rag-registry/e6-acceptance/priority","status":404},"id":41,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.612Z","diff":{"detail":"","method":"GET","path":"/api/rag-registry/e6-acceptance","status":404},"id":40,"rag_id":"e6-acceptance"},{"action":"not_found_denied","actor":"admin","at":"2026-11-16T19:19:08.599Z","diff"
+audit entries: 21
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+   not_found_denied e6-acceptance 
+=== [14] temp-consumer lifecycle (create -> rags -> disable; left disabled = cleanup)
+=== [14] temp-consumer lifecycle (create -> rags -> disable; left disabled = cleanup)
+{"api_key":"***MASKED***","consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-c6-temp","created_at":"2026-11-16T19:19:09.064Z","created_by":"admin","default_rag_id":"","description":"Temporary consumer for C6 consumer-lifecycle acceptance. Left disabled as cleanup.","display_name":"C6 temp consumer","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T19:19:09.064Z"},"key_notice":"store now; the key is shown exactly once","ok":true}
+
+HTTP=201--- temp consumer /rags (expect 200 with mizan):
+{"consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-c6-temp","created_at":"2026-11-16T19:19:09.064Z","created_by":"admin","default_rag_id":"","description":"Temporary consumer for C6 consumer-lifecycle acceptance. Left disabled as cleanup.","display_name":"C6 temp consumer","enabled":true,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T19:19:09.064Z"},"model_aliases":{"multi":"rag-general","single":["rag-mizan"]},"ok":true,"providers":[{"allowed_consumers":[],"allowed_users":[],"api_contract_version":"v1","api_en
+--- disable temp consumer (PATCH If-Match=2026-11-16T19:19:09.064Z):
+{"consumer":{"allowed_rag_ids":["mizan"],"citation_format":"standard","consumer_id":"e6-c6-temp","created_at":"2026-11-16T19:19:09.064Z","created_by":"admin","default_rag_id":"","description":"Temporary consumer for C6 consumer-lifecycle acceptance. Left disabled as cleanup.","display_name":"C6 temp consumer","enabled":false,"routing_policy":"priority","stream_allowed":true,"timeout_ms":60000,"updated_at":"2026-11-16T19:19:09.113Z"},"ok":true}
+
+HTTP=200--- verify disabled:
+"enabled":false
+=== [15] final state
+=== [15] final state
+--- final version:
+  [version] {"ok":true,"providers_enabled":2,"version":"2026-11-16T19:19:09.113Z"}
+--- health:
+{"enabled":2,"ok":true,"providers":2,"service":"rag-registry","version":"e1"}
+
+radio2_api	Up 22 minutes (healthy)
+rag2-staging-core-litellm-1	Up 23 minutes (healthy)
+rag2_api	Up 52 minutes
+rag2-staging-core-synth-provider-1	Up 56 minutes (healthy)
+rag2-staging-core-gateway-1	Up About an hour (healthy)
+rag2-staging-core-registry-1	Up 4 minutes (healthy)
+C6_DONE log=/home/saber/e63-c6-acceptance-20261116-191908.log

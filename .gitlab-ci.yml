@@ -20,8 +20,11 @@
 # Jobs
 #   1. regression — the full backend test matrix (PCM-12.3 rule:
 #                   pct_test_support first, temp DB, order-independent).
-#                   188 tests: 182 historical + 18 contract tests
+#                   200 tests: 182 historical + 18 contract tests
 #                   (CT-01..CT-06 in test_api_contract.py).
+#                   (E6.3 C2: count corrected 188 -> 200, verified by
+#                   2026-11-16 full regression run, see docs/reports/
+#                   E6.3-MASTER-EXECUTION-REPORT.md)
 #   2. openapi    — machine-validity of the additive OpenAPI specs
 #                   (deploy/pcm19_openapi_check.py: parse + operationId +
 #                   local $ref resolution + path-parameter consistency).

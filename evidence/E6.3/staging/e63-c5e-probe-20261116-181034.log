@@ -1,0 +1,65 @@
+=== c5e probe 20261116-181034
+--- newest build log tail:
+buildlog=/home/saber/e63-c5d-build-20261116-180715.log
+=== [5] up synth+registry+gateway
+=== [5] up synth+registry+gateway
+compose: 2.40.3+ds1-0ubuntu1~24.04.1
+ Container rag2-staging-core-gateway-1  Starting
+ Container rag2-staging-core-synth-provider-1  Starting
+ Container rag2-staging-core-gateway-1  Started
+ Container rag2-staging-core-synth-provider-1  Started
+ Container rag2-staging-core-registry-1  Started
+UP: synth-provider (18101) after 1s
+UP: registry (18200) after 0s
+UP: gateway (18210) after 0s
+=== [5b] direct synth checks
+=== [5b] direct synth checks
+{"ok": true, "service": "e63-synth-provider", "collections": ["fiqh", "mizan"]}
+synth /v1/models without Bearer -> 401 (expect 401)
+=== [6] seed world
+=== [6] seed world
+provider mizan: HTTP 201 master_prompt_id=mp-mizan-v1
+provider fiqh: HTTP 201 master_prompt_id=mp-fiqh-v1
+consumer radio: HTTP 201 api_key=WAjhi_…(len 43) -> /stg-secrets/radio-key
+consumer portal: HTTP 201 api_key=fRmXoV…(len 43) -> /stg-secrets/portal-key
+enabled providers: ['mizan', 'fiqh']
+registry version: 2026-11-16T18:07:17.623Z enabled: 2
+audit entries for mizan: 1
+SEED_DONE
+--- containers (e63 core + staging ui):
+rag2-staging-core-synth-provider-1	Up 3 minutes (unhealthy)
+rag2-staging-core-gateway-1	Up 3 minutes (healthy)
+rag2-staging-core-registry-1	Up 3 minutes (healthy)
+rag2_frontend	Up 2 days
+rag2_api	Up 2 days
+rag2_auth_db	Up 2 days (healthy)
+rag2_db	Up 2 days (healthy)
+radio2_frontend	Up 2 days (healthy)
+radio2_api	Up 2 days (healthy)
+--- STG dir:
+total 32
+drwxrwxr-x  6 saber saber 4096 Nov 16 18:07 .
+drwxrwxr-x 28 saber saber 4096 Nov 16 18:07 ..
+drwxrwxrwx  2 saber saber 4096 Nov 16 18:07 audit
+-rw-rw-r--  1 saber saber 3269 Nov 16 18:07 compose.yml
+drwxrwxrwx  2 saber saber 4096 Nov 16 18:10 data
+drwxrwxrwx  2 saber saber 4096 Nov 16 18:07 secrets
+-rw-------  1 saber saber  516 Nov 16 18:07 stg.env
+drwxrwxr-x  2 saber saber 4096 Nov 16 18:07 synth
+--- UI env re-point (URL lines only, no secrets):
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+--- env backups:
+--- litellm health:
+
+GET /health -> 000
+--- smoke file:
+no smoke file yet
+--- UI /api/rag/status:
+radio2:
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"radio"}
+rag2:
+{"ok":true,"configured":true,"litellm_configured":true,"consumer_id":"portal"}
+PROBE_DONE

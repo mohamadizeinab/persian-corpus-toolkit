@@ -1,0 +1,85 @@
+=== B2 RECON TS=20261116-210207 (read-only, digests only) ===
+
+## 1) LiteLLM LiteLLM_ProxyModelTable: model_name/mode/api_base + params
+-- row count:
+13
+
+ERROR:  column "mode" does not exist
+LINE 1: SELECT model_name, coalesce(mode, ''), coalesce(litellm_para...
+                                    ^
+
+-- model_group_aliases (if table exists):
+ERROR:  relation "LiteLLM_ModelGroupAlias" does not exist
+LINE 1: SELECT * FROM "LiteLLM_ModelGroupAlias" LIMIT 40;
+                      ^
+
+## 2) Registry consumer store (digest match; key columns digested only)
+registry container: rag-registry
+-- mounts:
+  mount: bind /home/saber/dedicated-rag-registry/data/registry -> /data
+  mount: bind /home/saber/dedicated-rag-registry/openapi -> /app/openapi
+registry data dir: /home/saber/dedicated-rag-registry/data/registry
+total 348
+-rw-r--r-- 1 saber saber 356352 Nov 16 20:58 rag-registry.db
+  db=/home/saber/dedicated-rag-registry/data/registry/rag-registry.db tables=['rag_providers', 'rag_master_prompts', 'rag_registry_audit', 'sqlite_sequence', 'rag_consumers']
+  [rag_providers] cols=['rag_id', 'rag_name', 'display_name', 'description', 'provider_type', 'base_url', 'api_endpoint', 'api_contract_version', 'healthcheck_endpoint', 'auth_ref', 'master_prompt_id', 'priority', 'retrieval_weight', 'fallback_priority', 'retrieval_config', 'embedding_model', 'vector_index', 'top_k', 'similarity_threshold', 'timeout_ms', 'retry_policy', 'enabled', 'archived', 'allowed_consumers', 'allowed_users', 'created_at', 'updated_at', 'created_by']
+  [rag_master_prompts] cols=['prompt_id', 'rag_id', 'version', 'body', 'status', 'created_by', 'created_at', 'audit_ref']
+  [rag_registry_audit] cols=['id', 'rag_id', 'action', 'actor', 'diff_json', 'at']
+  [sqlite_sequence] cols=['name', 'seq']
+  [rag_consumers] cols=['consumer_id', 'display_name', 'description', 'key_hash', 'allowed_rag_ids', 'default_rag_id', 'routing_policy', 'timeout_ms', 'stream_allowed', 'citation_format', 'enabled', 'created_at', 'updated_at', 'created_by']
+  row: consumer_id=radio display_name=radio description= key_hash=<64B sha256-16=c94e108ff1b13a9e sha256=c94e108ff1b13a9e340ecaf530a364d22458040b0694d6d174f7b4008aa57256> allowed_rag_ids=["mizan","fiqh"] default_rag_id=mizan routing_policy=priority timeout_ms=60000 stream_allowed=1 citation_format=standard enabled=1 created_at=2026-11-13T18:40:14.929Z updated_at=2026-11-13T18:55:20.372Z created_by=admin
+  row: consumer_id=e2e-client display_name=E2E client description= key_hash=<64B sha256-16=4f5aa18acec9a9f2 sha256=4f5aa18acec9a9f2111bfaca469c7c594cb83181c53fef420757d851b7e3ff48> allowed_rag_ids=["mizan","e2e"] default_rag_id= routing_policy=fusion timeout_ms=60000 stream_allowed=1 citation_format=standard enabled=0 created_at=2026-11-14T07:24:19.957Z updated_at=2026-11-14T07:42:09.574Z created_by=admin
+  row: consumer_id=e2e-denied display_name=E2E denied client description= key_hash=<64B sha256-16=65b53757b1c8fdec sha256=65b53757b1c8fdec03d2a39713490524389a81ac1314ef4bcfb698bfdda90183> allowed_rag_ids=["mizan"] default_rag_id= routing_policy=single timeout_ms=60000 stream_allowed=1 citation_format=standard enabled=0 created_at=2026-11-14T07:34:34.744Z updated_at=2026-11-14T07:42:09.633Z created_by=admin
+  row: consumer_id=portal display_name=RAG Portal (rag.ai.ismc.ir) description=Portal consumer for the multi-RAG platform key_hash=<64B sha256-16=60a68c18ac1339d9 sha256=60a68c18ac1339d98dbb02303d3c7bf584ab3963ac8d7fb8d5319a7ada80f94f> allowed_rag_ids=["mizan","fiqh"] default_rag_id=mizan routing_policy=priority timeout_ms=60000 stream_allowed=1 citation_format=standard enabled=1 created_at=2026-11-14T14:29:13.719Z updated_at=2026-11-14T14:42:39.870Z created_by=admin
+  row: consumer_id=e6-b4-prod display_name=E6.3 B4 prod temp (authz test) description=Temporary cross-consumer authz verification. Disabled immediately as cleanup. key_hash=<64B sha256-16=7529cabcd759e0c1 sha256=7529cabcd759e0c1bd0e4bbf1a5b7562103ebae8f2efec88e31ae73e918a7b5f> allowed_rag_ids=["mizan"] default_rag_id= routing_policy=priority timeout_ms=60000 stream_allowed=1 citation_format=standard enabled=0 created_at=2026-11-16T19:44:03.345Z updated_at=2026-11-16T19:44:19.422Z created_by=admin
+
+## 3) Known operator secret-store digests (cross-match reference)
+  PORTAL_CONSUMER_KEY: len=46 prefix=rc_ sha256-16=a9a63be6cb1cc007 sha256=a9a63be6cb1cc007de0c008432cbd5161593be19100f9fad6c4c5876d6ddcb25
+
+## 4) Registry consumer list via API (metadata only, no keys)
+  consumer: {"allowed_rag_ids": ["mizan", "fiqh"], "citation_format": "standard", "consumer_id": "portal", "created_at": "2026-11-14T14:29:13.719Z", "created_by": "admin", "default_rag_id": "mizan", "description": "Portal consumer for the multi-RAG platform", "display_name": "RAG Portal (rag.ai.ismc.ir)", "enabled": true, "routing_policy": "priority", "stream_allowed": true, "timeout_ms": 60000, "updated_at": "2026-11-14T14:42:39.870Z"}
+  consumer: {"allowed_rag_ids": ["mizan", "fiqh"], "citation_format": "standard", "consumer_id": "radio", "created_at": "2026-11-13T18:40:14.929Z", "created_by": "admin", "default_rag_id": "mizan", "description": "", "display_name": "radio", "enabled": true, "routing_policy": "priority", "stream_allowed": true, "timeout_ms": 60000, "updated_at": "2026-11-13T18:55:20.372Z"}
+
+## 5) Traffic: which rag aliases are actually called
+-- litellm log tail 4000: rag-* alias mention counts:
+-- litellm log tail sample (last 3 lines, truncated):
+INFO:     10.240.17.1:36686 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     10.240.17.1:38450 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     10.240.17.1:47744 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+
+-- gateway :8210 /metrics (rag/consumer/model lines):
+
+-- registry :8200 /metrics (head):
+# HELP rag_up Service liveness
+# TYPE rag_up gauge
+rag_up 1
+# HELP rag_providers_total Registered RAG providers (incl. archived)
+# TYPE rag_providers_total gauge
+rag_providers_total 4
+# HELP rag_providers_enabled_enabled Active (enabled, non-archived) providers
+# TYPE rag_providers_enabled_enabled gauge
+rag_providers_enabled_enabled 2
+# HELP rag_consumers_enabled_enabled Active consumers
+# TYPE rag_consumers_enabled_enabled gauge
+rag_consumers_enabled_enabled 2
+# HELP rag_audit_entries_total Audit trail entries by action (lifetime)
+# TYPE rag_audit_entries_total counter
+rag_audit_entries_total{action="archive"} 2
+rag_audit_entries_total{action="consumer_create"} 5
+rag_audit_entries_total{action="consumer_key_rotate"} 7
+rag_audit_entries_total{action="consumer_update"} 3
+rag_audit_entries_total{action="consumer_verify"} 2360
+rag_audit_entries_total{action="create"} 4
+rag_audit_entries_total{action="disable"} 1
+rag_audit_entries_total{action="forbidden_denied"} 1
+rag_audit_entries_total{action="not_found_denied"} 3
+rag_audit_entries_total{action="prompt_activate"} 5
+rag_audit_entries_total{action="prompt_create"} 2
+rag_audit_entries_total{action="test_auth"} 6
+rag_audit_entries_total{action="test_connection"} 8
+rag_audit_entries_total{action="test_retrieval"} 7
+rag_audit_entries_total{action="unauthorized_denied"} 10
+rag_audit_entries_total{action="unknown_key_denied"} 245
+rag_audit_entries_total{action="update"} 2
+
+=== B2 RECON DONE log=/home/saber/e63-b2-recon-20261116-210207.log ===

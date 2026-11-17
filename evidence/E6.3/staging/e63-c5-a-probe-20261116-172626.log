@@ -1,0 +1,211 @@
+=== E6.3 C5-A probe 20261116-172626 (host: llm) ===
+
+=== [1] direct s53 -> s52:22 (cross-server relay feasibility) ===
+s53->s52:22 CLOSED
+
+=== [2] s53 ssh key state (to s52) ===
+id_ed25519 present
+no id_rsa
+authorized_keys
+authorized_keys.backup-20261108-090637
+config
+gitlab52_deploy
+gitlab52_deploy.pub
+id_ed25519
+id_ed25519.pub
+known_hosts
+known_hosts.old
+saber38
+
+=== [3] host ports in use (181xx/182xx check + full list) ===
+22
+53
+80
+3000
+3001
+3308
+3929
+4000
+4001
+4002
+5432
+5436
+5440
+5446
+5456
+5466
+5467
+5477
+5478
+6010
+6011
+6333
+6334
+6379
+6556
+7474
+7687
+8000
+8001
+8003
+8004
+8013
+8014
+8023
+8024
+8033
+8034
+8043
+8044
+8045
+8046
+8047
+8048
+8053
+8054
+8063
+8064
+8080
+8083
+8085
+8090
+8590
+8990
+9000
+9001
+9002
+9003
+9004
+9080
+9095
+9100
+9400
+9443
+9500
+11434
+15432
+16379
+18001
+18002
+18080
+18091
+18789
+20241
+22001
+41282
+42099
+60119
+
+=== [4] vLLM model name on s53 (for staging LLM endpoint) ===
+VL_PORT_HINT=ragportal_api 0.0.0.0:8033->8000/tcp, [::]:8033->8000/tcp
+rag2_api 0.0.0.0:8047->8000/tcp, [::]:8047->8000/tcp
+kong-gw-oss-kong 8443-8444/tcp, 127.0.0.1:18080->8000/tcp, 127.0.0.1:18001->8001/tcp
+LOOPBACK_PORTS=127.0.0.1:8590->8590
+127.0.0.1:4002->3000
+127.0.0.1:16379->6379
+127.0.0.1:15432->5432
+127.0.0.1:18080->8000
+--- vllm probe :35000 ---
+curl: (7) Failed to connect to 127.0.0.1 port 35000 after 0 ms: Couldn't connect to server
+
+--- vllm probe :8000 ---
+{"object":"list","data":[{"id":"/models/Qwen3.8-27B-FP8","object":"model","created":1794849994,"owned_by":"vllm","root":"/models/Qwen3.8-27B-FP8","parent":null,"max_model_len":200000,"permission":[{"id":"modelperm-9ad69705052ff944","object":"model_permission","created":1794849994,"allow_create_engine":false,"allow_sampling":true,"allow_logprobs":true,"allow_search_indices":false,"allow_view":true,"allow_fine_tuning":false,"organization":"*","group":null,"is_blocking":false}]}]}
+--- vllm probe :8001 ---
+{"object":"list","data":[{"id":"/models/Qwen3.8-27B-FP8","object":"model","created":1794849994,"owned_by":"vllm","root":"/models/Qwen3.8-27B-FP8","parent":null,"max_model_len":200000,"permission":[{"id":"modelperm-9ddfd5c76eec43d8","object":"model_permission","created":1794849994,"allow_create_engine":false,"allow_sampling":true,"allow_logprobs":true,"allow_search_indices":false,"allow_view":true,"allow_fine_tuning":false,"organization":"*","group":null,"is_blocking":false}]}]}
+
+=== [5] staging litellm (s53:4101) model inventory ===
+curl: (7) Failed to connect to 127.0.0.1 port 4101 after 0 ms: Couldn't connect to server
+
+
+=== [6] litellm container name(s) on s53 ===
+mock-litellm ghcr.io/berriai/litellm:main-latest 0.0.0.0:9001->4000/tcp, [::]:9001->4000/tcp
+
+=== [7] staging compose files (paths only) ===
+/home/saber/e63-c5-a-probe-20261116-172626.log
+/home/saber/m23_staging
+/home/saber/saberprojects/p04_staging
+/home/saber/saberprojects/radio2-staging
+/home/saber/saberprojects/rag2-staging
+/home/saber/saberprojects/rag2-staging/docker-compose.rag2.yml
+/home/saber/saberprojects/radio2-staging/docker-compose.radio2.yml
+
+=== [8] radio2_api container full inspect + env ===
+inspect saved
+--- env (RAG_/LITELLM keys only, values masked) ---
+LITELLM_API_KEY=***MASKED***
+RAG_ADMIN_TOKEN=***MASKED***
+RAG_CONSUMER_ID=radio
+RAG_REGISTRY_TOKEN=***MASKED***
+RAG_SERVICE_TOKEN=***MASKED***
+RAG_MODEL_PREFIX=rag-
+RAG_TIMEOUT_S=120
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+RAG_LITELLM_KEY=***MASKED***
+LITELLM_BASE=http://172.30.0.133:4000/v1
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+--- mounts/network/labels ---
+image: mrbaqeri/qa_lang_neo4j_mesbah:1.0.0
+networks: ['graph-rag_default']
+ports: {'8003/tcp': [{'HostIp': '0.0.0.0', 'HostPort': '8045'}, {'HostIp': '::', 'HostPort': '8045'}], '8501/tcp': None}
+restart: {'Name': 'unless-stopped', 'MaximumRetryCount': 0}
+user: 
+labels: {'com.docker.compose.config-hash': '5eefd7b233c919ac629bb551b6d4171a0f169a181e545b0f06f9fff43b83892f', 'com.docker.compose.container-number': '1', 'com.docker.compose.depends_on': '', 'com.docker.compose.image': 'sha256:00195a93a4555cb46c3a72a9bf4c24743f09e1c2decd2387145a1bed74af0459', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'radio2-staging', 'com.docker.compose.project.config_files': '/home/saber/saberprojects/radio2-staging/docker-compose.radio2.yml', 'com.docker.compose.project.environment_file': '/home/saber/saberprojects/radio2-staging/.env.radio2', 'com.docker.compose.project.working_dir': '/home/saber/saberprojects/radio2-staging', 'com.docker.compose.service': 'api', 'com.docker.compose.version': '2.40.3'}
+mounts: [
+ {
+  "Type": "bind",
+  "Source": "/home/saber/saberprojects/radio2-staging/rag_proxy.py",
+  "Destination": "/app/app/rag_proxy.py",
+  "Mode": "ro",
+  "RW": false,
+  "Propagation": "rprivate"
+ },
+ {
+  "Type": "bind",
+  "Source": "/home/saber/saberprojects/radio2-staging/api.py",
+  "Destination": "/app/app/api.py",
+  "Mode": "ro",
+  "RW": false,
+  "Propagation": "rprivate"
+ }
+]
+
+=== [9] rag2_api container full inspect + env ===
+inspect saved
+--- env (RAG_/LITELLM/DB keys only, values masked) ---
+RAG_CONSUMER_ID=portal
+LITELLM_KEY=***MASKED***
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+RAG_BASE_URLS=
+LITELLM_BASE=http://172.30.0.133:4000/v1
+RAG_MODEL_PREFIX=portal-rag-
+RAG_LITELLM_KEY=***MASKED***
+RAG_TIMEOUT_S=120
+RAG_REGISTRY_TOKEN=***MASKED***
+--- mounts/network/labels ---
+image: rag2-staging-api
+networks: ['rag2-staging_default']
+ports: {'8000/tcp': [{'HostIp': '0.0.0.0', 'HostPort': '8047'}, {'HostIp': '::', 'HostPort': '8047'}]}
+restart: {'Name': 'unless-stopped', 'MaximumRetryCount': 0}
+user: 
+labels: {'com.docker.compose.config-hash': '189939c083523977c1f36c749c1e1636481e97d725389c1e13dc91dfb43defbb', 'com.docker.compose.container-number': '1', 'com.docker.compose.depends_on': 'pg:service_healthy:false,auth_db:service_healthy:false', 'com.docker.compose.image': 'sha256:eb9278462bfb0eb29a72349d01e2a5d708f8185ec57a9cf3801d2d4752dc50fc', 'com.docker.compose.oneoff': 'False', 'com.docker.compose.project': 'rag2-staging', 'com.docker.compose.project.config_files': '/home/saber/saberprojects/rag2-staging/docker-compose.rag2.yml', 'com.docker.compose.project.environment_file': '/home/saber/saberprojects/rag2-staging/.env', 'com.docker.compose.project.working_dir': '/home/saber/saberprojects/rag2-staging', 'com.docker.compose.service': 'api', 'com.docker.compose.version': '2.40.3'}
+mounts: []
+
+=== [10] s53 -> s52 prod registry (re-confirm isolation baseline) ===
+s53->s52:8200 CLOSED (expected)
+s53->s52:8210 CLOSED (expected)
+
+=== [11] s53 -> local vllm + gateway target sanity ===
+18101 free
+18200 free
+18210 free
+
+=== [12] disk/capacity ===
+/dev/mapper/ubuntu--vg-ubuntu--lv  1.5T  1.1T  292G  80% /
+               total        used        free      shared  buff/cache   available
+Mem:             117          44           0           1          74          73
+40
+
+=== DONE ===
+cat: /home/saber/e63-c5-a-probe-20261116-172626.log: input file is output file
+LOGFILE=/home/saber/e63-c5-a-probe-20261116-172626.log
