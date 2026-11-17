@@ -415,7 +415,15 @@ async function postReport(projectId, body) {
   return r.json();
 }
 
+function newToken() {
+  return 'r' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
 async function startReading(msg, sender) {
+  const stored = await chrome.storage.local.get('pctRun');
+  if (stored.pctRun?.active) {
+    return { ok: false, message: 'یک پروژهٔ دیگر در حال خواندن است — اول «توقف» را بزن.' };
+  }
   const projectId = msg.projectId;
   const info = await fetch(`${BACKEND}/api/projects/${projectId}`).then((r) => r.json());
   if (!info.id) return { ok: false, message: 'پروژه پیدا نشد' };
@@ -425,16 +433,14 @@ async function startReading(msg, sender) {
   if (info.next_mode !== 'url_param' || !info.next_param) {
     return { ok: false, message: 'قانون صفحه بعد ذخیره نشده' };
   }
-  let tabId = sender?.tab?.id;
-  if (!tabId) {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    tabId = tabs[0]?.id;
-  }
-  if (!tabId) return { ok: false, message: 'تب صفحه باز نیست' };
   const pages = Math.max(1, Math.min(12, Number(msg.pagesPerMinute || info.pages_per_minute || 4)));
+  // تب اختصاصی در background: تب کاربر (و پنلش) دست‌نخورده می‌ماند و می‌تواند
+  // در همان meanwhile پروژهٔ دیگر را ویرایش کند.
+  const tab = await chrome.tabs.create({ url: 'about:blank', active: false });
+  const tabId = tab.id;
   await postReport(projectId, { status: 'running', message: `خواندن شروع شد، ${pages} صفحه در دقیقه` });
   await chrome.storage.local.set({
-    pctRun: { active: true, projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, nextUrl: String(msg.nextUrl || '') },
+    pctRun: { active: true, token: newToken(), projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, nextUrl: String(msg.nextUrl || '') },
   });
   chrome.alarms.create('pctRead', { delayInMinutes: 1, periodInMinutes: 1 });
   runMinute();
@@ -442,14 +448,17 @@ async function startReading(msg, sender) {
 }
 
 async function stopReading() {
-  reading = false;
-  await chrome.alarms.clear('pctRead');
   const stored = await chrome.storage.local.get('pctRun');
   const run = stored.pctRun;
-  if (run?.projectId) {
+  await chrome.alarms.clear('pctRead');
+  if (run?.active && run?.projectId) {
     await postReport(run.projectId, { status: 'paused', message: 'خواندن متوقف شد' });
   }
-  await chrome.storage.local.set({ pctRun: { ...(run || {}), active: false } });
+  // تغییر token: حلقه‌ای که در حال اجراست ناهمخوانی را می‌بیند و می‌ایستد؛
+  // هیچ snapshot قدیمی دیگر نمی‌تواند active:true را برگرداند.
+  await chrome.storage.local.set({
+    pctRun: { ...(run || {}), active: false, token: newToken() },
+  });
   return { ok: true, message: 'خواندن متوقف شد' };
 }
 
@@ -486,57 +495,91 @@ async function extractWhenReady(tabId, payload) {
   return { ok: false, message: last };
 }
 
+// توقفی که token هنوز هم‌خوانی دارد: گزارش paused + غیرفعال‌سازی. اگر کاربر
+// از قبل «توقف» زده باشد (token عوض شده)، دست به storage نمی‌زند.
+async function endRun(projectId, message, token) {
+  await postReport(projectId, { status: 'paused', message });
+  const stored = await chrome.storage.local.get('pctRun');
+  const cur = stored.pctRun;
+  if (cur?.active && cur.token === token) {
+    await chrome.storage.local.set({ pctRun: { ...cur, active: false } });
+  }
+  await chrome.alarms.clear('pctRead');
+}
+
+// خفتی که به توقف واکنش نشان می‌دهد: هر یک ثانیه یک‌بار چک می‌کند.
+async function sleepLive(ms, isLive) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    await sleep(Math.min(1000, end - Date.now()));
+    if (!(await isLive())) return false;
+  }
+  return true;
+}
+
 async function runMinute() {
   if (reading) return;
   const stored = await chrome.storage.local.get('pctRun');
-  const run = stored.pctRun;
-  if (!run?.active) return;
+  const run0 = stored.pctRun;
+  if (!run0?.active) return;
+  // خواندنی قدیمی (بدون token، قبل از v3.7): پایان می‌دهد و شروع دوباره می‌خواهد.
+  if (!run0.token) {
+    await postReport(run0.projectId, { status: 'paused', message: 'خواندن نسخهٔ قدیمی قطع شد — دوباره «آزمایش و شروع» بزن.' });
+    await chrome.storage.local.set({ pctRun: { ...run0, active: false } });
+    await chrome.alarms.clear('pctRead');
+    return;
+  }
+  const token = run0.token;
+  // هویت این اجرا: تا tokenِ storage با token ما یکی باشد و active باشد، زنده‌ایم؛
+  // «توقف» فقط token را عوض می‌کند.
+  const isLive = async () => {
+    const fresh = await chrome.storage.local.get('pctRun');
+    return !!(fresh.pctRun && fresh.pctRun.active && fresh.pctRun.token === token);
+  };
   reading = true;
   let saved = 0;
   let skipped = 0;
   let failed = 0;
+  let emptyStreak = run0.emptyStreak || 0;
+  let nextUrl = run0.nextUrl || '';
+  const run = { projectId: run0.projectId, tabId: run0.tabId, pagesPerMinute: run0.pagesPerMinute };
   try {
     const project = await fetch(`${BACKEND}/api/projects/${run.projectId}`).then((r) => r.json());
     if (!project?.id || project.status === 'paused') {
-      await chrome.storage.local.set({ pctRun: { ...run, active: false } });
-      await chrome.alarms.clear('pctRead');
+      await endRun(run.projectId, 'پروژه متوقف یا پیدا نشد.', token);
       return;
     }
     const spec = parseNextSpec(project);
     let cursor = project.cursor_url || project.start_url;
     const pages = Math.max(1, Math.min(12, Number(run.pagesPerMinute || project.pages_per_minute || 4)));
     const gap = Math.max(2000, Math.floor(60000 / pages) - 4000);
-    let emptyStreak = run.emptyStreak || 0;
     let target = '';
     if (spec.kind === 'nextLink') {
       // صفحه بعد از لینکِ خود صفحه پیدا می‌شود؛ در آزمایش اولین‌اش ذخیره شد.
-      target = String(run.nextUrl || '');
+      target = String(nextUrl || '');
       if (!target) target = cursor; // لینک ذخیره‌شده نیست: اول صفحه فعلی را بخوان تا کشف شود
     } else {
       try {
         target = advanceUrl(cursor, project);
       } catch (e) {
-        await postReport(run.projectId, { status: 'paused', failed: 1, message: e.message });
-        await chrome.storage.local.set({ pctRun: { ...run, active: false } });
-        await chrome.alarms.clear('pctRead');
+        await endRun(run.projectId, 'نمی‌توان به صفحه بعد رفت: ' + e.message, token);
         return;
       }
     }
-    const pauseRun = async (message) => {
-      await postReport(run.projectId, { status: 'paused', message });
-      await chrome.storage.local.set({ pctRun: { ...run, active: false, emptyStreak } });
-      await chrome.alarms.clear('pctRead');
-    };
     for (let i = 0; i < pages; i += 1) {
-      const fresh = await chrome.storage.local.get('pctRun');
-      if (!fresh.pctRun?.active) break;
+      if (!(await isLive())) return; // «توقف» زده شد
       if (!target) {
-        await pauseRun('لینک صفحه بعد پیدا نشد — خواندن تمام شد.');
+        await endRun(run.projectId, 'لینک صفحه بعد پیدا نشد — خواندن تمام شد.', token);
+        return;
+      }
+      try { await chrome.tabs.get(run.tabId); } catch (_) {
+        await endRun(run.projectId, 'تب خواندن بسته شد.', token);
         return;
       }
       try {
         await chrome.tabs.update(run.tabId, { url: target });
         await waitComplete(run.tabId, 20000);
+        if (!(await isLive())) return;
         await sleep(600);
         const result = await extractWhenReady(run.tabId, {
           action: 'extractProject',
@@ -544,6 +587,7 @@ async function runMinute() {
           points: project.points,
           nextSpec: project.next_param || '',
         });
+        if (!(await isLive())) return;
         // مقصد بعدی: در روش لینک، از خود صفحه؛ در بقیه، از آدرس.
         let nextTarget = '';
         if (spec.kind === 'nextLink') {
@@ -561,15 +605,15 @@ async function runMinute() {
           failed += 1;
           await postReport(run.projectId, { failed: 1, cursor_url: target, message: result?.message || 'صفحه خوانده نشد' });
           if (advanceFailed) {
-            await pauseRun('نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4));
+            await endRun(run.projectId, 'نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4), token);
             return;
           }
           if (spec.kind === 'nextLink' && !nextTarget) {
-            await pauseRun('صفحه بعد پیدا نشد. خواندن ایستاد.');
+            await endRun(run.projectId, 'صفحه بعد پیدا نشد. خواندن ایستاد.', token);
             return;
           }
           if (emptyStreak >= 2) {
-            await pauseRun('دو صفحه پشت‌سرهم متن نداشت. خواندن ایستاد.');
+            await endRun(run.projectId, 'دو صفحه پشت‌سرهم متن نداشت. خواندن ایستاد.', token);
             return;
           }
         } else {
@@ -583,27 +627,38 @@ async function runMinute() {
             message: `${result.status}: ${label || target}${tail}`,
           });
           if (advanceFailed) {
-            await pauseRun('نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4));
+            await endRun(run.projectId, 'نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4), token);
             return;
           }
           if (spec.kind === 'nextLink' && !nextTarget) {
-            await pauseRun('صفحه ذخیره شد ولی لینک صفحه بعد نداشت — خواندن تمام شد.');
+            await endRun(run.projectId, 'صفحه ذخیره شد ولی لینک صفحه بعد نداشت — خواندن تمام شد.', token);
             return;
           }
         }
         cursor = target;
         if (nextTarget) {
-          if (spec.kind === 'nextLink') run.nextUrl = nextTarget;
+          if (spec.kind === 'nextLink') nextUrl = nextTarget;
           target = nextTarget;
         }
-        await chrome.storage.local.set({ pctRun: { ...run, emptyStreak, active: true } });
+        if (!(await isLive())) return;
+        // ذخیره پیشرفت با همان token — snapshot قدیمی دیگر نمی‌تواند run را
+        // بعد از توقف زنده کند.
+        await chrome.storage.local.set({
+          pctRun: { active: true, token, projectId: run.projectId, tabId: run.tabId, pagesPerMinute: run.pagesPerMinute, emptyStreak, nextUrl },
+        });
       } catch (e) {
+        if (!(await isLive())) return;
         failed += 1;
         await postReport(run.projectId, { failed: 1, message: e.message });
       }
-      if (i < pages - 1) await sleep(gap);
+      if (i < pages - 1) {
+        if (!(await sleepLive(gap, isLive))) return;
+      }
     }
+    if (!(await isLive())) return;
     const summary = await fetch(`${BACKEND}/api/projects/${run.projectId}`).then((r) => r.json());
+    // آخرین چک: اگر وسط fetch توقف زده شد، «running» قدیمی را بعد از «paused» نپوشانیم.
+    if (!(await isLive())) return;
     await postReport(run.projectId, {
       status: 'running',
       message: `این دقیقه ${saved} ذخیره، ${skipped} رد، ${failed} خطا. مجموع ${summary.saved_count || 0}.`,
@@ -615,6 +670,17 @@ async function runMinute() {
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'pctRead') runMinute();
+});
+
+// اگر تب خواندن بسته شود، run پایان می‌یابد و گزارش می‌دهد.
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  const stored = await chrome.storage.local.get('pctRun');
+  const run = stored.pctRun;
+  if (run?.active && run.tabId === tabId) {
+    await chrome.alarms.clear('pctRead');
+    await postReport(run.projectId, { status: 'paused', message: 'خواندن متوقف شد — تب خواندن بسته شد.' });
+    await chrome.storage.local.set({ pctRun: { ...run, active: false, token: newToken() } });
+  }
 });
 
 async function resumeReadingAlarm() {

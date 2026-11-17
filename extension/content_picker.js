@@ -10,6 +10,7 @@
   let selected = null;
   let busy = false;
   let poll = null;
+  let runState = null;
 
   const hostEl = document.createElement('div');
   hostEl.id = 'pct-picker-host';
@@ -108,6 +109,7 @@
         <button class="primary" id="test" type="button">آزمایش و شروع</button>
         <button class="stop" id="stop" type="button">توقف</button>
       </div>
+      <div class="sub" id="runNote" style="display:none"></div>
       <div class="report" id="report" role="status" aria-live="polite" aria-atomic="true"></div>
     </div>
   `;
@@ -235,7 +237,7 @@
   function openPanel() {
     if (!hostEl.isConnected) document.documentElement.appendChild(hostEl);
     panel().style.display = 'block';
-    if (!poll) poll = setInterval(() => { if (project?.id) load(project.id).catch(() => {}); }, 4000);
+    if (!poll) poll = setInterval(() => { if (project?.id) { load(project.id).catch(() => {}); refreshRunState(); } }, 4000);
   }
 
   function closePanel() {
@@ -457,6 +459,28 @@
     return '';
   }
 
+  async function refreshRunState() {
+    const st = await chrome.storage.local.get('pctRun');
+    runState = st.pctRun || null;
+    if (!project) return;
+    const btn = $('test');
+    const note = $('runNote');
+    if (runState?.active && runState.projectId === project.id) {
+      btn.disabled = true;
+      btn.textContent = 'در حال خواندن…';
+      note.style.display = 'none';
+    } else if (runState?.active) {
+      btn.disabled = false;
+      btn.textContent = 'آزمایش و شروع';
+      note.textContent = `پروژهٔ ${runState.projectId} در حال خواندن است — برای شروع این پروژه اول «توقف» را بزن.`;
+      note.style.display = 'block';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'آزمایش و شروع';
+      note.style.display = 'none';
+    }
+  }
+
   async function testAndStart() {
     if (!project?.id) {
       report('اول از اکستنشن پروژه را بساز');
@@ -465,6 +489,15 @@
     if (!(project.points || []).length) {
       report('اول یک نقطه از متن تفسیر وصل کن');
       return { ok: false, message: 'نقطه‌ای تعریف نشده' };
+    }
+    const st = await chrome.storage.local.get('pctRun');
+    if (st.pctRun?.active) {
+      if (st.pctRun.projectId === project.id) {
+        report('این پروژه همین حالا در حال خواندن است — برای ایستادن «توقف» را بزن.');
+        return { ok: false, message: 'already running' };
+      }
+      report(`پروژهٔ ${st.pctRun.projectId} در حال خواندن است — اول «توقف» را بزن.`);
+      return { ok: false, message: 'another project running' };
     }
     try {
       await saveRule();
@@ -498,6 +531,7 @@
     });
     report(started?.ok ? `${started.message} — ${preview}` : (started?.message || preview));
     if (started?.ok) $('step4').classList.add('on');
+    refreshRunState();
     return { ok: !!started?.ok, started: !!started?.ok, message: $('report').textContent, values: result.values };
   }
 
@@ -527,10 +561,11 @@
   $('close').addEventListener('click', closePanel);
   $('savePoint').addEventListener('click', () => savePoint().catch((e) => report(String(e))));
   $('test').addEventListener('click', () => testAndStart());
-  $('stop').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ action: 'stopReading' }, (resp) => {
-      report(resp?.message || 'توقف شد');
-    });
+  $('stop').addEventListener('click', async () => {
+    const resp = await chrome.runtime.sendMessage({ action: 'stopReading' });
+    report(resp?.message || 'توقف شد');
+    if (project?.id) load(project.id).catch(() => {});
+    refreshRunState();
   });
   $('source').addEventListener('change', () => { picking = $('source').value === 'css' && $('form').style.display === 'block'; });
   $('nextMode').addEventListener('change', updateNextDetail);
@@ -547,6 +582,7 @@
             updateNextDetail();
           }
         }
+        refreshRunState();
         sendResponse({ ok: true });
       }).catch((e) => sendResponse({ ok: false, message: String(e) }));
       return true;

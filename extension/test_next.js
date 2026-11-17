@@ -21,6 +21,7 @@ function makeChrome() {
     },
     tabs: {
       onUpdated: { addListener: noop },
+      onRemoved: { addListener: noop },
       query: async () => [],
       create: async () => ({}),
       update: async () => {},
