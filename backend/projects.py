@@ -5,8 +5,14 @@ on the page. Quran verse tags are not seeded here.
 """
 import hashlib
 import json
+import time
 
 from flask import jsonify, request
+
+
+# PCM-EXT-03: a run lock without a fresh heartbeat for this long is expired,
+# so a dead browser cannot hold a project forever (self-healing lock).
+RUN_LOCK_TTL = 180  # seconds
 
 
 def ensure_projects_schema(db):
@@ -52,6 +58,17 @@ def ensure_projects_schema(db):
     CREATE INDEX IF NOT EXISTS idx_projects_host ON projects(host, id DESC);
     CREATE INDEX IF NOT EXISTS idx_project_pages ON project_pages(project_id, id DESC);
     """)
+    # PCM-EXT-03 (additive migration): per-project run lock for
+    # cross-browser single-run enforcement. Older DBs get the columns
+    # added in place; defaults keep legacy rows unlocked.
+    cols = {r[1] for r in db.execute("PRAGMA table_info(projects)").fetchall()}
+    for col, typedef in [
+        ("run_owner", "TEXT DEFAULT ''"),
+        ("run_token", "TEXT DEFAULT ''"),
+        ("run_heartbeat", "REAL DEFAULT 0"),
+    ]:
+        if col not in cols:
+            db.execute(f"ALTER TABLE projects ADD COLUMN {col} {typedef}")
     db.commit()
 
 
@@ -330,3 +347,119 @@ def register_project_routes(app, get_db):
         _touch(db, project_id, **fields)
         db.commit()
         return jsonify({"ok": True, "project": _project(db, project_id)})
+
+
+    @app.route("/api/projects/<int:project_id>/run", methods=["POST"])
+    def claim_run(project_id):
+        """PCM-EXT-03: claim the cross-browser single-run lock.
+
+        Atomic single conditional UPDATE: succeeds when the project is
+        unlocked, the lock is expired (heartbeat older than RUN_LOCK_TTL),
+        or the SAME owner re-claims (service-worker restart / retry).
+        A live lock held by another browser -> 409 (it is still reading).
+        """
+        db = get_db()
+        ensure_projects_schema(db)
+        if not _project(db, project_id):
+            return jsonify({"ok": False, "message": "پروژه پیدا نشد"}), 404
+        data = request.get_json(silent=True) or {}
+        owner = str(data.get("owner") or "")[:64]
+        token = str(data.get("token") or "")[:64]
+        if not owner or not token:
+            return jsonify({"ok": False, "message": "owner و token لازم است"}), 400
+        now = time.time()
+        stale = now - RUN_LOCK_TTL
+        cur = db.execute(
+            """UPDATE projects
+               SET run_owner=?, run_token=?, run_heartbeat=?, status='running',
+                   updated_at=datetime('now')
+               WHERE id=? AND (run_token='' OR COALESCE(run_heartbeat, 0) < ? OR run_owner=?)""",
+            (owner, token, now, project_id, stale, owner),
+        )
+        db.commit()
+        if cur.rowcount:
+            return jsonify({"ok": True, "claimed": True, "project": _project(db, project_id)})
+        # The UPDATE lost: read the current lock and answer precisely.
+        row = db.execute(
+            "SELECT run_owner, run_token, run_heartbeat FROM projects WHERE id=?",
+            (project_id,),
+        ).fetchone()
+        if (
+            row
+            and row["run_token"]
+            and (row['run_heartbeat'] or 0) >= stale
+            and row["run_owner"] != owner
+        ):
+            return (
+                jsonify(
+                    {
+                        "ok": False,
+                        "message": "این پروژه همین حالا توسط نشست دیگری در حال خواندن است — صبر کن یا آن را متوقف کن.",
+                        "locked_by": {"owner": row["run_owner"], "heartbeat": row["run_heartbeat"]},
+                    }
+                ),
+                409,
+            )
+        # Defensive retry (e.g. NULL heartbeat race): take the lock again.
+        cur = db.execute(
+            """UPDATE projects
+               SET run_owner=?, run_token=?, run_heartbeat=?, status='running',
+                   updated_at=datetime('now')
+               WHERE id=? AND (run_token='' OR COALESCE(run_heartbeat, 0) < ? OR run_owner=?)""",
+            (owner, token, now, project_id, stale, owner),
+        )
+        db.commit()
+        if cur.rowcount:
+            return jsonify({"ok": True, "claimed": True, "project": _project(db, project_id)})
+        return jsonify({"ok": False, "message": "ثبت run ممکن نشد — دوباره تلاش کن."}), 409
+
+    @app.route("/api/projects/<int:project_id>/run/heartbeat", methods=["POST"])
+    def heartbeat_run(project_id):
+        """PCM-EXT-03: refresh the lock. 409 when this (owner, token) no
+        longer holds the lock — the crawler must then stop itself."""
+        db = get_db()
+        ensure_projects_schema(db)
+        if not _project(db, project_id):
+            return jsonify({"ok": False, "message": "پروژه پیدا نشد"}), 404
+        data = request.get_json(silent=True) or {}
+        owner = str(data.get("owner") or "")[:64]
+        token = str(data.get("token") or "")[:64]
+        if not owner or not token:
+            return jsonify({"ok": False, "message": "owner و token لازم است"}), 400
+        now = time.time()
+        cur = db.execute(
+            "UPDATE projects SET run_heartbeat=?, updated_at=datetime('now') "
+            "WHERE id=? AND run_owner=? AND run_token=?",
+            (now, project_id, owner, token),
+        )
+        db.commit()
+        if cur.rowcount:
+            return jsonify({"ok": True, "heartbeat": now})
+        return jsonify({"ok": False, "message": "این run دیگر مالک قفل پروژه نیست."}), 409
+
+    @app.route("/api/projects/<int:project_id>/run/release", methods=["POST"])
+    def release_run(project_id):
+        """PCM-EXT-03: release the lock (stop / run finished / tab closed).
+        Only the holding (owner, token) may release a live lock; an expired
+        lock may be cleared by anyone (self-heal)."""
+        db = get_db()
+        ensure_projects_schema(db)
+        if not _project(db, project_id):
+            return jsonify({"ok": False, "message": "پروژه پیدا نشد"}), 404
+        data = request.get_json(silent=True) or {}
+        owner = str(data.get("owner") or "")[:64]
+        token = str(data.get("token") or "")[:64]
+        now = time.time()
+        cur = db.execute(
+            """UPDATE projects
+               SET run_owner='', run_token='', run_heartbeat=0, status='paused',
+                   updated_at=datetime('now')
+               WHERE id=? AND run_token<>''
+                 AND ((run_owner=? AND run_token=?) OR COALESCE(run_heartbeat, 0) < ?)""",
+            (project_id, owner, token, now - RUN_LOCK_TTL),
+        )
+        db.commit()
+        if cur.rowcount:
+            return jsonify({"ok": True, "released": True, "project": _project(db, project_id)})
+        return jsonify({"ok": False, "message": "قفل پروژه فعال است و مالکیت دیگری دارد."}), 409
+

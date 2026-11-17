@@ -11,6 +11,14 @@
   let busy = false;
   let poll = null;
   let runState = null;
+  // PCM-EXT-03: باید با RUN_LOCK_TTL بک‌اند یکی باشد (ثانیه).
+  const RUN_LOCK_TTL_SEC = 180;
+  // قفل بین‌مرورگری: آیا همین پروژه را نشست/مرورگر دیگری همین حالا می‌خواند؟
+  // (مبنای قضاوت: GET پروژه که run_owner/run_heartbeat را از بک‌اند می‌آورد.)
+  const lockLiveByOther = () => !!(
+    project?.run_owner && project?.run_heartbeat &&
+    (Date.now() / 1000 - Number(project.run_heartbeat)) < RUN_LOCK_TTL_SEC
+  );
 
   const hostEl = document.createElement('div');
   hostEl.id = 'pct-picker-host';
@@ -237,7 +245,7 @@
   function openPanel() {
     if (!hostEl.isConnected) document.documentElement.appendChild(hostEl);
     panel().style.display = 'block';
-    if (!poll) poll = setInterval(() => { if (project?.id) { load(project.id).catch(() => {}); refreshRunState(); } }, 4000);
+    if (!poll) poll = setInterval(async () => { if (project?.id) { await load(project.id).catch(() => {}); refreshRunState(); } }, 4000);
   }
 
   function closePanel() {
@@ -474,6 +482,12 @@
       btn.textContent = 'آزمایش و شروع';
       note.textContent = `پروژهٔ ${runState.projectId} در حال خواندن است — برای شروع این پروژه اول «توقف» را بزن.`;
       note.style.display = 'block';
+    } else if (lockLiveByOther()) {
+      // PCM-EXT-03: lock زنده در بک‌اند از یک مرورگر/دستگاه دیگر.
+      btn.disabled = true;
+      btn.textContent = 'در حال خواندن (دستگاه دیگر)';
+      note.textContent = 'این پروژه همین حالا توسط نشست دیگری (مرورگر/دستگاه دیگر) در حال خواندن است — شروع ممکن نیست.';
+      note.style.display = 'block';
     } else {
       btn.disabled = false;
       btn.textContent = 'آزمایش و شروع';
@@ -498,6 +512,12 @@
       }
       report(`پروژهٔ ${st.pctRun.projectId} در حال خواندن است — اول «توقف» را بزن.`);
       return { ok: false, message: 'another project running' };
+    }
+    // PCM-EXT-03: قفل بین‌مرورگری (claim در startReading مرجع نهایی است؛
+    // این چک فقط پیام سریع به کاربر می‌دهد).
+    if (lockLiveByOther()) {
+      report('این پروژه همین حالا توسط نشست دیگری در حال خواندن است — صبر کن یا آن را متوقف کن.');
+      return { ok: false, message: 'locked by another session' };
     }
     try {
       await saveRule();
@@ -564,7 +584,7 @@
   $('stop').addEventListener('click', async () => {
     const resp = await chrome.runtime.sendMessage({ action: 'stopReading' });
     report(resp?.message || 'توقف شد');
-    if (project?.id) load(project.id).catch(() => {});
+    if (project?.id) await load(project.id).catch(() => {});
     refreshRunState();
   });
   $('source').addEventListener('change', () => { picking = $('source').value === 'css' && $('form').style.display === 'block'; });

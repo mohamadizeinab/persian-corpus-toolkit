@@ -419,6 +419,57 @@ function newToken() {
   return 'r' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
 }
 
+// PCM-EXT-03: هویت پایدارِ این مرورگر (برای قفل بین‌مرورگری run).
+// یک‌بار ساخته می‌شود و تا همیشه در storage.local همین پروفایل می‌ماند.
+async function getOwnerId() {
+  const stored = await chrome.storage.local.get('pctOwner');
+  if (stored.pctOwner) return stored.pctOwner;
+  const owner = 'b' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  await chrome.storage.local.set({ pctOwner: owner });
+  return owner;
+}
+
+// ── PCM-EXT-03: قفل run بین‌مرورگری — حقیقت در backend است ─────────────
+// claim: گرفتن قفل (اتمی در سرور). 409 = نشست دیگر دارد می‌خواند.
+async function claimRun(projectId, owner, token) {
+  const resp = await fetch(`${BACKEND}/api/projects/${projectId}/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ owner, token }),
+  });
+  const body = await resp.json().catch(() => ({}));
+  return { code: resp.status, body };
+}
+
+// heartbeat: تمدید قفل. 409 = دیگر مالک قفل نیستیم → run باید خود را متوقف کند.
+// خطای شبکهٔ گذرا run را نمی‌کشد (heartbeat بعدی حقیقت را می‌گوید).
+async function heartbeatRun(projectId, owner, token) {
+  try {
+    const resp = await fetch(`${BACKEND}/api/projects/${projectId}/run/heartbeat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ owner, token }),
+    });
+    if (resp.status === 409) return { ok: false, body: await resp.json().catch(() => ({})) };
+    return { ok: true, body: {} };
+  } catch (_) {
+    return { ok: true, body: {} };
+  }
+}
+
+// release: آزادسازی قفل (توقف/پایان run/بسته‌شدن تب). best-effort: اگر نشود،
+// TTL سرور قفل را خودکار منقضی می‌کند.
+async function releaseRun(projectId, owner, token) {
+  if (!owner || !token) return;
+  try {
+    await fetch(`${BACKEND}/api/projects/${projectId}/run/release`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ owner, token }),
+    });
+  } catch (_) { /* TTL سرور قفل را منقضی می‌کند */ }
+}
+
 async function startReading(msg, sender) {
   const stored = await chrome.storage.local.get('pctRun');
   if (stored.pctRun?.active) {
@@ -434,13 +485,32 @@ async function startReading(msg, sender) {
     return { ok: false, message: 'قانون صفحه بعد ذخیره نشده' };
   }
   const pages = Math.max(1, Math.min(12, Number(msg.pagesPerMinute || info.pages_per_minute || 4)));
+  // PCM-EXT-03: قفل run بین‌مرورگری — backend «حقیقت»ِ یک-run-در-هر-زمان است.
+  // اگر مرورگر/دستگاه دیگری همین پروژه را می‌خواند، اینجا 409 می‌گیریم.
+  const owner = await getOwnerId();
+  const token = newToken();
+  let claim;
+  try {
+    claim = await claimRun(projectId, owner, token);
+  } catch (e) {
+    return { ok: false, message: 'اتصال به سرور برای شروع ممکن نشد: ' + e.message };
+  }
+  if (claim.code === 409) {
+    return { ok: false, message: claim.body?.message || 'این پروژه همین حالا در حال خواندن است (نشست دیگر) — صبر کن یا آن را متوقف کن.' };
+  }
+  if (claim.code === 404) {
+    // backend قدیمی بدون route قفل: رفتار v3.7 (فقط محلی) ادامه می‌یابد.
+    console.warn('PCM-EXT-03: run-lock route missing — backend outdated');
+  } else if (claim.code !== 200) {
+    return { ok: false, message: 'ثبت run در سرور ممکن نشد (کد ' + claim.code + ')' };
+  }
   // تب اختصاصی در background: تب کاربر (و پنلش) دست‌نخورده می‌ماند و می‌تواند
   // در همان meanwhile پروژهٔ دیگر را ویرایش کند.
   const tab = await chrome.tabs.create({ url: 'about:blank', active: false });
   const tabId = tab.id;
   await postReport(projectId, { status: 'running', message: `خواندن شروع شد، ${pages} صفحه در دقیقه` });
   await chrome.storage.local.set({
-    pctRun: { active: true, token: newToken(), projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, nextUrl: String(msg.nextUrl || '') },
+    pctRun: { active: true, token, owner, projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, nextUrl: String(msg.nextUrl || '') },
   });
   chrome.alarms.create('pctRead', { delayInMinutes: 1, periodInMinutes: 1 });
   runMinute();
@@ -453,6 +523,7 @@ async function stopReading() {
   await chrome.alarms.clear('pctRead');
   if (run?.active && run?.projectId) {
     await postReport(run.projectId, { status: 'paused', message: 'خواندن متوقف شد' });
+    await releaseRun(run.projectId, run.owner, run.token); // PCM-EXT-03
   }
   // تغییر token: حلقه‌ای که در حال اجراست ناهمخوانی را می‌بیند و می‌ایستد؛
   // هیچ snapshot قدیمی دیگر نمی‌تواند active:true را برگرداند.
@@ -502,6 +573,7 @@ async function endRun(projectId, message, token) {
   const stored = await chrome.storage.local.get('pctRun');
   const cur = stored.pctRun;
   if (cur?.active && cur.token === token) {
+    await releaseRun(projectId, cur.owner, token); // PCM-EXT-03: فقط run زنده قفل را رها می‌کند
     await chrome.storage.local.set({ pctRun: { ...cur, active: false } });
   }
   await chrome.alarms.clear('pctRead');
@@ -530,6 +602,7 @@ async function runMinute() {
     return;
   }
   const token = run0.token;
+  const owner = run0.owner || ''; // PCM-EXT-03: run‌های legacy بدون owner، heartbeat نمی‌فرستند
   // هویت این اجرا: تا tokenِ storage با token ما یکی باشد و active باشد، زنده‌ایم؛
   // «توقف» فقط token را عوض می‌کند.
   const isLive = async () => {
@@ -568,6 +641,14 @@ async function runMinute() {
     }
     for (let i = 0; i < pages; i += 1) {
       if (!(await isLive())) return; // «توقف» زده شد
+      // PCM-EXT-03: heartbeat هر صفحه؛ 409 = قفل حالا با نشست دیگری است.
+      if (owner) {
+        const hb = await heartbeatRun(run.projectId, owner, token);
+        if (!hb.ok) {
+          await endRun(run.projectId, 'قفل این run دیگر متعلق به نشست دیگری است — خواندن متوقف شد.', token);
+          return;
+        }
+      }
       if (!target) {
         await endRun(run.projectId, 'لینک صفحه بعد پیدا نشد — خواندن تمام شد.', token);
         return;
@@ -588,6 +669,15 @@ async function runMinute() {
           nextSpec: project.next_param || '',
         });
         if (!(await isLive())) return;
+        // PCM-EXT-03: heartbeat دوم (بعد از extract) تا فاصلهٔ بین‌heartbeat‌ها
+        // با سرعت پایین صفحه/دقیقه از TTL سرور عبور نکند.
+        if (owner) {
+          const hb2 = await heartbeatRun(run.projectId, owner, token);
+          if (!hb2.ok) {
+            await endRun(run.projectId, 'قفل این run دیگر متعلق به نشست دیگری است — خواندن متوقف شد.', token);
+            return;
+          }
+        }
         // مقصد بعدی: در روش لینک، از خود صفحه؛ در بقیه، از آدرس.
         let nextTarget = '';
         if (spec.kind === 'nextLink') {
@@ -679,6 +769,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (run?.active && run.tabId === tabId) {
     await chrome.alarms.clear('pctRead');
     await postReport(run.projectId, { status: 'paused', message: 'خواندن متوقف شد — تب خواندن بسته شد.' });
+    await releaseRun(run.projectId, run.owner, run.token); // PCM-EXT-03
     await chrome.storage.local.set({ pctRun: { ...run, active: false, token: newToken() } });
   }
 });
