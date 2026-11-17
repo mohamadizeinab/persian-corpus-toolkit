@@ -87,11 +87,21 @@
           <button id="cancel" type="button">انصراف</button>
         </div>
       </div>
-      <label for="nextParam">صفحه بعد با پارامتر آدرس</label>
+      <label for="nextMode">روش صفحه بعد</label>
       <div class="row">
-        <input id="nextParam" placeholder="item_index" style="flex:2">
+        <select id="nextMode" style="flex:3">
+          <option value="param">پارامتر آدرس (item_index=5)</option>
+          <option value="nextlink">لینک صفحه بعد در صفحه</option>
+          <option value="number">عدد در آدرس (ساده)</option>
+          <option value="regex">رجکس (دقیق)</option>
+          <option value="none">بدون قانون</option>
+        </select>
         <input id="nextStep" type="number" value="1" min="1" style="flex:1" aria-label="گام">
       </div>
+      <div id="nextDetail" class="row" style="display:none">
+        <input id="nextDetailInput" dir="ltr" style="flex:3">
+      </div>
+      <div class="sub" id="nextHint"></div>
       <label for="pace">در هر دقیقه چند صفحه</label>
       <input id="pace" type="number" min="1" max="12" value="4">
       <div class="row">
@@ -168,9 +178,12 @@
   function render() {
     if (!project) return;
     $('title').textContent = project.name || 'پروژه';
-    $('nextParam').value = project.next_param || $('nextParam').value;
+    const parsed = parseSpecField(project.next_param);
+    $('nextMode').value = parsed.mode;
+    $('nextDetailInput').value = parsed.detail || $('nextDetailInput').value;
     $('nextStep').value = project.next_step || 1;
     $('pace').value = project.pages_per_minute || 4;
+    updateNextDetail();
     const count = (project.points || []).length;
     $('step2').classList.toggle('on', count > 0);
     $('step3').classList.toggle('on', project.status === 'tested' || project.status === 'running' || project.status === 'paused');
@@ -271,14 +284,63 @@
     render();
   }
 
+  function parseSpecField(raw) {
+    const spec = String(raw || '').trim();
+    if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
+      return { mode: 'nextlink', detail: spec === 'next-link' ? '' : spec.slice('next-link:'.length).trim() };
+    }
+    if (spec === 'url-number') return { mode: 'number', detail: '' };
+    if (spec.indexOf('regex:') === 0) return { mode: 'regex', detail: spec.slice('regex:'.length).trim() };
+    if (spec) return { mode: 'param', detail: spec };
+    return { mode: 'none', detail: '' };
+  }
+
+  function specFromForm() {
+    const mode = $('nextMode').value;
+    const detail = $('nextDetailInput').value.trim();
+    if (mode === 'param') return detail;
+    if (mode === 'nextlink') return detail ? 'next-link:' + detail : 'next-link';
+    if (mode === 'number') return 'url-number';
+    if (mode === 'regex') return detail ? 'regex:' + detail : '';
+    return '';
+  }
+
+  const NEXT_DETAIL = {
+    param: { show: true, ph: 'item_index', hint: 'نام پارامتر در آدرس، مثلا ?item_index=5 — در هر خواندن به عددش گام اضافه می‌شود.' },
+    nextlink: { show: true, ph: 'مثلا: a[rel=next] — خالی = خودکار', hint: 'اگر CSS لینک «بعدی» را می‌دانی بنویس؛ وگرنه خالی بگذار تا خودکار از rel=next، متن «بعدی/ادامه/Next» و عدد آدرس کشف شود.' },
+    number: { show: false, ph: '', hint: 'آخرین عدد مسیر + گام؛ صفرهای پیشین حفظ می‌شوند: 001→002 و 1→2 (هم p_ghazal-495.html و هم sh495 را پوشش می‌دهد).' },
+    regex: { show: true, ph: 'مثلا: p_ghazal-(\\d+)\\.html یا sh(\\d+)', hint: 'الگو روی مسیر آدرس خوانده می‌شود و باید دقیقا یک گروه ( ) با محتوای عددی داشته باشد؛ بعد از +گام، عرض صفرها حفظ می‌شود.' },
+    none: { show: false, ph: '', hint: 'فقط همین صفحه خوانده می‌شود؛ خواندن خودکار ادامه پیدا نمی‌کند.' },
+  };
+
+  function updateNextDetail() {
+    const mode = $('nextMode').value;
+    const cfg = NEXT_DETAIL[mode] || NEXT_DETAIL.none;
+    $('nextDetail').style.display = cfg.show ? 'flex' : 'none';
+    $('nextDetailInput').placeholder = cfg.ph;
+    $('nextHint').textContent = cfg.hint || '';
+  }
+
   async function saveRule() {
-    const param = $('nextParam').value.trim();
+    const mode = $('nextMode').value;
+    const detail = $('nextDetailInput').value.trim();
+    if (mode === 'regex' && !detail) {
+      report('برای روش رجکس، الگو را بنویس');
+      return null;
+    }
+    if (mode === 'regex' && detail) {
+      try { new RegExp(detail); } catch (e) {
+        report('رجکس نامعتبر است: ' + e.message);
+        return null;
+      }
+    }
+    const spec = specFromForm();
     const r = await fetch(`${BACKEND}/api/projects/${project.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        next_mode: param ? 'url_param' : 'none',
-        next_param: param,
+        next_mode: spec ? 'url_param' : 'none',
+        next_param: spec,
         next_step: Number($('nextStep').value) || 1,
         pages_per_minute: Math.max(1, Math.min(12, Number($('pace').value) || 4)),
       }),
@@ -308,7 +370,7 @@
     }
   }
 
-  async function extract(points, projectId) {
+  async function extract(points, projectId, nextSpec) {
     if (busy) return { ok: false, message: 'در حال خواندن' };
     busy = true;
     try {
@@ -322,16 +384,77 @@
         body: JSON.stringify({ url, values }),
       });
       const data = await r.json();
+      const spec = String(nextSpec != null ? nextSpec : (project ? project.next_param : '') || '');
+      let nextUrl = '';
+      if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
+        nextUrl = findNextUrl(spec, url);
+      }
       if (!r.ok || data.ok === false) {
-        return { ok: false, status: data.status || 'empty', message: data.message || 'خوانده نشد', values, url };
+        return { ok: false, status: data.status || 'empty', message: data.message || 'خوانده نشد', values, url, nextUrl };
       }
       if (data.project) project = data.project;
-      return { ok: true, status: data.status, values, url, project: data.project };
+      return { ok: true, status: data.status, values, url, nextUrl, project: data.project };
     } catch (e) {
       return { ok: false, message: String(e) };
     } finally {
       busy = false;
     }
+  }
+
+  // Find the next page's link on this page. Order: explicit CSS (if given in
+  // the spec) → rel=next → anchor text «بعدی/ادامه/Next» → anchor whose path
+  // equals "last number in the path +1" (covers numbered sites).
+  function findNextUrl(spec, currentUrl) {
+    const explicit = spec === 'next-link' ? '' : spec.slice('next-link:'.length).trim();
+    const clean = (h) => String(h || '').split('#')[0];
+    let here;
+    try { here = new URL(currentUrl); } catch (_) { return ''; }
+    const abs = (a) => {
+      try {
+        const u = new URL(a.href, currentUrl);
+        if (u.origin !== here.origin) return '';
+        const c = clean(u.href);
+        return c === clean(currentUrl) ? '' : c;
+      } catch (_) {
+        return '';
+      }
+    };
+    let anchors = [];
+    try { anchors = Array.from(document.querySelectorAll('a[href]')); } catch (_) { return ''; }
+    if (explicit) {
+      let el = null;
+      try { el = document.querySelector(explicit); } catch (_) { el = null; }
+      if (el && el.tagName === 'A') {
+        const u = abs(el);
+        if (u) return u;
+      }
+    }
+    const byRel = anchors.find((a) => /\bnext\b/i.test(a.getAttribute('rel') || ''));
+    if (byRel) { const u = abs(byRel); if (u) return u; }
+    const exact = /^(بعدی|بعد|ادامه|ادامه مطلب|صفحه بعد|next|»|›|>>|→)$/i;
+    const loose = /(بعدی|ادامه|next page)/i;
+    const byText = anchors.find((a) => {
+      const t = ((a.innerText || a.textContent) || '').replace(/\s+/g, ' ').trim();
+      return !!t && t.length <= 40 && (exact.test(t) || loose.test(t));
+    });
+    if (byText) { const u = abs(byText); if (u) return u; }
+    const runs = here.pathname.match(/\d+/g);
+    if (runs && runs.length) {
+      const run = runs[runs.length - 1];
+      const idx = here.pathname.lastIndexOf(run);
+      const n = parseInt(run, 10);
+      if (Number.isFinite(n)) {
+        const bumped = (run.length > 1 && run[0] === '0') ? String(n + 1).padStart(run.length, '0') : String(n + 1);
+        const expected = here.pathname.slice(0, idx) + bumped + here.pathname.slice(idx + run.length);
+        const byHref = anchors.find((a) => {
+          const u = abs(a);
+          if (!u) return false;
+          try { return new URL(u).pathname === expected; } catch (_) { return false; }
+        });
+        if (byHref) return abs(byHref);
+      }
+    }
+    return '';
   }
 
   async function testAndStart() {
@@ -349,21 +472,29 @@
       report(String(e));
       return { ok: false, message: String(e) };
     }
-    const result = await extract(project.points, project.id);
+    const result = await extract(project.points, project.id, project.next_param || '');
     render();
     if (!result.ok) {
       report(result.message || 'آزمایش ناموفق بود');
       return result;
     }
     const preview = Object.entries(result.values).map(([k, v]) => `${k}: ${String(v || '').slice(0, 60)}`).join(' | ');
-    if (project.next_mode !== 'url_param' || !project.next_param) {
+    if (!project.next_param) {
       report(`صفحه ذخیره شد. قانون صفحه بعد را بنویس تا خواندن ادامه پیدا کند. ${preview}`);
       return { ok: true, started: false, message: reportText(), values: result.values };
+    }
+    const spec = String(project.next_param || '');
+    let nextNote = '';
+    if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
+      nextNote = result.nextUrl
+        ? ` — لینک بعدی: ${result.nextUrl}`
+        : ' — هشدار: لینک صفحه بعد روی این صفحه پیدا نشد؛ برای کشفش صفحه اول دوباره خوانده می‌شود.';
     }
     const started = await chrome.runtime.sendMessage({
       action: 'startReading',
       projectId: project.id,
       pagesPerMinute: project.pages_per_minute,
+      nextUrl: result.nextUrl || '',
     });
     report(started?.ok ? `${started.message} — ${preview}` : (started?.message || preview));
     if (started?.ok) $('step4').classList.add('on');
@@ -402,13 +533,22 @@
     });
   });
   $('source').addEventListener('change', () => { picking = $('source').value === 'css' && $('form').style.display === 'block'; });
+  $('nextMode').addEventListener('change', updateNextDetail);
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === 'openProject') {
       openPanel();
-      const params = new URLSearchParams(location.search);
-      if (params.has('item_index') && !$('nextParam').value) $('nextParam').value = 'item_index';
-      load(message.projectId).then(() => sendResponse({ ok: true })).catch((e) => sendResponse({ ok: false, message: String(e) }));
+      load(message.projectId).then(() => {
+        if (!project.next_param) {
+          const keys = [...new URLSearchParams(location.search).keys()];
+          if (keys.length) {
+            $('nextMode').value = 'param';
+            $('nextDetailInput').value = keys[0];
+            updateNextDetail();
+          }
+        }
+        sendResponse({ ok: true });
+      }).catch((e) => sendResponse({ ok: false, message: String(e) }));
       return true;
     }
     if (message.action === 'testProject') {
@@ -420,7 +560,7 @@
       return true;
     }
     if (message.action === 'extractProject') {
-      extract(message.points || project?.points || [], message.projectId).then(sendResponse);
+      extract(message.points || project?.points || [], message.projectId, message.nextSpec).then(sendResponse);
       return true;
     }
     if (message.action === 'ping') {

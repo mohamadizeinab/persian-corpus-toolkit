@@ -339,17 +339,71 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
 
 let reading = false;
 
-function advanceUrl(url, project) {
-  const next = new URL(url);
-  const param = project.next_param;
-  if (project.next_mode !== 'url_param' || !param) {
-    throw new Error('قانون صفحه بعد ذخیره نشده');
+// --- Next-page strategies ----------------------------------------------------
+// next_param holds a spec string (next_mode stays 'url_param' for backend compat):
+//   ''                              → none
+//   '<param>'                       → legacy: increment ?<param>=N query param
+//   'next-link' | 'next-link:<css>' → follow the next-page link found on the page
+//   'url-number'                    → last number in the path, +step, zero-pad kept
+//   'regex:<pattern>'               → exactly one digit capture group, +step
+
+function parseNextSpec(project) {
+  const spec = String((project && project.next_param) || '').trim();
+  if (!spec) return { kind: 'none' };
+  if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
+    return { kind: 'nextLink', selector: spec === 'next-link' ? '' : spec.slice('next-link:'.length).trim() };
   }
-  if (!next.searchParams.has(param)) throw new Error('پارامتر ' + param + ' در لینک نیست');
-  const n = parseInt(next.searchParams.get(param), 10);
-  if (!Number.isFinite(n)) throw new Error('پارامتر صفحه عدد نیست');
-  next.searchParams.set(param, String(n + (Number(project.next_step) || 1)));
-  return next.toString();
+  if (spec === 'url-number') return { kind: 'number' };
+  if (spec.indexOf('regex:') === 0) return { kind: 'regex', pattern: spec.slice('regex:'.length).trim() };
+  return { kind: 'param', param: spec };
+}
+
+function bumpNumber(numStr, step) {
+  const n = parseInt(numStr, 10) + step;
+  if (!Number.isFinite(n) || n < 0) throw new Error('عدد ' + numStr + ' جلو نمی‌رود');
+  return (numStr.length > 1 && numStr[0] === '0') ? String(n).padStart(numStr.length, '0') : String(n);
+}
+
+function advanceUrl(url, project) {
+  const spec = parseNextSpec(project);
+  if (spec.kind === 'none') throw new Error('قانون صفحه بعد ذخیره نشده');
+  if (spec.kind === 'nextLink') throw new Error('روش «لینک صفحه بعد» نیاز به باز شدن صفحه دارد');
+  const step = Number((project && project.next_step) || 1) || 1;
+  const next = new URL(url);
+  if (spec.kind === 'param') {
+    const param = spec.param;
+    if (!next.searchParams.has(param)) throw new Error('پارامتر ' + param + ' در لینک نیست');
+    const n = parseInt(next.searchParams.get(param), 10);
+    if (!Number.isFinite(n)) throw new Error('پارامتر صفحه عدد نیست');
+    next.searchParams.set(param, String(n + step));
+    return next.toString();
+  }
+  if (spec.kind === 'number') {
+    const runs = next.pathname.match(/\d+/g);
+    if (!runs) throw new Error('عدد در مسیر آدرس نیست — از روش رجکس استفاده کن');
+    const run = runs[runs.length - 1];
+    const idx = next.pathname.lastIndexOf(run);
+    next.pathname = next.pathname.slice(0, idx) + bumpNumber(run, step) + next.pathname.slice(idx + run.length);
+    return next.toString();
+  }
+  if (spec.kind === 'regex') {
+    let re;
+    try {
+      re = new RegExp(spec.pattern);
+    } catch (e) {
+      throw new Error('رجکس نامعتبر: ' + e.message);
+    }
+    const m = re.exec(next.pathname);
+    if (!m) throw new Error('رجکس با این آدرس همخوانی ندارد');
+    const groups = m.slice(1).filter((g) => g !== undefined);
+    if (groups.length !== 1) throw new Error('رجکس باید دقیقا‌ یک گروه ( ) داشته باشد');
+    const g = groups[0];
+    if (!/^\d+$/.test(g)) throw new Error('گروهِ رجکس عدد نیست');
+    const idx = m.index + m[0].indexOf(g);
+    next.pathname = next.pathname.slice(0, idx) + bumpNumber(g, step) + next.pathname.slice(idx + g.length);
+    return next.toString();
+  }
+  throw new Error('قانون صفحه بعد نامعتبر است');
 }
 
 async function postReport(projectId, body) {
@@ -380,7 +434,7 @@ async function startReading(msg, sender) {
   const pages = Math.max(1, Math.min(12, Number(msg.pagesPerMinute || info.pages_per_minute || 4)));
   await postReport(projectId, { status: 'running', message: `خواندن شروع شد، ${pages} صفحه در دقیقه` });
   await chrome.storage.local.set({
-    pctRun: { active: true, projectId, tabId, pagesPerMinute: pages, emptyStreak: 0 },
+    pctRun: { active: true, projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, nextUrl: String(msg.nextUrl || '') },
   });
   chrome.alarms.create('pctRead', { delayInMinutes: 1, periodInMinutes: 1 });
   runMinute();
@@ -448,42 +502,74 @@ async function runMinute() {
       await chrome.alarms.clear('pctRead');
       return;
     }
+    const spec = parseNextSpec(project);
     let cursor = project.cursor_url || project.start_url;
     const pages = Math.max(1, Math.min(12, Number(run.pagesPerMinute || project.pages_per_minute || 4)));
     const gap = Math.max(2000, Math.floor(60000 / pages) - 4000);
     let emptyStreak = run.emptyStreak || 0;
-    for (let i = 0; i < pages; i += 1) {
-      const fresh = await chrome.storage.local.get('pctRun');
-      if (!fresh.pctRun?.active) break;
-      let next;
+    let target = '';
+    if (spec.kind === 'nextLink') {
+      // صفحه بعد از لینکِ خود صفحه پیدا می‌شود؛ در آزمایش اولین‌اش ذخیره شد.
+      target = String(run.nextUrl || '');
+      if (!target) target = cursor; // لینک ذخیره‌شده نیست: اول صفحه فعلی را بخوان تا کشف شود
+    } else {
       try {
-        next = advanceUrl(cursor, project);
+        target = advanceUrl(cursor, project);
       } catch (e) {
         await postReport(run.projectId, { status: 'paused', failed: 1, message: e.message });
         await chrome.storage.local.set({ pctRun: { ...run, active: false } });
         await chrome.alarms.clear('pctRead');
         return;
       }
+    }
+    const pauseRun = async (message) => {
+      await postReport(run.projectId, { status: 'paused', message });
+      await chrome.storage.local.set({ pctRun: { ...run, active: false, emptyStreak } });
+      await chrome.alarms.clear('pctRead');
+    };
+    for (let i = 0; i < pages; i += 1) {
+      const fresh = await chrome.storage.local.get('pctRun');
+      if (!fresh.pctRun?.active) break;
+      if (!target) {
+        await pauseRun('لینک صفحه بعد پیدا نشد — خواندن تمام شد.');
+        return;
+      }
       try {
-        await chrome.tabs.update(run.tabId, { url: next });
+        await chrome.tabs.update(run.tabId, { url: target });
         await waitComplete(run.tabId, 20000);
         await sleep(600);
         const result = await extractWhenReady(run.tabId, {
           action: 'extractProject',
           projectId: project.id,
           points: project.points,
+          nextSpec: project.next_param || '',
         });
+        // مقصد بعدی: در روش لینک، از خود صفحه؛ در بقیه، از آدرس.
+        let nextTarget = '';
+        if (spec.kind === 'nextLink') {
+          nextTarget = String((result && result.nextUrl) || '');
+        } else {
+          try {
+            nextTarget = advanceUrl(target, project);
+          } catch (e) {
+            nextTarget = 'ERR:' + e.message;
+          }
+        }
+        const advanceFailed = spec.kind !== 'nextLink' && nextTarget.indexOf('ERR:') === 0;
         if (!result?.ok) {
           emptyStreak += 1;
           failed += 1;
-          await postReport(run.projectId, { failed: 1, cursor_url: next, message: result?.message || 'صفحه خوانده نشد' });
+          await postReport(run.projectId, { failed: 1, cursor_url: target, message: result?.message || 'صفحه خوانده نشد' });
+          if (advanceFailed) {
+            await pauseRun('نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4));
+            return;
+          }
+          if (spec.kind === 'nextLink' && !nextTarget) {
+            await pauseRun('صفحه بعد پیدا نشد. خواندن ایستاد.');
+            return;
+          }
           if (emptyStreak >= 2) {
-            await postReport(run.projectId, {
-              status: 'paused',
-              message: 'دو صفحه پشت‌سرهم متن نداشت. خواندن ایستاد.',
-            });
-            await chrome.storage.local.set({ pctRun: { ...run, active: false, emptyStreak } });
-            await chrome.alarms.clear('pctRead');
+            await pauseRun('دو صفحه پشت‌سرهم متن نداشت. خواندن ایستاد.');
             return;
           }
         } else {
@@ -491,12 +577,25 @@ async function runMinute() {
           if (result.status === 'skipped') skipped += 1;
           else saved += 1;
           const label = Object.entries(result.values || {}).map(([k, v]) => `${k}=${String(v || '').slice(0, 24)}`).join(' ');
+          const tail = spec.kind === 'nextLink' && nextTarget ? ' → ' + nextTarget : '';
           await postReport(run.projectId, {
-            cursor_url: next,
-            message: `${result.status}: ${label || next}`,
+            cursor_url: target,
+            message: `${result.status}: ${label || target}${tail}`,
           });
+          if (advanceFailed) {
+            await pauseRun('نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4));
+            return;
+          }
+          if (spec.kind === 'nextLink' && !nextTarget) {
+            await pauseRun('صفحه ذخیره شد ولی لینک صفحه بعد نداشت — خواندن تمام شد.');
+            return;
+          }
         }
-        cursor = next;
+        cursor = target;
+        if (nextTarget) {
+          if (spec.kind === 'nextLink') run.nextUrl = nextTarget;
+          target = nextTarget;
+        }
         await chrome.storage.local.set({ pctRun: { ...run, emptyStreak, active: true } });
       } catch (e) {
         failed += 1;
