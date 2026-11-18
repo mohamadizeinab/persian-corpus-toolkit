@@ -364,6 +364,51 @@ function bumpNumber(numStr, step) {
   return (numStr.length > 1 && numStr[0] === '0') ? String(n).padStart(numStr.length, '0') : String(n);
 }
 
+// ── PCM-20.10: حد عددی توقف (stop rule) ────────────────────────────────
+// «تا کجا بروی» روی همان مقیاسی که advanceUrl جلو می‌رود (شماره‌ی صفحه).
+// stopNumber خالی/۰ = بدون حد. با stop-token (دکمه‌ی توقف) مستقل است:
+// هر دو باید برقرار باشند تا run زنده بماند.
+function parseStopSpec(project) {
+  const raw = String((project && (project.stop_number != null ? project.stop_number : project.stopNumber)) || '').trim();
+  if (!raw) return null;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+// شماره‌ی عددی صفحه‌ای که آدرسش `url` است — با همان روشی که advanceUrl
+// جلو می‌رود. null اگر قابل استخراج نبود (در آن صورت حد اعمال نمی‌شود).
+function pageNumberOf(url, project) {
+  let u;
+  try { u = new URL(url); } catch (_) { return null; }
+  const spec = parseNextSpec(project);
+  if (spec.kind === 'param') {
+    const v = u.searchParams.get(spec.param);
+    return v !== null && /^\d+$/.test(v) ? parseInt(v, 10) : null;
+  }
+  if (spec.kind === 'regex') {
+    const m = spec.pattern ? new RegExp(spec.pattern).exec(u.pathname) : null;
+    if (m) {
+      const g = m.slice(1).find((x) => x !== undefined);
+      if (g && /^\d+$/.test(g)) return parseInt(g, 10);
+    }
+    return null;
+  }
+  // number / nextLink / none: آخرین عدد مسیر
+  const runs = u.pathname.match(/\d+/g);
+  return runs ? parseInt(runs[runs.length - 1], 10) : null;
+}
+
+// { done, why } — done=true یعنی run باید پایان یابد (حد عددی رسید/عبور کرد).
+function checkStopUrl(targetUrl, project) {
+  const stopAt = parseStopSpec(project);
+  if (!stopAt) return { done: false };
+  const n = pageNumberOf(targetUrl, project);
+  if (n === null) return { done: false }; // حد اعمال‌پذیر نیست
+  if (n > stopAt) return { done: true, why: 'حد عددی ' + stopAt + ' از عدد ' + n + ' عبور کرد' };
+  if (n === stopAt) return { done: true, why: 'به حد عددی ' + stopAt + ' رسید (صفحهٔ ' + n + ' آخرین صفحه است)' };
+  return { done: false };
+}
+
 function advanceUrl(url, project) {
   const spec = parseNextSpec(project);
   if (spec.kind === 'none') throw new Error('قانون صفحه بعد ذخیره نشده');
@@ -655,6 +700,13 @@ async function runMinute() {
       }
       try { await chrome.tabs.get(run.tabId); } catch (_) {
         await endRun(run.projectId, 'تب خواندن بسته شد.', token);
+        return;
+      }
+      // PCM-20.10: حد عددی — قبل از باز کردن صفحه بررسی می‌شود تا از
+      // عبور از حد جلوگیری کند (مثلا حد 495: sh495 خوانده می‌شود، sh496 نه).
+      const stopCheck = checkStopUrl(target, project);
+      if (stopCheck.done) {
+        await endRun(run.projectId, 'خواندن به حد مشخص‌شده رسید: ' + stopCheck.why + '.', token);
         return;
       }
       try {

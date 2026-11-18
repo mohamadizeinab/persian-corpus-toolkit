@@ -153,5 +153,69 @@ class ProjectFlowTests(unittest.TestCase):
         self.assertEqual(len(set(ids)), 3)
 
 
+class StopNumberTests(unittest.TestCase):
+    """PCM-20.10: the numeric stop rule (limit the crawl at page N)."""
+
+    def setUp(self):
+        pct_test_support.reset_db()
+        db = sqlite3.connect(server.DB_PATH)
+        server.ensure_khamenei_schema(db)
+        db.close()
+        self.client = server.app.test_client()
+
+    def _create(self, **extra):
+        payload = {
+            "name": "SN", "host": "tasnim.hamtaa.org",
+            "start_url": "https://tasnim.hamtaa.org/payload?item_index=1",
+            "next_mode": "url_param", "next_param": "item_index",
+        }
+        payload.update(extra)
+        r = self.client.post("/api/projects", json=payload)
+        self.assertEqual(r.status_code, 200)
+        return r.get_json()["project"]["id"]
+
+    def test_sn01_create_with_stop_number(self):
+        pid = self._create(stop_number="495")
+        got = self.client.get(f"/api/projects/{pid}").get_json()
+        self.assertEqual(got["stop_number"], "495")
+
+    def test_sn02_create_without_stop_number_defaults_empty(self):
+        pid = self._create()
+        got = self.client.get(f"/api/projects/{pid}").get_json()
+        self.assertEqual(got["stop_number"], "")
+
+    def test_sn03_update_stop_number(self):
+        pid = self._create()
+        r = self.client.post(f"/api/projects/{pid}", json={"stop_number": "7"})
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.get_json()["ok"])
+        self.assertEqual(r.get_json()["project"]["stop_number"], "7")
+
+    def test_sn04_update_clears_stop_number(self):
+        pid = self._create(stop_number="100")
+        r = self.client.post(f"/api/projects/{pid}", json={"stop_number": ""})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.get_json()["project"]["stop_number"], "")
+
+    def test_sn05_invalid_stop_number_rejected(self):
+        for bad in ("0", "-3", "abc", "12.5"):
+            r = self.client.post("/api/projects", json={
+                "name": "bad", "host": "x.test", "stop_number": bad})
+            self.assertEqual(r.status_code, 400, f"stop_number={bad!r} should 400")
+        pid = self._create(stop_number="50")
+        r = self.client.post(f"/api/projects/{pid}", json={"stop_number": "x"})
+        self.assertEqual(r.status_code, 400)
+        self.assertEqual(
+            self.client.get(f"/api/projects/{pid}").get_json()["stop_number"], "50")
+
+    def test_sn06_additive_migration_keeps_old_rows(self):
+        # A row written before the column existed gets the default ''.
+        pid = self._create()
+        db = sqlite3.connect(server.DB_PATH)
+        row = db.execute("SELECT stop_number FROM projects WHERE id=?", (pid,)).fetchone()
+        db.close()
+        self.assertEqual(row[0], "")
+
+
 if __name__ == "__main__":
     unittest.main()

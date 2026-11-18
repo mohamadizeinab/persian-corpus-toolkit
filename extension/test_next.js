@@ -49,6 +49,10 @@ vm.runInContext(fs.readFileSync(path.join(__dirname, "background.js"), "utf8"), 
 const advanceUrl = sandbox.advanceUrl;
 const parseNextSpec = sandbox.parseNextSpec;
 const bumpNumber = sandbox.bumpNumber;
+// PCM-20.10
+const parseStopSpec = sandbox.parseStopSpec;
+const pageNumberOf = sandbox.pageNumberOf;
+const checkStopUrl = sandbox.checkStopUrl;
 
 let passed = 0;
 let failed = 0;
@@ -168,6 +172,71 @@ const specEq = (actual, expected) =>
     throws(() => advanceUrl("https://x.test/a", { next_param: "next-link" }), /لینک/));
   await t("none: advanceUrl refuses", () =>
     throws(() => advanceUrl("https://x.test/a", { next_param: "" }), /ذخیره نشده/));
+
+  // ---- PCM-20.10: stop rule -----------------------------------------------------
+  await t("stop: empty stop_number -> null", () => {
+    assert.strictEqual(parseStopSpec({ stop_number: "" }), null);
+    assert.strictEqual(parseStopSpec({}), null);
+    assert.strictEqual(parseStopSpec({ stop_number: "0" }), null);
+    assert.strictEqual(parseStopSpec({ stop_number: "  " }), null);
+  });
+  await t("stop: numeric stop_number parsed", () => {
+    assert.strictEqual(parseStopSpec({ stop_number: "495" }), 495);
+    assert.strictEqual(parseStopSpec({ stop_number: " 7 " }), 7);
+  });
+  await t("stop: param mode page number from query", () => {
+    const p = { next_param: "item_index", next_step: 1 };
+    assert.strictEqual(pageNumberOf("https://tasnim.hamtaa.org/payload?file_id=10&item_index=69677", p), 69677);
+    assert.strictEqual(pageNumberOf("https://x.test/a", p), null);
+    assert.strictEqual(pageNumberOf("https://x.test/a?item_index=ab", p), null);
+  });
+  await t("stop: number mode page number from path", () => {
+    const p = { next_param: "url-number", next_step: 1 };
+    assert.strictEqual(pageNumberOf("https://ganjoor.net/hafez/ghazal/sh495", p), 495);
+    assert.strictEqual(pageNumberOf("https://www.hafizonlove.com/divan/p_ghazal-001.html", p), 1);
+    assert.strictEqual(pageNumberOf("https://x.test/about", p), null);
+  });
+  await t("stop: regex mode page number from capture", () => {
+    const p = { next_param: "regex:sh(\\d+)", next_step: 1 };
+    assert.strictEqual(pageNumberOf("https://ganjoor.net/hafez/ghazal/sh150", p), 150);
+    assert.strictEqual(pageNumberOf("https://ganjoor.net/hafez/madigh/1", p), null);
+  });
+  await t("stop: no limit -> never done", () => {
+    const p = { next_param: "url-number", stop_number: "" };
+    specEq(checkStopUrl("https://ganjoor.net/hafez/ghazal/sh99999", p), { done: false });
+  });
+  await t("stop: below limit -> not done", () => {
+    const p = { next_param: "url-number", stop_number: "495" };
+    specEq(checkStopUrl("https://ganjoor.net/hafez/ghazal/sh494", p), { done: false });
+  });
+  await t("stop: at limit -> done (last page read)", () => {
+    const p = { next_param: "url-number", stop_number: "495" };
+    const r = checkStopUrl("https://ganjoor.net/hafez/ghazal/sh495", p);
+    assert.strictEqual(r.done, true);
+    assert.match(r.why, /رسید/);
+  });
+  await t("stop: over limit -> done (overshoot blocked)", () => {
+    const p = { next_param: "url-number", stop_number: "495" };
+    const r = checkStopUrl("https://ganjoor.net/hafez/ghazal/sh496", p);
+    assert.strictEqual(r.done, true);
+    assert.match(r.why, /عبور/);
+  });
+  await t("stop: param mode at limit (tasnim item_index)", () => {
+    const p = { next_param: "item_index", stop_number: "70000" };
+    assert.strictEqual(checkStopUrl("https://tasnim.hamtaa.org/payload?item_index=69999", p).done, false);
+    assert.strictEqual(checkStopUrl("https://tasnim.hamtaa.org/payload?item_index=70000", p).done, true);
+    assert.strictEqual(checkStopUrl("https://tasnim.hamtaa.org/payload?item_index=70001", p).done, true);
+  });
+  await t("stop: step 2 can overshoot -> still stops", () => {
+    // step 2: sh494 -> sh496 crosses the 495 limit without landing on it
+    const p = { next_param: "url-number", next_step: 2, stop_number: "495" };
+    const r = checkStopUrl("https://ganjoor.net/hafez/ghazal/sh496", p);
+    assert.strictEqual(r.done, true);
+  });
+  await t("stop: limit not applicable (no number) -> not done", () => {
+    const p = { next_param: "url-number", stop_number: "495" };
+    specEq(checkStopUrl("https://x.test/about", p), { done: false });
+  });
 
   console.log(`\n${passed} passed, ${failed} failed`);
   process.exit(failed ? 1 : 0);

@@ -15,6 +15,19 @@ from flask import jsonify, request
 RUN_LOCK_TTL = 180  # seconds
 
 
+def _clean_stop_number(value):
+    """PCM-20.10: normalize the stop rule. '' (empty) = no limit; otherwise
+    a positive-integer string. Returns None when invalid."""
+    if value is None:
+        return ""
+    s = str(value).strip()
+    if s == "":
+        return ""
+    if not s.isdigit() or int(s) < 1:
+        return None
+    return s
+
+
 def ensure_projects_schema(db):
     db.executescript("""
     CREATE TABLE IF NOT EXISTS projects (
@@ -70,6 +83,11 @@ def ensure_projects_schema(db):
         if col not in cols:
             db.execute(f"ALTER TABLE projects ADD COLUMN {col} {typedef}")
     db.commit()
+    # PCM-20.10 (additive migration): stop_number — numeric stop rule.
+    # Empty string = no limit. Older DBs get the column added in place.
+    if "stop_number" not in cols:
+        db.execute("ALTER TABLE projects ADD COLUMN stop_number TEXT DEFAULT ''")
+        db.commit()
 
 
 def _points(db, project_id):
@@ -150,10 +168,13 @@ def register_project_routes(app, get_db):
         pace = max(1, min(12, pace))
         step = int(data.get("next_step") or 1) or 1
         start_url = (data.get("start_url") or "").split("#")[0].strip()
+        stop_number = _clean_stop_number(data.get("stop_number"))
+        if stop_number is None:
+            return jsonify({"ok": False, "message": "stop_number نامعتبر است (عدد صحیح مثبت یا خالی)"}), 400
         cur = db.execute(
             """INSERT INTO projects
-               (name, host, start_url, next_mode, next_param, next_step, pages_per_minute, cursor_url, status, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', datetime('now'))""",
+               (name, host, start_url, next_mode, next_param, next_step, pages_per_minute, cursor_url, status, stop_number, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, datetime('now'))""",
             (
                 name,
                 host,
@@ -163,6 +184,7 @@ def register_project_routes(app, get_db):
                 step,
                 pace,
                 start_url,
+                stop_number,
             ),
         )
         db.commit()
@@ -200,6 +222,11 @@ def register_project_routes(app, get_db):
             fields["next_step"] = int(data["next_step"] or 1) or 1
         if "pages_per_minute" in data:
             fields["pages_per_minute"] = max(1, min(12, int(data["pages_per_minute"] or 4)))
+        if "stop_number" in data:
+            stop_number = _clean_stop_number(data["stop_number"])
+            if stop_number is None:
+                return jsonify({"ok": False, "message": "stop_number نامعتبر است (عدد صحیح مثبت یا خالی)"}), 400
+            fields["stop_number"] = stop_number
         if "cursor_url" in data:
             fields["cursor_url"] = str(data["cursor_url"] or "").split("#")[0].strip()
         if "status" in data:

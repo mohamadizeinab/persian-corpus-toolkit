@@ -113,6 +113,8 @@
       <div class="sub" id="nextHint"></div>
       <label for="pace">در هر دقیقه چند صفحه</label>
       <input id="pace" type="number" min="1" max="12" value="4">
+      <label for="stopNum">حد عددی توقف (صفحهٔ آخر؛ خالی = بدون حد)</label>
+      <input id="stopNum" type="number" min="1" step="1" placeholder="مثلا 495 — تا همین عدد بخواند">
       <div class="row">
         <button class="primary" id="test" type="button">آزمایش و شروع</button>
         <button class="stop" id="stop" type="button">توقف</button>
@@ -193,6 +195,7 @@
     $('nextDetailInput').value = parsed.detail || $('nextDetailInput').value;
     $('nextStep').value = project.next_step || 1;
     $('pace').value = project.pages_per_minute || 4;
+    $('stopNum').value = project.stop_number || '';
     updateNextDetail();
     const count = (project.points || []).length;
     $('step2').classList.toggle('on', count > 0);
@@ -353,6 +356,7 @@
         next_param: spec,
         next_step: Number($('nextStep').value) || 1,
         pages_per_minute: Math.max(1, Math.min(12, Number($('pace').value) || 4)),
+        stop_number: $('stopNum').value.trim(),
       }),
     });
     const data = await r.json();
