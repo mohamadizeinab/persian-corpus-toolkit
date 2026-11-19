@@ -1,7 +1,7 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════
-# PCM-EXT-03 — controlled deploy of the cross-browser run lock to s52
-# (172.20.1.52)
+# PCM-EXT-03 + PCM-EXT-04 — controlled deploy of the cross-browser run lock
+# AND the content-based stop (stop_field) to s52 (172.20.1.52)
 #
 # What this deploy ships:
 #   1. backend/projects.py — per-project run lock (cross-browser single-run
@@ -11,17 +11,23 @@
 #        POST /api/projects/<id>/run/heartbeat (409 when no longer owner)
 #        POST /api/projects/<id>/run/release   (owner-only; expired clearable)
 #      RUN_LOCK_TTL = 180 s (self-heal for dead browsers).
-#   2. extension v3.8 (background.js + content_picker.js + manifest) is
+#   2. backend/projects.py — PCM-EXT-04: additive migration
+#      (stop_field TEXT DEFAULT '' on projects) + create/update accept
+#      stop_field (the content-basis field for the 10-identical-page stop
+#      rule; '' = auto, whole extracted content).
+#      NOTE: stop_number (numeric max-page cap, PCM-20.10) is migrated by
+#      the same lazy path and is asserted in the smoke probe too.
+#   3. extension v3.9 (background.js + content_picker.js + manifest) is
 #      consumed LOCALLY by each user's Chrome (Load unpacked / Reload).
 #      Nothing in this script deploys the extension; it only makes the
 #      backend the single source of truth across browsers.
 #
-# Code identity: commit e38f914 (branch pcm-20.9-knowledge-studio-factory,
+# Code identity: commit e86cd0d (branch pcm-20.9-knowledge-studio-factory,
 #   GitHub). Blobs verified below via `git hash-object` after extraction.
 #
 # PREP (on Windows, before SSH):
 #   git archive --format=tar.gz --prefix=persian-corpus-toolkit/ \
-#       e38f914 -o pct-code-ext03.tgz
+#       e86cd0d -o pct-code-ext03.tgz
 #   scp -P 22 pct-code-ext03.tgz saber@172.20.1.52:/tmp/
 #   scp -P 22 deploy/pcm_ext_03_deploy.sh saber@172.20.1.52:/tmp/
 #   ssh -p 22 saber@172.20.1.52 'bash /tmp/pcm_ext_03_deploy.sh'
@@ -29,9 +35,9 @@
 # Safety model (AGENTS.md §2/§3):
 #   1. sqlite3 online backup (WAL-safe) + integrity_check BEFORE any change
 #   2. tar snapshot of the whole deploy dir (DB excluded)
-#   3. code extracted from `git archive e38f914` — NEVER rewrites
+#   3. code extracted from `git archive e86cd0d` — NEVER rewrites
 #      thesaurus.db, .env, or data/ (all untracked -> not in the tar)
-#   4. blob-hash verification of key files against commit e38f914
+#   4. blob-hash verification of key files against commit e86cd0d
 #   5. `docker compose build backend && docker compose up -d backend` —
 #      ONLY the backend service. NO `docker compose down`, NO volume removal.
 #   6. The schema change is ADDITIVE (3x ALTER TABLE ... ADD COLUMN),
@@ -58,14 +64,17 @@ BK=/home/saber/backups
 CODE_TGZ=/tmp/pct-code-ext03.tgz
 mkdir -p "$BK"
 
-# expected blob SHAs (git rev-parse e38f914:<path>) — commit identity check
+# expected blob SHAs (git rev-parse e86cd0d:<path>) — commit identity check
 declare -A EXPECT=(
-  [backend/projects.py]=b0411c05788cbba18f8e5c6a0f245360466894d0
+  [backend/projects.py]=f484dd12c7e34ec3dfd4a156590eb17d7218d568
   [backend/server.py]=b0cfa21357928aa125f70f7e47a647f087fc8b78
   [backend/Dockerfile]=0d211b9b1cb4f02a229189ed8d516c7ea7262032
   [docker-compose.yml]=fc05c99800a3c70d7516ee4aa3b1332ddd2df2ec
   [dashboard/index.html]=e548c3ac068faf17d3e6ed8ac35a2984eef38e08
-  [extension/manifest.json]=68a963f8d39684b7ba365873628b9093f25e0c7e
+  [extension/manifest.json]=202684cc5475daf92ac5f09fd659978edd907d37
+  [extension/background.js]=98b35eafcbc90a801e12740abf08dbbcc6c1d5cf
+  [extension/content_picker.js]=1536b7c689b22f26870c13df63742ae22934e511
+  [extension/test_next.js]=3631482fa846b929b60c4ef9706636f66adb9f3f
 )
 
 STEP="init"
@@ -74,7 +83,7 @@ trap 'fail "abnormal exit (line $LINENO)"' ERR
 
 echo "=== 0. preconditions ==="
 command -v docker >/dev/null || fail "docker missing"
-[ -f "$CODE_TGZ" ] || fail "code tar not found at $CODE_TGZ (build with git archive e38f914, scp to s52:/tmp)"
+[ -f "$CODE_TGZ" ] || fail "code tar not found at $CODE_TGZ (build with git archive e86cd0d, scp to s52:/tmp)"
 [ -f "$APP/.env" ] || fail ".env missing (refusing to touch auth config)"
 [ -f "$APP/backend/thesaurus.db" ] || fail "production DB missing — refusing"
 cd "$APP"
@@ -107,7 +116,7 @@ ls -la "$CODE_TGZ"
 echo "=== 5. extract new code (DB/.env/data untouched by definition) ==="
 # tar carries prefix 'persian-corpus-toolkit/' -> extract into the PARENT dir
 tar xzf "$CODE_TGZ" -C "$(dirname "$APP")"
-echo "-- blob-identity check vs commit e38f914 --"
+echo "-- blob-identity check vs commit e86cd0d --"
 for f in "${!EXPECT[@]}"; do
   [ -f "$APP/$f" ] || fail "missing $f after extract"
   got=$(git hash-object "$APP/$f")
@@ -164,6 +173,9 @@ echo "$COLS" | grep -q 'run_owner'     || fail "run_owner column missing (migrat
 echo "$COLS" | grep -q 'run_token'     || fail "run_token column missing (migration did not run)"
 echo "$COLS" | grep -q 'run_heartbeat' || fail "run_heartbeat column missing (migration did not run)"
 echo "lock columns present: run_owner / run_token / run_heartbeat"
+echo "$COLS" | grep -q 'stop_number' || fail "stop_number column missing (PCM-20.10 migration did not run)"
+echo "$COLS" | grep -q 'stop_field'  || fail "stop_field column missing (PCM-EXT-04 migration did not run)"
+echo "stop-rule columns present: stop_number / stop_field"
 
 echo "=== 10. DB integrity (post-deploy) ==="
 [ "$(sqlite3 "$APP/backend/thesaurus.db" 'PRAGMA integrity_check;')" = "ok" ] || fail "post-deploy integrity_check"
@@ -182,5 +194,7 @@ echo "project_pages: before=$PAGES_BEFORE after=$PAGES_AFTER"
 echo "=== DEPLOY OK (TS=$TS) ==="
 echo "backups: $BK/thesaurus-${TS}.db + $BK/pct-deploy-${TS}.tar.gz"
 echo "run-lock routes are live. Extension users should reload the extension"
-echo "to v3.8 (chrome://extensions -> Reload) to use the cross-browser lock."
+echo "to v3.9 (chrome://extensions -> Reload) to use the cross-browser lock,"
+echo "the numeric stop cap (stop_number box) and the content-basis stop"
+echo "(stop_field select: 10 identical pages -> clean stop)."
 echo "Note: until a browser claims/releases, projects keep run_owner='' (unlocked)."
