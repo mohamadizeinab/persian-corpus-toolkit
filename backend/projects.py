@@ -28,6 +28,16 @@ def _clean_stop_number(value):
     return s
 
 
+def _clean_stop_field(value):
+    """PCM-EXT-04: normalize the «content-basis field» used by the
+    repeated-content stop rule. '' (empty) = auto (whole extracted
+    content); otherwise the trimmed tag name of one of the project's
+    points (capped at 64 chars). Always valid — no rejection case."""
+    if value is None:
+        return ""
+    return str(value).strip()[:64]
+
+
 def ensure_projects_schema(db):
     db.executescript("""
     CREATE TABLE IF NOT EXISTS projects (
@@ -87,6 +97,12 @@ def ensure_projects_schema(db):
     # Empty string = no limit. Older DBs get the column added in place.
     if "stop_number" not in cols:
         db.execute("ALTER TABLE projects ADD COLUMN stop_number TEXT DEFAULT ''")
+        db.commit()
+    # PCM-EXT-04 (additive migration): stop_field — the content-basis field
+    # for the repeated-content stop rule (tag of a project point; '' = auto,
+    # i.e. the whole extracted content). Older DBs get the column in place.
+    if "stop_field" not in cols:
+        db.execute("ALTER TABLE projects ADD COLUMN stop_field TEXT DEFAULT ''")
         db.commit()
 
 
@@ -171,10 +187,11 @@ def register_project_routes(app, get_db):
         stop_number = _clean_stop_number(data.get("stop_number"))
         if stop_number is None:
             return jsonify({"ok": False, "message": "stop_number نامعتبر است (عدد صحیح مثبت یا خالی)"}), 400
+        stop_field = _clean_stop_field(data.get("stop_field"))
         cur = db.execute(
             """INSERT INTO projects
-               (name, host, start_url, next_mode, next_param, next_step, pages_per_minute, cursor_url, status, stop_number, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, datetime('now'))""",
+               (name, host, start_url, next_mode, next_param, next_step, pages_per_minute, cursor_url, status, stop_number, stop_field, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, datetime('now'))""",
             (
                 name,
                 host,
@@ -185,6 +202,7 @@ def register_project_routes(app, get_db):
                 pace,
                 start_url,
                 stop_number,
+                stop_field,
             ),
         )
         db.commit()
@@ -227,6 +245,8 @@ def register_project_routes(app, get_db):
             if stop_number is None:
                 return jsonify({"ok": False, "message": "stop_number نامعتبر است (عدد صحیح مثبت یا خالی)"}), 400
             fields["stop_number"] = stop_number
+        if "stop_field" in data:
+            fields["stop_field"] = _clean_stop_field(data["stop_field"])
         if "cursor_url" in data:
             fields["cursor_url"] = str(data["cursor_url"] or "").split("#")[0].strip()
         if "status" in data:

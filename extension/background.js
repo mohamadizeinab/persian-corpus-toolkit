@@ -409,6 +409,38 @@ function checkStopUrl(targetUrl, project) {
   return { done: false };
 }
 
+// ── PCM-EXT-04: توقف بر مبنای تکرار محتوا (content stop) ──────────────
+// اگر محتوای مبنایی N صفحهٔ پشت‌سرهم یکسان باشد (یا صفحات خالی باشند)،
+// سایت گیر/تکراری است و run تمام می‌شود. مبنای محتوا = فیلدی که کاربر
+// انتخاب کرده (project.stop_field)؛ اگر انتخاب نشده باشد، کل محتوای
+// استخراج‌شده (ترکیب همه‌ی values).
+const SAME_PAGE_LIMIT = 10;
+
+// امضای محتوای یک صفحه: مقدار فیلد مبنایی؛ اگر فیلد انتخاب نشده باشد یا
+// در values این صفحه نباشد، ترکیب مرتب‌شده‌ی همه‌ی مقادیر.
+function contentSignature(project, values) {
+  const v = values || {};
+  const field = String((project && (project.stop_field != null ? project.stop_field : project.stopField)) || '').trim();
+  if (field && Object.prototype.hasOwnProperty.call(v, field)) {
+    return String(v[field] == null ? '' : v[field]);
+  }
+  return Object.keys(v).sort().map((k) => String(v[k] == null ? '' : v[k])).join('\u0001');
+}
+
+// هش djb2 32-بیت از امضا — مقدار کوچک برای ذخیره در pctRun.
+function sigHash(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i += 1) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return String(h);
+}
+
+// { streak, stop } — streak = تعداد صفحات یکسانِ پشت‌سرهم تا این صفحه (شامل
+// آن). stop=true یعنی حد SAME_PAGE_LIMIT رسید و run باید تمام شود.
+function updateSameStreak(sameStreak, lastSig, sig) {
+  const streak = sig === lastSig ? sameStreak + 1 : 1;
+  return { streak, stop: streak >= SAME_PAGE_LIMIT };
+}
+
 function advanceUrl(url, project) {
   const spec = parseNextSpec(project);
   if (spec.kind === 'none') throw new Error('قانون صفحه بعد ذخیره نشده');
@@ -555,7 +587,7 @@ async function startReading(msg, sender) {
   const tabId = tab.id;
   await postReport(projectId, { status: 'running', message: `خواندن شروع شد، ${pages} صفحه در دقیقه` });
   await chrome.storage.local.set({
-    pctRun: { active: true, token, owner, projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, nextUrl: String(msg.nextUrl || '') },
+    pctRun: { active: true, token, owner, projectId, tabId, pagesPerMinute: pages, emptyStreak: 0, sameStreak: 0, lastSig: '', nextUrl: String(msg.nextUrl || '') },
   });
   chrome.alarms.create('pctRead', { delayInMinutes: 1, periodInMinutes: 1 });
   runMinute();
@@ -659,6 +691,8 @@ async function runMinute() {
   let skipped = 0;
   let failed = 0;
   let emptyStreak = run0.emptyStreak || 0;
+  let sameStreak = run0.sameStreak || 0;
+  let lastSig = String(run0.lastSig || '');
   let nextUrl = run0.nextUrl || '';
   const run = { projectId: run0.projectId, tabId: run0.tabId, pagesPerMinute: run0.pagesPerMinute };
   try {
@@ -762,6 +796,16 @@ async function runMinute() {
           emptyStreak = 0;
           if (result.status === 'skipped') skipped += 1;
           else saved += 1;
+          // PCM-EXT-04: توقف بر مبنای تکرار محتوا — ۱۰ صفحهٔ پشت‌سرهم با
+          // امضای یکسان (مبنای انتخابی یا کل محتوا) = سایت گیر کرده.
+          const st = updateSameStreak(sameStreak, lastSig, sigHash(contentSignature(project, result.values)));
+          sameStreak = st.streak;
+          lastSig = sigHash(contentSignature(project, result.values));
+          if (st.stop) {
+            const basis = String(project.stop_field || '').trim();
+            await endRun(run.projectId, 'ده صفحهٔ پشت‌سرهم محتوای یکسان (' + (basis ? 'فیلد «' + basis + '»' : 'کل محتوا') + ') داشت — خواندن ایستاد.', token);
+            return;
+          }
           const label = Object.entries(result.values || {}).map(([k, v]) => `${k}=${String(v || '').slice(0, 24)}`).join(' ');
           const tail = spec.kind === 'nextLink' && nextTarget ? ' → ' + nextTarget : '';
           await postReport(run.projectId, {
@@ -786,7 +830,7 @@ async function runMinute() {
         // ذخیره پیشرفت با همان token — snapshot قدیمی دیگر نمی‌تواند run را
         // بعد از توقف زنده کند.
         await chrome.storage.local.set({
-          pctRun: { active: true, token, projectId: run.projectId, tabId: run.tabId, pagesPerMinute: run.pagesPerMinute, emptyStreak, nextUrl },
+          pctRun: { active: true, token, projectId: run.projectId, tabId: run.tabId, pagesPerMinute: run.pagesPerMinute, emptyStreak, sameStreak, lastSig, nextUrl },
         });
       } catch (e) {
         if (!(await isLive())) return;

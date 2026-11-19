@@ -53,6 +53,10 @@ const bumpNumber = sandbox.bumpNumber;
 const parseStopSpec = sandbox.parseStopSpec;
 const pageNumberOf = sandbox.pageNumberOf;
 const checkStopUrl = sandbox.checkStopUrl;
+// PCM-EXT-04
+const contentSignature = sandbox.contentSignature;
+const sigHash = sandbox.sigHash;
+const updateSameStreak = sandbox.updateSameStreak;
 
 let passed = 0;
 let failed = 0;
@@ -236,6 +240,86 @@ const specEq = (actual, expected) =>
   await t("stop: limit not applicable (no number) -> not done", () => {
     const p = { next_param: "url-number", stop_number: "495" };
     specEq(checkStopUrl("https://x.test/about", p), { done: false });
+  });
+
+  // ── PCM-EXT-04: توقف بر مبنای تکرار محتوا ─────────────────────────────
+  await t("content: auto mode joins ALL values, sorted by key", () => {
+    const p = { stop_field: "" };
+    const s = contentSignature(p, { b: "۲", a: "۱", c: "۳" });
+    assert.strictEqual(s, "۱\u0001۲\u0001۳");
+  });
+  await t("content: auto mode ignores stop_field when empty", () => {
+    const p = {};
+    assert.strictEqual(contentSignature(p, { x: "only" }), "only");
+  });
+  await t("content: selected field used when present in values", () => {
+    const p = { stop_field: "body" };
+    assert.strictEqual(contentSignature(p, { body: "متن اصلی", title: "عنوان" }), "متن اصلی");
+  });
+  await t("content: selected field missing from values -> fallback to auto", () => {
+    const p = { stop_field: "body" };
+    assert.strictEqual(contentSignature(p, { title: "عنوان" }), "عنوان");
+  });
+  await t("content: null/undefined values become empty string", () => {
+    const p = { stop_field: "" };
+    assert.strictEqual(contentSignature(p, { a: null, b: undefined, c: "x" }), "\u0001\u0001x");
+  });
+  await t("content: different field selection -> different signature", () => {
+    const vals = { body: "متن", title: "عنوان" };
+    assert.notStrictEqual(
+      contentSignature({ stop_field: "body" }, vals),
+      contentSignature({ stop_field: "title" }, vals)
+    );
+  });
+  await t("hash: deterministic", () => {
+    assert.strictEqual(sigHash("متن یکسان"), sigHash("متن یکسان"));
+  });
+  await t("hash: distinct for different strings", () => {
+    assert.notStrictEqual(sigHash("aaa"), sigHash("aab"));
+    assert.notStrictEqual(sigHash(""), sigHash("x"));
+  });
+  await t("hash: returns string form", () => {
+    assert.strictEqual(typeof sigHash("abc"), "string");
+  });
+  await t("streak: equal sig increments", () => {
+    assert.strictEqual(updateSameStreak(0, "h", "h").streak, 1);
+    assert.strictEqual(updateSameStreak(1, "h", "h").streak, 2);
+    assert.strictEqual(updateSameStreak(9, "h", "h").streak, 10);
+  });
+  await t("streak: different sig resets to 1", () => {
+    assert.strictEqual(updateSameStreak(9, "h1", "h2").streak, 1);
+    assert.strictEqual(updateSameStreak(0, "", "first").streak, 1);
+  });
+  await t("streak: stop=true exactly at 10 (not at 9)", () => {
+    assert.strictEqual(updateSameStreak(8, "h", "h").stop, false); // ->9
+    assert.strictEqual(updateSameStreak(9, "h", "h").stop, true); // ->10
+  });
+  await t("streak: full 10-identical-page simulation", () => {
+    let streak = 0;
+    let last = "";
+    let stopped = null;
+    for (let i = 1; i <= 12 && stopped === null; i += 1) {
+      const sig = sigHash(contentSignature({ stop_field: "body" }, { body: "همین متن" }));
+      const r = updateSameStreak(streak, last, sig);
+      last = sig;
+      streak = r.streak;
+      if (r.stop) stopped = i;
+    }
+    assert.strictEqual(stopped, 10); // دهمین صفحهٔ یکسان → توقف
+  });
+  await t("streak: change after 9 identical -> restart, no stop", () => {
+    let streak = 0;
+    let last = "";
+    let stopped = false;
+    for (let i = 0; i < 12; i += 1) {
+      // ۹ صفحهٔ یکسان، بعد یه صفحهٔ متفاوت (reset)، بعد ادامه
+      const sig = sigHash("page-" + (i === 9 ? "new" : "same"));
+      const r = updateSameStreak(streak, last, sig);
+      last = sig;
+      streak = r.streak;
+      if (r.stop) stopped = true;
+    }
+    assert.strictEqual(stopped, false);
   });
 
   console.log(`\n${passed} passed, ${failed} failed`);

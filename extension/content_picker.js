@@ -115,6 +115,10 @@
       <input id="pace" type="number" min="1" max="12" value="4">
       <label for="stopNum">حد عددی توقف (صفحهٔ آخر؛ خالی = بدون حد)</label>
       <input id="stopNum" type="number" min="1" step="1" placeholder="مثلا 495 — تا همین عدد بخواند">
+      <label for="stopField">مبنای تشخیص تکرار محتوا (۱۰ صفحهٔ یکسان → توقف)</label>
+      <select id="stopField" title="اگر ۱۰ صفحهٔ پشت‌سرهم محتوای یکسان دید، خواندن ایست می‌کند. «خودکار» یعنی کل محتوا">
+        <option value="">خودکار (کل محتوا)</option>
+      </select>
       <div class="row">
         <button class="primary" id="test" type="button">آزمایش و شروع</button>
         <button class="stop" id="stop" type="button">توقف</button>
@@ -196,6 +200,7 @@
     $('nextStep').value = project.next_step || 1;
     $('pace').value = project.pages_per_minute || 4;
     $('stopNum').value = project.stop_number || '';
+    rebuildStopField();
     updateNextDetail();
     const count = (project.points || []).length;
     $('step2').classList.toggle('on', count > 0);
@@ -235,6 +240,25 @@
         `${project.last_message || project.status} — ذخیره ${project.saved_count || 0}، رد ${project.skipped_count || 0}، خطا ${project.failed_count || 0}`
       );
     }
+  }
+
+  // PCM-EXT-04: گزینه‌های «مبنای تشخیص تکرار محتوا» از نقاط پروژه ساخته می‌شود
+  function rebuildStopField() {
+    const sel = $('stopField');
+    const current = String(project?.stop_field || '');
+    const tags = (project?.points || []).map((p) => String(p.tag || '').trim()).filter(Boolean);
+    sel.innerHTML = '';
+    const opt0 = document.createElement('option');
+    opt0.value = '';
+    opt0.textContent = 'خودکار (کل محتوا)';
+    sel.appendChild(opt0);
+    tags.forEach((tag) => {
+      const opt = document.createElement('option');
+      opt.value = tag;
+      opt.textContent = tag;
+      sel.appendChild(opt);
+    });
+    sel.value = (current && tags.includes(current)) ? current : '';
   }
 
   async function load(id) {
@@ -357,6 +381,7 @@
         next_step: Number($('nextStep').value) || 1,
         pages_per_minute: Math.max(1, Math.min(12, Number($('pace').value) || 4)),
         stop_number: $('stopNum').value.trim(),
+        stop_field: $('stopField').value,
       }),
     });
     const data = await r.json();

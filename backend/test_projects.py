@@ -217,5 +217,139 @@ class StopNumberTests(unittest.TestCase):
         self.assertEqual(row[0], "")
 
 
+class StopFieldTests(unittest.TestCase):
+    """PCM-EXT-04: the content-basis field (مبنای تشخیص تکرار محتوا).
+
+    '' = auto (whole extracted content); otherwise the tag of one point.
+    Never rejected — whitespace is trimmed and length capped at 64.
+    """
+
+    def setUp(self):
+        pct_test_support.reset_db()
+        db = sqlite3.connect(server.DB_PATH)
+        server.ensure_khamenei_schema(db)
+        db.close()
+        self.client = server.app.test_client()
+
+    def _create(self, **extra):
+        payload = {
+            "name": "SF", "host": "tasnim.hamtaa.org",
+            "start_url": "https://tasnim.hamtaa.org/payload?item_index=1",
+            "next_mode": "url_param", "next_param": "item_index",
+        }
+        payload.update(extra)
+        r = self.client.post("/api/projects", json=payload)
+        self.assertEqual(r.status_code, 200)
+        return r.get_json()["project"]["id"]
+
+    def test_sf01_create_without_stop_field_defaults_empty(self):
+        pid = self._create()
+        got = self.client.get(f"/api/projects/{pid}").get_json()
+        self.assertIn("stop_field", got)
+        self.assertEqual(got["stop_field"], "")
+
+    def test_sf02_create_with_stop_field_persists(self):
+        pid = self._create(stop_field="body")
+        got = self.client.get(f"/api/projects/{pid}").get_json()
+        self.assertEqual(got["stop_field"], "body")
+
+    def test_sf03_update_stop_field(self):
+        pid = self._create(stop_field="title")
+        r = self.client.post(f"/api/projects/{pid}", json={"stop_field": "body"})
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.get_json()["ok"])
+        self.assertEqual(r.get_json()["project"]["stop_field"], "body")
+        self.assertEqual(
+            self.client.get(f"/api/projects/{pid}").get_json()["stop_field"], "body")
+
+    def test_sf04_update_clears_stop_field(self):
+        pid = self._create(stop_field="body")
+        r = self.client.post(f"/api/projects/{pid}", json={"stop_field": ""})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.get_json()["project"]["stop_field"], "")
+
+    def test_sf05_long_value_capped_at_64_never_rejected(self):
+        long_tag = "x" * 200
+        r = self.client.post("/api/projects", json={
+            "name": "SF", "host": "x.test", "stop_field": long_tag})
+        self.assertEqual(r.status_code, 200, "stop_field must never be rejected")
+        pid = r.get_json()["project"]["id"]
+        got = self.client.get(f"/api/projects/{pid}").get_json()
+        self.assertEqual(len(got["stop_field"]), 64)
+        self.assertEqual(got["stop_field"], "x" * 64)
+
+    def test_sf06_whitespace_trimmed(self):
+        r = self.client.post("/api/projects", json={
+            "name": "SF", "host": "x.test", "stop_field": "  body  "})
+        self.assertEqual(r.status_code, 200)
+        pid = r.get_json()["project"]["id"]
+        self.assertEqual(
+            self.client.get(f"/api/projects/{pid}").get_json()["stop_field"], "body")
+
+    def test_sf07_list_response_exposes_stop_field(self):
+        pid = self._create(stop_field="body")
+        items = self.client.get("/api/projects").get_json()["projects"]
+        row = next(p for p in items if p["id"] == pid)
+        self.assertEqual(row["stop_field"], "body")
+
+    def test_sf08_legacy_schema_additive_migration(self):
+        # A DB from before PCM-EXT-04 (has stop_number, no stop_field):
+        # the migration adds the column in place, row preserved, idempotent.
+        import os
+        import tempfile
+        import projects as projects_mod
+        fd, legacy = tempfile.mkstemp(prefix="pct_sfield_", suffix=".db")
+        os.close(fd)
+        try:
+            db = sqlite3.connect(legacy)
+            db.executescript(
+                """CREATE TABLE projects (
+                    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name              TEXT NOT NULL,
+                    host              TEXT NOT NULL,
+                    start_url         TEXT DEFAULT '',
+                    next_mode         TEXT DEFAULT 'url_param',
+                    next_param        TEXT DEFAULT '',
+                    next_step         INTEGER DEFAULT 1,
+                    pages_per_minute  INTEGER DEFAULT 4,
+                    cursor_url        TEXT DEFAULT '',
+                    status            TEXT DEFAULT 'draft',
+                    saved_count       INTEGER DEFAULT 0,
+                    skipped_count     INTEGER DEFAULT 0,
+                    failed_count      INTEGER DEFAULT 0,
+                    last_message      TEXT DEFAULT '',
+                    tested_at         TEXT,
+                    created_at        TEXT,
+                    updated_at        TEXT DEFAULT (datetime('now')),
+                    stop_number       TEXT DEFAULT ''
+                );
+                INSERT INTO projects (name, host, status, stop_number)
+                VALUES ('Legacy', 'x.org', 'paused', '495');"""
+            )
+            db.commit()
+            projects_mod.ensure_projects_schema(db)
+            cols = {r[1] for r in db.execute("PRAGMA table_info(projects)").fetchall()}
+            self.assertIn("stop_field", cols)
+            row = db.execute(
+                "SELECT name, status, stop_number, stop_field FROM projects"
+            ).fetchone()
+            self.assertEqual(row[0], "Legacy")
+            self.assertEqual(row[1], "paused")
+            self.assertEqual(row[2], "495")
+            self.assertEqual(row[3], "")
+            # idempotent: running the migration again changes nothing
+            before = db.execute("SELECT * FROM projects").fetchall()
+            projects_mod.ensure_projects_schema(db)
+            after = db.execute("SELECT * FROM projects").fetchall()
+            self.assertEqual(before, after)
+            db.close()
+        finally:
+            for suffix in ("", "-wal", "-shm"):
+                try:
+                    os.remove(legacy + suffix)
+                except OSError:
+                    pass
+
+
 if __name__ == "__main__":
     unittest.main()
