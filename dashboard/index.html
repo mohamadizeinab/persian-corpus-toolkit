@@ -394,9 +394,9 @@ async function loadOverview() {
   if (!stats) return;
   
   document.getElementById('overviewStats').innerHTML = `
-    <div class="stat-card"><div class="label">کل آیتم‌های کراول‌شده</div><div class="value blue">${stats.crawled_total.toLocaleString('fa-IR')}</div></div>
-    <div class="stat-card"><div class="label">در صف (منبع: crawl_queue)</div><div class="value orange">${stats.queue_pending.toLocaleString('fa-IR')}</div></div>
-    <div class="stat-card"><div class="label">انجام شده</div><div class="value green">${stats.queue_done.toLocaleString('fa-IR')}</div></div>
+    <div class="stat-card"><div class="label">آیتم‌های ذخیره‌شده (محتوای کراول‌شده)</div><div class="value blue">${stats.crawled_total.toLocaleString('fa-IR')}</div></div>
+    <div class="stat-card"><div class="label">صفحات در صف (crawl_queue)</div><div class="value orange">${stats.queue_pending.toLocaleString('fa-IR')}</div></div>
+    <div class="stat-card"><div class="label">صفحات انجام‌شده (crawl_queue)</div><div class="value green">${stats.queue_done.toLocaleString('fa-IR')}</div></div>
     <div class="stat-card"><div class="label">نوع‌های محتوا</div><div class="value">${Object.keys(stats.by_type || {}).length}</div></div>
   `;
   
@@ -412,10 +412,10 @@ async function loadOverview() {
   `).join('');
   
   document.getElementById('queueStats').innerHTML = `
-    <div class="stat-card"><div class="label">در حال کراول</div><div class="value orange">${stats.queue_crawling}</div></div>
-    <div class="stat-card"><div class="label">در صف</div><div class="value blue">${stats.queue_pending}</div></div>
-    <div class="stat-card"><div class="label">انجام شده</div><div class="value green">${stats.queue_done}</div></div>
-    <div class="stat-card"><div class="label">کل صف</div><div class="value">${stats.queue_total}</div></div>
+    <div class="stat-card"><div class="label">صفحات در حال کراول</div><div class="value orange">${stats.queue_crawling}</div></div>
+    <div class="stat-card"><div class="label">صفحات در صف</div><div class="value blue">${stats.queue_pending}</div></div>
+    <div class="stat-card"><div class="label">صفحات انجام‌شده</div><div class="value green">${stats.queue_done}</div></div>
+    <div class="stat-card"><div class="label">کل صفحات صف</div><div class="value">${stats.queue_total}</div></div>
   `;
 
   // PCM-21: real per-site breakdown — source: crawl_queue.site (no fabricated numbers)
@@ -426,14 +426,14 @@ async function loadOverview() {
     qbsEl.innerHTML = entries.length ? entries.map(([site, c]) => `
       <span title="منبع: crawl_queue.site = ${escHtml(site)}" style="display:inline-flex;align-items:center;gap:8px;margin:0 0 6px 0;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;background:#0b1120">
         <b>${escHtml(site)}</b>
-        <span style="color:var(--orange)">در صف: ${faNum(c.pending)}</span>
+        <span style="color:var(--orange)">در صف (صفحه): ${faNum(c.pending)}</span>
         <span style="color:var(--green)">انجام‌شده: ${faNum(c.done)}</span>
         <span style="color:var(--dim)">کل: ${faNum(c.total)}</span>
       </span>
     `).join('') : '<div class="empty" style="padding:8px">هنوز ردیفی در crawl_queue نیست</div>';
   }
   
-  document.getElementById('recentActivity').innerHTML = `✅ سرور فعال است | ${stats.crawled_total} آیتم ذخیره شده | ${stats.queue_pending} کار در صف`;
+  document.getElementById('recentActivity').innerHTML = `✅ سرور فعال است | ${stats.crawled_total} آیتم ذخیره شده | ${stats.queue_pending} صفحه در صف`;
 }
 
 // PCM-21: resume — move stuck 'crawling' rows back to 'pending' so crawl can continue
@@ -447,7 +447,8 @@ async function resumeCrawlQueue() {
       body: '{}',
     });
     const d = await r.json().catch(() => ({}));
-    if (el) el.textContent = (d.status === 'ok' ? '✅ صف reset شد — ' : '❌ ') +
+    if (el) el.textContent = (d.status === 'ok' ?
+      `✅ ${faNum(d.reset || 0)} ردیف «در حال کراول» به pending برگشت — ` : '❌ ') +
       'ادامه کراول با اکستنشن مرورگر (صف pending به‌صورت خودکار مصرف می‌شود)';
     await loadOverview();
   } catch (e) {
@@ -559,7 +560,7 @@ async function loadKhamenei() {
       <div class="stat-card"><div class="label">کل بیانات</div><div class="value blue">${(stats.total || 0).toLocaleString('fa-IR')}</div></div>
       <div class="stat-card"><div class="label">با تاریخ</div><div class="value green">${(stats.with_date || 0).toLocaleString('fa-IR')}</div></div>
       <div class="stat-card"><div class="label">بدون تاریخ</div><div class="value orange">${(stats.without_date || 0).toLocaleString('fa-IR')}</div></div>
-      <div class="stat-card"><div class="label">در صف</div><div class="value">${(stats.pending || 0).toLocaleString('fa-IR')}</div></div>
+      <div class="stat-card"><div class="label">در صف (صفحات بیانات)</div><div class="value">${(stats.pending || 0).toLocaleString('fa-IR')}</div></div>
       <div class="stat-card"><div class="label">آخرین کراول</div><div class="value" style="font-size:16px">${stats.last_crawled_at || '-'}</div></div>
       <div class="stat-card"><div class="label">کل کاراکتر</div><div class="value green">${(stats.total_chars || 0).toLocaleString('fa-IR')}</div></div>
     `;

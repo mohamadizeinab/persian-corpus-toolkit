@@ -1179,11 +1179,13 @@ def stats():
 
 @app.route('/api/reset-queue', methods=['POST'])
 def reset_queue():
-    """Reset all 'crawling' jobs back to 'pending'"""
+    """Reset all 'crawling' jobs back to 'pending' (PCM-25: report count)."""
     db = get_db()
-    db.execute("UPDATE crawl_queue SET status='pending', started_at=NULL WHERE status='crawling'")
+    cur = db.execute(
+        "UPDATE crawl_queue SET status='pending', started_at=NULL "
+        "WHERE status='crawling'")
     db.commit()
-    return jsonify({"status": "ok"})
+    return jsonify({"status": "ok", "reset": cur.rowcount})
 
 
 # ═══════════════════════════════════════

@@ -3873,7 +3873,8 @@ def register_knowledge_routes(app, get_db):
         stages = [
             dict(r) for r in db.execute(
                 """SELECT stage, COUNT(*) AS files FROM knowledge_file_queue
-                   WHERE stage IS NOT NULL AND collection_id=?
+                   WHERE stage IS NOT NULL AND status='failed'
+                     AND collection_id=?
                    GROUP BY stage""", (cid,))]
         return jsonify({"batches": [dict(r) for r in rows],
                         "total": total, "page": page, "per_page": per_page,
@@ -4037,9 +4038,17 @@ def register_knowledge_routes(app, get_db):
                methods=["POST"])
     @require_auth
     def knowledge_resume_batch(batch_id):
-        """PCM-15: clear the pause flag (does NOT auto-start a worker —
-        resume processing by POSTing /process again; an interrupted/paused
-        job is re-executed by the existing job idempotency)."""
+        """PCM-15 + PCM-25: clear the pause flag AND actually continue.
+
+        If the batch's process job is in a retryable state (interrupted /
+        failed — e.g. paused mid-run or a worker crash), it is re-executed
+        through the existing job idempotency: files that are already
+        processed (parsed/needs_review/approved/indexed) are skipped by the
+        worker, so the remaining pending files continue from the last safe
+        stage. If no job exists yet (paused before /process) only the flag
+        is cleared and the client must press «پردازش». The response carries
+        `resumed` (true when a worker was restarted) and `job`.
+        """
         db = get_db()
         ensure_knowledge_schema(db)
         _recover_interrupted(db)
@@ -4050,7 +4059,23 @@ def register_knowledge_routes(app, get_db):
         ctrl = db.execute(
             "SELECT paused, updated_at FROM knowledge_queue_control WHERE scope=?",
             (queue_scope(batch_id),)).fetchone()
-        return jsonify({"ok": True, "paused": False,
+        resumed = False
+        job = None
+        jrow = db.execute(
+            "SELECT job_id, status FROM knowledge_jobs WHERE job_key=?",
+            (f"process_batch:{batch_id}",)).fetchone()
+        if jrow and jrow["status"] in ("interrupted", "failed"):
+            db.execute(
+                "UPDATE knowledge_import_batches SET status='processing', "
+                "updated_at=? WHERE batch_id=?", (_now(), batch_id))
+            db.commit()
+            job, _created = _submit_job(
+                db, f"process_batch:{batch_id}", "process_batch",
+                b["collection_id"], batch_id,
+                idempotency_key=f"batch:{batch_id}")
+            resumed = True
+        return jsonify({"ok": True, "paused": False, "resumed": resumed,
+                        "job": job,
                         "scope": queue_scope(batch_id),
                         "queue_control": dict(ctrl)})
 
@@ -4619,7 +4644,7 @@ def register_knowledge_routes(app, get_db):
         stages = [
             dict(r) for r in db.execute(
                 f"""SELECT stage, COUNT(*) AS files FROM knowledge_file_queue
-                   WHERE stage IS NOT NULL
+                   WHERE stage IS NOT NULL AND status='failed'
                      {'AND collection_id=?' if coll_id else ''}
                    GROUP BY stage""",
                 (coll_id,) if coll_id else ())]

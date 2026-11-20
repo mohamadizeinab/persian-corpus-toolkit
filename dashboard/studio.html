@@ -1937,7 +1937,9 @@ async function batchAction(batchId, act) {
     if (act === 'process') toast('شروع پردازش: ' + faNum(j.files_queued) + ' فایل در صف');
     else if (act === 'retry') toast('تلاش مجدد: ' + faNum(j.files_queued) + ' فایل ناموفق دوباره در صف (فایل‌های موفق دست‌نخورده)');
     else if (act === 'pause') toast('صف متوقف شد — فایل جاری تا پایان می‌رسد و بقیه در انتظار می‌مانند');
-    else if (act === 'resume') toast('توقف لغو شد — برای ادامهٔ پردازش دوباره «پردازش» بزنید');
+    else if (act === 'resume') toast(j.resumed
+      ? '✅ ادامهٔ پردازش شروع شد — فایل‌های باقی‌مانده از آخرین مرحلهٔ امن ادامه می‌یابند'
+      : 'توقف لغو شد — پردازش هنوز شروع نشده بود؛ دکمه «پردازش» را بزنید');
     refreshJobs();
     await loadQueue();
   } catch (e) { toast(e.message, 'err'); }

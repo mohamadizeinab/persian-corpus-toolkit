@@ -234,7 +234,10 @@ class TestQ01_BatchE2E(Base):
 
 
 class TestQ02_PauseResume(Base):
-    """Q-02: deterministic pause before process -> 0 processed, then resume."""
+    """Q-02: deterministic pause before process -> 0 processed; resume with
+    no job only clears the flag (resumed=False, job=None); resume with an
+    interrupted job ACTUALLY restarts it (same job id, checkpoint keeps
+    already-processed files untouched)."""
 
     def test_q02_pause_then_resume(self):
         self.login()
@@ -250,11 +253,22 @@ class TestQ02_PauseResume(Base):
             self._file_entry(good), self._file_entry(corrupt)])
         batch_id = plan["batch"]["batch_id"]
 
-        # pause BEFORE processing starts
+        # 1) pause BEFORE any process call; resume with NO job yet: only the
+        #    flag is cleared, no worker is restarted
         r = self.client.post(f"/api/knowledge/import/batches/{batch_id}/pause")
         self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
         self.assertTrue(r.get_json()["paused"])
+        r = self.client.post(f"/api/knowledge/import/batches/{batch_id}/resume")
+        self.assertEqual(r.status_code, 200)
+        j = r.get_json()
+        self.assertFalse(j["paused"])
+        self.assertFalse(j["resumed"])
+        self.assertIsNone(j["job"])
 
+        # 2) pause again, then process -> worker stops cleanly on the flag
+        r = self.client.post(f"/api/knowledge/import/batches/{batch_id}/pause")
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.get_json()["paused"])
         job = self._process_batch(batch_id)
         row = self.wait_job(job["job"]["job_id"])
         self.assertEqual(row["status"], "interrupted", row)
@@ -273,12 +287,16 @@ class TestQ02_PauseResume(Base):
         self.assertEqual(det["batch"]["status"], "planned")
         self.assertTrue(det["paused"])
 
-        # resume (clears the flag; processing must be (re)started)
+        # 3) resume must ACTUALLY continue: the interrupted job is
+        #    auto-restarted (same job id) and runs to completion
         r = self.client.post(f"/api/knowledge/import/batches/{batch_id}/resume")
         self.assertEqual(r.status_code, 200)
-        self.assertFalse(r.get_json()["paused"])
-        job = self._process_batch(batch_id)
-        row = self.wait_job(job["job"]["job_id"])
+        j = r.get_json()
+        self.assertFalse(j["paused"])
+        self.assertTrue(j["resumed"])
+        self.assertIsNotNone(j["job"])
+        self.assertEqual(j["job"]["job_id"], job["job"]["job_id"])
+        row = self.wait_job(j["job"]["job_id"])
         self.assertEqual(row["status"], "succeeded", row)
         q = {r["file_key"]: r for r in self._queue_rows(coll["collection_id"])}
         self.assertEqual({r["status"] for r in q.values()},

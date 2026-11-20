@@ -305,7 +305,8 @@ class TestS03_CountersMatch(Base):
             }
             stages = [dict(r) for r in conn.execute(
                 "SELECT stage, COUNT(*) AS files FROM knowledge_file_queue "
-                "WHERE stage IS NOT NULL AND collection_id=? "
+                "WHERE stage IS NOT NULL AND status='failed' "
+                "AND collection_id=? "
                 "GROUP BY stage", (coll["collection_id"],))]
         finally:
             conn.close()
