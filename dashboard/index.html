@@ -151,8 +151,15 @@
       </div>
       
       <div class="card">
-        <h2>⏳ وضعیت صف کراول</h2>
+        <h2>⏳ وضعیت صف کراول <span style="font-size:11px;color:var(--dim);font-weight:normal">— منبع: جدول crawl_queue (شمارنده واقعی DB)</span></h2>
         <div class="stats-grid" id="queueStats"></div>
+        <div id="queueBySite" style="margin-top:10px"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button type="button" onclick="resumeCrawlQueue()" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:#052e16;color:var(--green);cursor:pointer;font-family:inherit">
+            ▶️ ادامه پردازش (بازگشت crawling به pending)
+          </button>
+          <span id="resumeMsg" style="font-size:11px;color:var(--dim)"></span>
+        </div>
       </div>
       
       <div class="card">
@@ -167,7 +174,23 @@
       <div class="stats-grid" id="thesaurusStats"></div>
       
       <div class="card">
-        <h2>🗂️ توزیع بر اساس شاخه علمی</h2>
+        <h2>📊 پیشرفت اسکن و کراول محتوا</h2>
+        <div class="stats-grid" id="thesaurusProgressStats"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button type="button" onclick="runTheHarvest()" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:#172554;color:var(--accent);cursor:pointer;font-family:inherit">
+            🔎 اسکن / ادامه اسکن (سرور، از آخرین cursor)
+          </button>
+          <span id="harvestMsg" style="font-size:11px;color:var(--dim)"></span>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--dim)">
+          کراول جزئیات محتوا (اصطلاح/کلیدواژه) در اکستنشن مرورگر انجام می‌شود — صف pending به‌صورت خودکار ادامه پیدا می‌کند.
+        </div>
+        <table style="margin-top:12px"><thead><tr><th>شاخه علمی</th><th>اسکن لیست</th><th>وضعیت</th><th>صف محتوا (pending/done)</th><th>آیتم‌های ذخیره</th></tr></thead>
+        <tbody id="thesaurusProgressTable"></tbody></table>
+      </div>
+
+      <div class="card">
+        <h2>🗂️ توزیع اسکن‌شده بر اساس شاخه علمی</h2>
         <div class="bar-chart" id="scienceChart"></div>
       </div>
       
@@ -187,12 +210,19 @@
         <h2>📅 توزیع بر اساس سال</h2>
         <div class="bar-chart" id="yearChart"></div>
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" onclick="continueKhameneiYears()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#052e16;color:var(--green);cursor:pointer;font-family:inherit">
+            ⏭️ ادامه سال‌های گذشته (باز کردن لیست سال در مرورگر)
+          </button>
           <button type="button" onclick="resetKhamenei('phase2')" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#78350f;color:var(--orange);cursor:pointer;font-family:inherit">
             🔄 ریست فاز۲ (نگه‌داشتن لیست، کراول دوباره برای تاریخ)
           </button>
           <button type="button" onclick="resetKhamenei('full')" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#450a0a;color:var(--red);cursor:pointer;font-family:inherit">
             🗑️ ریست کامل بیانات
           </button>
+        </div>
+        <div id="khameneiStatus" style="margin-top:8px;font-size:11px;color:var(--dim)"></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--dim);line-height:1.9">
+          نقشه راه بعد از تکمیل بانک (khamenei_speeches): ① تبدیل به Word Factory (blocks.jsonl) → ② استودیوی دانش (کالکشن) → ③ دیتاست/ES → ④ دامپ رسمی → ⑤ ثبت در registry RAG → منبع در rag.ai.ismc.ir — جزئیات در <a href="/dashboard/studio.html" style="color:var(--accent)">استودیو</a>
         </div>
       </div>
       
@@ -365,7 +395,7 @@ async function loadOverview() {
   
   document.getElementById('overviewStats').innerHTML = `
     <div class="stat-card"><div class="label">کل آیتم‌های کراول‌شده</div><div class="value blue">${stats.crawled_total.toLocaleString('fa-IR')}</div></div>
-    <div class="stat-card"><div class="label">در صف</div><div class="value orange">${stats.queue_pending.toLocaleString('fa-IR')}</div></div>
+    <div class="stat-card"><div class="label">در صف (منبع: crawl_queue)</div><div class="value orange">${stats.queue_pending.toLocaleString('fa-IR')}</div></div>
     <div class="stat-card"><div class="label">انجام شده</div><div class="value green">${stats.queue_done.toLocaleString('fa-IR')}</div></div>
     <div class="stat-card"><div class="label">نوع‌های محتوا</div><div class="value">${Object.keys(stats.by_type || {}).length}</div></div>
   `;
@@ -387,8 +417,42 @@ async function loadOverview() {
     <div class="stat-card"><div class="label">انجام شده</div><div class="value green">${stats.queue_done}</div></div>
     <div class="stat-card"><div class="label">کل صف</div><div class="value">${stats.queue_total}</div></div>
   `;
+
+  // PCM-21: real per-site breakdown — source: crawl_queue.site (no fabricated numbers)
+  const qbs = stats.queue_by_site || {};
+  const qbsEl = document.getElementById('queueBySite');
+  if (qbsEl) {
+    const entries = Object.entries(qbs);
+    qbsEl.innerHTML = entries.length ? entries.map(([site, c]) => `
+      <span title="منبع: crawl_queue.site = ${escHtml(site)}" style="display:inline-flex;align-items:center;gap:8px;margin:0 0 6px 0;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;background:#0b1120">
+        <b>${escHtml(site)}</b>
+        <span style="color:var(--orange)">در صف: ${faNum(c.pending)}</span>
+        <span style="color:var(--green)">انجام‌شده: ${faNum(c.done)}</span>
+        <span style="color:var(--dim)">کل: ${faNum(c.total)}</span>
+      </span>
+    `).join('') : '<div class="empty" style="padding:8px">هنوز ردیفی در crawl_queue نیست</div>';
+  }
   
   document.getElementById('recentActivity').innerHTML = `✅ سرور فعال است | ${stats.crawled_total} آیتم ذخیره شده | ${stats.queue_pending} کار در صف`;
+}
+
+// PCM-21: resume — move stuck 'crawling' rows back to 'pending' so crawl can continue
+async function resumeCrawlQueue() {
+  const el = document.getElementById('resumeMsg');
+  if (el) el.textContent = '⏳ در حال بازگرداندن crawling به pending...';
+  try {
+    const r = await fetch(`${API}/api/reset-queue`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+    const d = await r.json().catch(() => ({}));
+    if (el) el.textContent = (d.status === 'ok' ? '✅ صف reset شد — ' : '❌ ') +
+      'ادامه کراول با اکستنشن مرورگر (صف pending به‌صورت خودکار مصرف می‌شود)';
+    await loadOverview();
+  } catch (e) {
+    if (el) el.textContent = '❌ خطا: ' + e;
+  }
 }
 
 // ─── THESAURUS ───
@@ -402,8 +466,41 @@ async function loadThesaurus() {
     <div class="stat-card"><div class="label">نمایه‌ها</div><div class="value">${(stats.by_type?.index || 0).toLocaleString('fa-IR')}</div></div>
   `;
   
-  // Science distribution chart (placeholder - needs real data)
-  document.getElementById('scienceChart').innerHTML = '<div class="empty">برای مشاهده توزیع دقیق، نیاز به endpoint اختصاصی است</div>';
+  // PCM-21: real per-science progress (list-scan cursors + content queue + saved items)
+  const prog = await fetchAPI('/api/thesaurus/progress');
+  if (prog) {
+    const ls = prog.list_scan || {};
+    const ct = prog.content || {};
+    document.getElementById('thesaurusProgressStats').innerHTML = `
+      <div class="stat-card"><div class="label">اسکن لیست (صفحات)</div><div class="value blue" style="font-size:18px">${faNum(ls.scanned_pages || 0)} / ${faNum(ls.expected_pages || 0)}</div></div>
+      <div class="stat-card"><div class="label">وضعیت اسکن لیست</div><div class="value" style="font-size:15px">${ls.complete ? '✅ کامل' : '⏳ در حال کار'}</div></div>
+      <div class="stat-card"><div class="label">صف محتوا (pending)</div><div class="value orange">${faNum(ct.pending || 0)}</div></div>
+      <div class="stat-card"><div class="label">محتوای انجام‌شده (done)</div><div class="value green">${faNum(ct.done || 0)}</div></div>
+      <div class="stat-card"><div class="label">آیتم‌های ذخیره‌شده</div><div class="value">${faNum(ct.items_saved || 0)}</div></div>
+    `;
+    const scis = prog.sciences || [];
+    const rows = scis.map(s => {
+      const l = s.list_scan || {};
+      const q = s.queue || {};
+      return `<tr>
+        <td><b>${escHtml(s.name)}</b> <span class="pg-label">${escHtml(s.id)}</span></td>
+        <td style="direction:ltr;text-align:left">${l.page != null ? faNum(l.page) + ' / ' + faNum(l.total_pages) : '-'}</td>
+        <td>${l.complete ? '<span style="color:var(--green)">✅ کامل</span>' : '<span style="color:var(--orange)">⏳ ناقص</span>'}</td>
+        <td><span style="color:var(--orange)">${faNum(q.pending || 0)}</span> / <span style="color:var(--green)">${faNum(q.done || 0)}</span></td>
+        <td>${faNum(s.content_items || 0)}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('thesaurusProgressTable').innerHTML = rows || '<tr><td colspan="5" class="empty">داده‌ای نیست</td></tr>';
+    const scanned = scis.map(s => (s.list_scan && s.list_scan.page) || 0);
+    const maxS = Math.max(...scanned, 1);
+    document.getElementById('scienceChart').innerHTML = scis.map((s, i) => `
+      <div class="bar-wrapper" title="${escHtml(s.name)}: ${scanned[i]} از ${s.list_scan && s.list_scan.total_pages != null ? s.list_scan.total_pages : '?'}">
+        <div class="bar-val">${faNum(scanned[i])}</div>
+        <div class="bar" style="height:${Math.max(4, (scanned[i] / maxS * 100))}%; background: var(--accent)"></div>
+        <div class="bar-label">${escHtml(s.id)}</div>
+      </div>
+    `).join('');
+  }
   
   // Recent items table
   let tableHtml = '';
@@ -419,6 +516,37 @@ async function loadThesaurus() {
     });
   }
   document.getElementById('thesaurusTable').innerHTML = tableHtml || '<tr><td colspan="5" class="empty">داده‌ای یافت نشد</td></tr>';
+}
+
+// PCM-21: server-side elastic list scan — resumes from the last saved cursor (async job)
+async function runTheHarvest() {
+  const el = document.getElementById('harvestMsg');
+  const set = (t) => { if (el) el.textContent = t; };
+  try {
+    const r = await fetch(`${API}/api/thesaurus/elastic-harvest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ async: true, resume: true }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 409) set('⏳ اسکن قبلاً در حال اجراست — منتظر پایان...');
+    else if (!r.ok) { set('❌ ' + (d.message || ('HTTP ' + r.status))); return; }
+    else set('⏳ اسکن به سرور ارسال شد — از آخرین cursor ادامه پیدا می‌کند...');
+    for (let i = 0; i < 60; i++) {
+      await new Promise(res => setTimeout(res, 5000));
+      const st = await fetchAPI('/api/thesaurus/elastic-harvest/status');
+      if (st && !st.running) {
+        const sm = st.summary || {};
+        set(`✅ اسکن تمام شد — صفحات: ${faNum(sm.pages || 0)} | جدید: ${faNum(sm.inserted || 0)} | به‌روزرسانی: ${faNum(sm.updated || 0)} | ردشده: ${faNum(sm.skipped || 0)} | خطا: ${faNum(sm.errors || 0)}${st.error ? ' | ⚠️ ' + st.error : ''}`);
+        await loadThesaurus();
+        return;
+      }
+      set('⏳ اسکن در حال اجرا است...');
+    }
+    set('⏳ اسکن هنوز در حال اجرا است — چند دقیقه بعد صفحه را تازه کنید');
+  } catch (e) {
+    set('❌ خطا: ' + e);
+  }
 }
 
 // ─── KHAMENEI ───
@@ -454,6 +582,17 @@ async function loadKhamenei() {
       }).join('');
     }
   }
+
+  // PCM-21: past years waiting in the queue — source: crawl_queue (page_type='khamenei_speech', status='pending')
+  const cstat = await fetchAPI('/api/khamenei/crawl-status');
+  const kbEl = document.getElementById('khameneiStatus');
+  if (kbEl) {
+    const pby = (cstat && cstat.pending_by_year) || {};
+    const yrs = Object.entries(pby);
+    kbEl.innerHTML = yrs.length
+      ? `<div style="font-size:12px;color:var(--orange)">📅 سال‌های در انتظار کراول (از crawl_queue): ${yrs.map(([y, n]) => y + ' (' + faNum(n) + ')').join('، ')} — دکمه «ادامه سال‌های گذشته» لیست هر سال را در تب جدید باز می‌کند و اکستنشن به‌صورت خودکار کراول می‌کند</div>`
+      : '<div style="font-size:12px;color:var(--green)">✅ هیچ سال گذشته‌ای در صف نیست</div>';
+  }
   
   let tableHtml = '';
   if (recent && recent.length > 0) {
@@ -469,20 +608,59 @@ async function loadKhamenei() {
   document.getElementById('khameneiTable').innerHTML = tableHtml || '<tr><td colspan="4" class="empty">هنوز بیانی کراول نشده</td></tr>';
 }
 
+// PCM-21: open pending past-year list pages in new browser tabs.
+// farsi.khamenei.ir is behind CloudGuard → crawl must run in the browser;
+// the extension auto-seeds (phase1) and crawls (phase2) each opened list page.
+async function continueKhameneiYears() {
+  const cstat = await fetchAPI('/api/khamenei/crawl-status');
+  const pby = (cstat && cstat.pending_by_year) || {};
+  const years = Object.keys(pby).filter(y => y !== '?').sort((a, b) => Number(a) - Number(b));
+  if (!years.length) {
+    alert('صف سال‌های گذشته خالی است — به‌نظر می‌رسد همه سال‌ها کراول شده‌اند.');
+    return;
+  }
+  alert('لیست این سال‌ها در تب جدید باز می‌شود:\n' + years.join('\n') +
+    '\n\nروی هر صفحه لیست، اکستنشن IDهای بیانات را کشف کرده و صف فاز۲ را خودکار پر می‌کند ' +
+    '(khamenei.ir فقط از مرورگر کراول می‌شود — CloudGuard).');
+  years.forEach(y => window.open('https://farsi.khamenei.ir/speech?nt=2&year=' + y, '_blank'));
+}
+
 // ─── CORPUS ───
 async function loadCorpus() {
   const corpus = await fetchAPI('/api/corpus/list');
   if (corpus && corpus.files) {
-    let html = '<table><thead><tr><th>فایل</th><th>حجم</th><th>آیتم</th><th>توضیح</th></tr></thead><tbody>';
-    corpus.files.forEach(f => {
-      html += `<tr>
-        <td>📄 ${f.name}</td>
-        <td>${f.size || '-'}</td>
-        <td>${f.entries || '-'}</td>
-        <td>${f.description || '-'}</td>
-      </tr>`;
-    });
-    html += '</tbody></table>';
+    // PCM-21: versioned tasnim corpus artifacts (corpus/tasnim) + legacy pipeline files
+    const legacyFiles = corpus.files.filter(f => !f.root);
+    const tasnimFiles = corpus.files.filter(f => f.root);
+    let html = '';
+    if (tasnimFiles.length) {
+      html += '<h2 style="margin-bottom:8px">🏛️ پیکره‌های تسنیم (نسخه‌شده — canonical)</h2>';
+      html += '<table><thead><tr><th>نام</th><th>نوع</th><th>نسخه</th><th>حجم</th><th>آیتم</th><th>توضیح</th></tr></thead><tbody>';
+      tasnimFiles.forEach(f => {
+        html += `<tr>
+          <td>📦 ${escHtml(f.name)}</td>
+          <td>${escHtml(f.kind || '-')}</td>
+          <td>${escHtml(f.version || '-')}</td>
+          <td>${f.size || '-'}</td>
+          <td>${f.entries || '-'}</td>
+          <td>${escHtml(f.description || '-')}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+    }
+    if (legacyFiles.length) {
+      html += '<h2 style="margin-top:14px;margin-bottom:8px">📄 پیکره‌های سنتی (corpus/pipeline.py)</h2>';
+      html += '<table><thead><tr><th>فایل</th><th>حجم</th><th>آیتم</th><th>توضیح</th></tr></thead><tbody>';
+      legacyFiles.forEach(f => {
+        html += `<tr>
+          <td>📄 ${escHtml(f.name)}</td>
+          <td>${f.size || '-'}</td>
+          <td>${f.entries || '-'}</td>
+          <td>${escHtml(f.description || '-')}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+    }
     document.getElementById('corpusContent').innerHTML = html;
   } else {
     document.getElementById('corpusContent').innerHTML = `
@@ -688,11 +866,18 @@ async function renderProjectDetail(id) {
       <div id="pagesBody"><div class="empty" style="padding:20px">در حال بارگذاری...</div></div>
     </div>
     <div class="card">
-      <h2>📄 آخرین صفحه ثبت‌شده</h2>
+      <h2>📄 آخرین صفحه ثبت‌شده <span style="font-size:11px;color:var(--dim);font-weight:normal">— شماره واقعی از URL/مقادیر آخرین صفحه (نه «حد عددی توقف»)</span></h2>
       ${ps.last_url ? `
-        <div style="font-size:12px;margin-bottom:8px">
-          <a href="${escHtml(ps.last_url)}" target="_blank" rel="noopener" style="color:var(--accent);word-break:break-all">${escHtml(ps.last_url)}</a>
-          <span class="pg-label"> · ثبت: ${escHtml(p.updated_at || '')}</span>
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px">
+          <div style="flex:1;min-width:240px">
+            <a href="${escHtml(ps.last_url)}" target="_blank" rel="noopener" style="color:var(--accent);word-break:break-all">${escHtml(ps.last_url)}</a>
+            <div class="pg-label" style="margin-top:4px">ثبت: ${escHtml(p.updated_at || '')}</div>
+          </div>
+          <div class="stat-card" style="flex:0 0 auto;min-width:170px">
+            <div class="label">🔢 آخرین شماره صفحه واقعی</div>
+            <div class="value blue" style="font-size:24px">${ps.last_page_number != null ? faNum(ps.last_page_number) : '-'}</div>
+            <div style="font-size:10px;color:var(--dim)">منبع: item_index در URL آخرین صفحه (یا بیشترین عدد مقادیر) — مستقل از stop_number</div>
+          </div>
         </div>
         <pre class="json-box">${escHtml(JSON.stringify(p.values_sample || {}, null, 2))}</pre>
         <button class="mini-btn" style="margin-top:8px" onclick="copyJson()">📋 کپی JSON</button>

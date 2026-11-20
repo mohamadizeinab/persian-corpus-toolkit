@@ -314,5 +314,47 @@ class PageBrowsingTests(Base):
         self.assertEqual(d2["pages"][0]["id"], self.ids[0])
 
 
+# ── PCM-21: real last-page number (never the configured stop_number) ──
+
+class PCM21DashboardTests(Base):
+    # L01 — last_page_number parsed from the last page URL (item_index)
+    def test_L01_last_page_number_from_url(self):
+        self.login()
+        pid = self.make_project("PCM21", next_mode="url_param", next_param="item_index")
+        self.post(f"/api/projects/{pid}/points", json={
+            "tag": "متن", "source": "css", "selector": "p", "transform": "text",
+        })
+        for i in (5, 82772, 82773):
+            self.post(f"/api/projects/{pid}/pages", json={
+                "url": f"https://tasnim.hamtaa.org/payload?file_id=10&item_index={i}",
+                "values": {"متن": f"متن {i}"},
+            })
+        d = self.get(f"/api/dashboard/projects/{pid}").get_json()
+        self.assertIn("item_index=82773", d["pages_summary"]["last_url"])
+        self.assertEqual(d["pages_summary"]["last_page_number"], 82773)
+
+    # L02 — no item_index in URL → largest captured numeric value
+    def test_L02_last_page_number_values_fallback(self):
+        self.login()
+        pid = self.make_project("PCM21b", next_mode="url_param", next_param="item_index")
+        self.post(f"/api/projects/{pid}/points", json={
+            "tag": "متن", "source": "css", "selector": "p", "transform": "text",
+        })
+        self.post(f"/api/projects/{pid}/pages", json={
+            "url": "https://example.org/book/page-12",
+            "values": {"متن": "متن صفحه", "شماره": "12"},
+        })
+        d = self.get(f"/api/dashboard/projects/{pid}").get_json()
+        self.assertEqual(d["pages_summary"]["last_page_number"], 12)
+
+    # L03 — no pages yet → null (a number is never invented)
+    def test_L03_last_page_number_none(self):
+        self.login()
+        pid = self.make_project("PCM21c", next_mode="url_param", next_param="item_index")
+        d = self.get(f"/api/dashboard/projects/{pid}").get_json()
+        self.assertEqual(d["pages_summary"]["last_url"], "")
+        self.assertIsNone(d["pages_summary"]["last_page_number"])
+
+
 if __name__ == "__main__":
     unittest.main()

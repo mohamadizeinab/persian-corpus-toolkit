@@ -200,5 +200,178 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(saved["fields"][0]["tag"], "title")
 
 
+class PCM21Tests(unittest.TestCase):
+    """PCM-21: dashboard counters with explicit sources.
+    /api/stats.queue_by_site, /api/thesaurus/progress,
+    /api/khamenei/crawl-status.pending_by_year, /api/reset-queue
+    (the "continue" button), /api/corpus/list tasnim artifacts.
+    Real DB counters only — no fabricated numbers."""
+
+    def setUp(self):
+        pct_test_support.reset_db()
+        db = sqlite3.connect(server.DB_PATH)
+        server.ensure_khamenei_schema(db)
+        db.close()
+        self.client = server.app.test_client()
+
+    def _db(self):
+        return sqlite3.connect(server.DB_PATH)
+
+    # T1 — /api/stats gains per-site breakdown (source: crawl_queue.site)
+    def test_stats_queue_by_site(self):
+        body = self.client.get("/api/stats").get_json()
+        self.assertEqual(body["queue_by_site"], {})
+        db = self._db()
+        db.execute(
+            "INSERT INTO crawl_queue (url, site, page_type, status, source_page) "
+            "VALUES ('https://farsi.khamenei.ir/speech-content?id=1', 'khamenei', "
+            "'khamenei_speech', 'pending', "
+            "'https://farsi.khamenei.ir/speech?nt=2&year=1400')"
+        )
+        db.execute(
+            "INSERT INTO crawl_queue (url, site, page_type, status, science_id) "
+            "VALUES ('https://thesaurus.eiis.iki.ac.ir/fa/term/1', 'thesaurus', "
+            "'term', 'done', '040')"
+        )
+        db.commit()
+        db.close()
+        body = self.client.get("/api/stats").get_json()
+        self.assertEqual(body["queue_by_site"]["khamenei"],
+                         {"total": 1, "pending": 1, "done": 0})
+        self.assertEqual(body["queue_by_site"]["thesaurus"],
+                         {"total": 1, "pending": 0, "done": 1})
+
+    # T2 — fresh progress endpoint: 13 sciences, zero counters, not complete
+    def test_thesaurus_progress_fresh(self):
+        body = self.client.get("/api/thesaurus/progress").get_json()
+        self.assertEqual(len(body["sciences"]), 13)
+        self.assertEqual(body["list_scan"]["scanned_pages"], 0)
+        self.assertEqual(body["list_scan"]["expected_pages"], 0)
+        self.assertFalse(body["list_scan"]["complete"])
+        self.assertEqual(body["content"]["pending"], 0)
+        self.assertEqual(body["content"]["items_saved"], 0)
+        self.assertIn("اصطلاح‌نامه", body["content"]["by_main_type"])
+
+    # T3 — seeded cursor/queue/content → real per-science progress
+    def test_thesaurus_progress_seeded(self):
+        db = self._db()
+        db.execute(
+            "INSERT INTO crawl_progress (key, value) VALUES (?, ?)",
+            ("thesaurus:list:040",
+             '{"key": "thesaurus:list:040", "scienceId": "040", '
+             '"page": 1658, "totalPages": 1658}'),
+        )
+        db.execute(
+            "INSERT INTO crawl_queue (url, site, page_type, status, science_id) "
+            "VALUES ('https://thesaurus.eiis.iki.ac.ir/fa/term/2', 'thesaurus', "
+            "'term', 'pending', '040')"
+        )
+        db.execute(
+            "INSERT INTO crawled_data (url, item_type, title, content_hash, "
+            "science_field) VALUES ("
+            "'https://thesaurus.eiis.iki.ac.ir/fa/term/3', 'term', 'تست', 'h1', '040')"
+        )
+        db.commit()
+        db.close()
+        body = self.client.get("/api/thesaurus/progress").get_json()
+        s040 = next(s for s in body["sciences"] if s["id"] == "040")
+        self.assertEqual(s040["list_scan"],
+                         {"page": 1658, "total_pages": 1658, "complete": True})
+        self.assertEqual(s040["queue"], {"total": 1, "pending": 1, "done": 0})
+        self.assertEqual(s040["content_items"], 1)
+        self.assertEqual(body["list_scan"],
+                         {"expected_pages": 1658, "scanned_pages": 1658,
+                          "complete": True})
+        self.assertEqual(body["content"]["pending"], 1)
+        self.assertEqual(body["content"]["items_saved"], 1)
+        self.assertEqual(body["content"]["by_main_type"]["اصطلاح‌نامه"], 1)
+
+    # T4 — pending past years (source: crawl_queue.source_page year=YYYY)
+    def test_khamenei_crawl_status_pending_by_year(self):
+        db = self._db()
+        for i, year in enumerate(("1398", "1398", "1400")):
+            db.execute(
+                "INSERT INTO crawl_queue (url, site, page_type, status, source_page) "
+                "VALUES (?, 'khamenei', 'khamenei_speech', 'pending', ?)",
+                ("https://farsi.khamenei.ir/speech-content?id=%d" % (9000 + i),
+                 "https://farsi.khamenei.ir/speech?nt=2&year=%s" % year),
+            )
+        db.commit()
+        db.close()
+        body = self.client.get("/api/khamenei/crawl-status").get_json()
+        self.assertEqual(body["pending"], 3)
+        self.assertEqual(body["pending_by_year"], {"1398": 2, "1400": 1})
+
+    # T5 — the "continue" button target: crawling rows go back to pending
+    def test_reset_queue_moves_crawling_to_pending(self):
+        db = self._db()
+        db.execute(
+            "INSERT INTO crawl_queue (url, site, page_type, status) "
+            "VALUES ('https://thesaurus.eiis.iki.ac.ir/fa/term/9', 'thesaurus', "
+            "'term', 'crawling')"
+        )
+        db.commit()
+        db.close()
+        resp = self.client.post("/api/reset-queue")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.get_json()["status"], "ok")
+        db = self._db()
+        st = db.execute(
+            "SELECT status FROM crawl_queue WHERE url LIKE '%/term/9'"
+        ).fetchone()[0]
+        db.close()
+        self.assertEqual(st, "pending")
+
+    # T6 — /api/corpus/list exposes versioned tasnim artifacts (temp dir)
+    def test_corpus_list_tasnim_artifacts(self):
+        import os
+        import shutil
+        import tempfile
+        tmp = tempfile.mkdtemp(prefix="pct_tasnim_")
+        try:
+            root = os.path.join(tmp, "root1")
+            v = os.path.join(root, "corpus", "builds", "v0001")
+            os.makedirs(v)
+            with open(os.path.join(v, "corpus.json"), "w", encoding="utf-8") as fh:
+                fh.write('{"x": 1}')
+            with open(os.path.join(v, "pages.jsonl"), "w", encoding="utf-8") as fh:
+                fh.write('{"a": 1}\n{"a": 2}\n{"a": 3}\n')
+            dv = os.path.join(root, "datasets", "100pct", "v0001")
+            os.makedirs(dv)
+            with open(os.path.join(dv, "dataset.json"), "w", encoding="utf-8") as fh:
+                fh.write('{"d": 1}')
+            old = server._TASNIM_DATA_DIRS
+            server._TASNIM_DATA_DIRS = (tmp,)
+            try:
+                body = self.client.get("/api/corpus/list").get_json()
+            finally:
+                server._TASNIM_DATA_DIRS = old
+            mine = [f for f in body["files"] if f.get("root") == "root1"]
+            self.assertEqual(len(mine), 2)
+            corpus_item = next(f for f in mine if f["kind"] == "corpus")
+            self.assertEqual(corpus_item["name"], "tasnim/root1 — corpus v0001")
+            self.assertEqual(corpus_item["version"], "v0001")
+            self.assertEqual(corpus_item["entries"], 3)
+            ds_item = next(f for f in mine if f["kind"] == "dataset")
+            self.assertEqual(ds_item["version"], "100pct v0001")
+            self.assertEqual(ds_item["entries"], 0)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    # T7 — missing tasnim dir → no tasnim rows, never an error
+    def test_corpus_list_no_tasnim_dir(self):
+        import os
+        import tempfile
+        old = server._TASNIM_DATA_DIRS
+        server._TASNIM_DATA_DIRS = (
+            os.path.join(tempfile.gettempdir(), "pct_missing_tasnim_dir"),
+        )
+        try:
+            body = self.client.get("/api/corpus/list").get_json()
+        finally:
+            server._TASNIM_DATA_DIRS = old
+        self.assertEqual([f for f in body["files"] if f.get("root")], [])
+
+
 if __name__ == "__main__":
     unittest.main()

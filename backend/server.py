@@ -174,7 +174,7 @@ def content_hash(data):
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from sciences import THESAURUS_SCIENCES, THESAURUS_SCIENCE_IDS
+from sciences import THESAURUS_SCIENCES, THESAURUS_SCIENCE_IDS, THESAURUS_MAIN_TYPES
 
 
 # ═══════════════════════════════════════
@@ -1027,6 +1027,122 @@ def thesaurus_elastic_status():
     })
 
 
+@app.route('/api/thesaurus/progress')
+def thesaurus_progress():
+    """PCM-21: per-science progress — how far we are and what remains.
+    Real counters only: list scan from crawl_progress cursors
+    (thesaurus:list:<sid>), content queue from crawl_queue, saved
+    content from crawled_data.
+    """
+    db = get_db()
+
+    cursor_map = {}
+    for key, value in db.execute("SELECT key, value FROM crawl_progress").fetchall():
+        if not key.startswith('thesaurus:list:'):
+            continue
+        try:
+            v = json.loads(value)
+        except (ValueError, TypeError):
+            v = {}
+        cursor_map[key[len('thesaurus:list:'):]] = v
+
+    queue_map = {}
+    for r in db.execute(
+        "SELECT COALESCE(NULLIF(science_id, ''), '_') AS sid, "
+        "COUNT(*) AS total, "
+        "SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending, "
+        "SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) AS done "
+        "FROM crawl_queue WHERE site = 'thesaurus' "
+        "GROUP BY COALESCE(NULLIF(science_id, ''), '_')"
+    ).fetchall():
+        queue_map[r['sid']] = r
+
+    content_map = {}
+    for r in db.execute(
+        "SELECT COALESCE(NULLIF(science_field, ''), '_') AS sf, COUNT(*) AS c "
+        "FROM crawled_data GROUP BY COALESCE(NULLIF(science_field, ''), '_')"
+    ).fetchall():
+        content_map[r['sf']] = r['c']
+
+    main_types = {}
+    for r in db.execute(
+        "SELECT item_type, COUNT(*) AS c FROM crawled_data "
+        "WHERE item_type IN ('term', 'category', 'grammer') GROUP BY item_type"
+    ).fetchall():
+        main_types[r['item_type']] = r['c']
+
+    sciences = []
+    expected_pages = 0
+    scanned_pages = 0
+    for sid, sname in THESAURUS_SCIENCES:
+        cur = cursor_map.get(sid) or {}
+        total_pages = cur.get('totalPages')
+        scanned = cur.get('page')
+        try:
+            total_pages = int(total_pages) if total_pages is not None else None
+        except (TypeError, ValueError):
+            total_pages = None
+        try:
+            scanned = int(scanned) if scanned is not None else None
+        except (TypeError, ValueError):
+            scanned = None
+        q = queue_map.get(sid)
+        if total_pages is not None:
+            expected_pages += total_pages
+            if scanned is not None:
+                scanned_pages += scanned
+        sciences.append({
+            'id': sid,
+            'name': sname,
+            'list_scan': {
+                'page': scanned,
+                'total_pages': total_pages,
+                'complete': (total_pages is not None and scanned is not None
+                             and scanned >= total_pages),
+            },
+            'queue': {
+                'total': q['total'] if q else 0,
+                'pending': (q['pending'] or 0) if q else 0,
+                'done': (q['done'] or 0) if q else 0,
+            },
+            'content_items': content_map.get(sid, 0),
+        })
+
+    pending_all = db.execute(
+        "SELECT COUNT(*) AS c FROM crawl_queue "
+        "WHERE site = 'thesaurus' AND status = 'pending'"
+    ).fetchone()['c']
+    done_all = db.execute(
+        "SELECT COUNT(*) AS c FROM crawl_queue "
+        "WHERE site = 'thesaurus' AND status = 'done'"
+    ).fetchone()['c']
+    items_saved = db.execute("SELECT COUNT(*) AS c FROM crawled_data").fetchone()['c']
+
+    return jsonify({
+        'sciences': sciences,
+        'list_scan': {
+            'expected_pages': expected_pages,
+            'scanned_pages': scanned_pages,
+            'complete': expected_pages > 0 and scanned_pages >= expected_pages,
+        },
+        'content': {
+            'pending': pending_all,
+            'done': done_all,
+            'items_saved': items_saved,
+            'by_main_type': {
+                label: main_types.get(key, 0) for key, label in THESAURUS_MAIN_TYPES
+            },
+        },
+        'harvest_job': {
+            'running': _HARVEST_JOB['running'],
+            'summary': _HARVEST_JOB['summary'],
+            'error': _HARVEST_JOB['error'],
+            'started_at': _HARVEST_JOB['started_at'],
+            'finished_at': _HARVEST_JOB['finished_at'],
+        },
+    })
+
+
 # ═══════════════════════════════════════
 # API - Stats & Status
 # ═══════════════════════════════════════
@@ -1040,12 +1156,22 @@ def stats():
     done = db.execute("SELECT COUNT(*) as c FROM crawl_queue WHERE status='done'").fetchone()['c']
     crawled = db.execute("SELECT COUNT(*) as c FROM crawled_data").fetchone()['c']
     by_type = db.execute("SELECT item_type, COUNT(*) as c FROM crawled_data GROUP BY item_type").fetchall()
-    
+    by_site_rows = db.execute(
+        "SELECT COALESCE(site, 'thesaurus') AS site, COUNT(*) AS total, "
+        "SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending, "
+        "SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) AS done "
+        "FROM crawl_queue GROUP BY COALESCE(site, 'thesaurus')"
+    ).fetchall()
+
     return jsonify({
         "queue_total": total_queue,
         "queue_pending": pending,
         "queue_crawling": crawling,
         "queue_done": done,
+        "queue_by_site": {
+            r["site"]: {"total": r["total"], "pending": r["pending"], "done": r["done"]}
+            for r in by_site_rows
+        },
         "crawled_total": crawled,
         "by_type": {row['item_type']: row['c'] for row in by_type}
     })
@@ -1265,12 +1391,23 @@ def khamenei_crawl_status():
     ).fetchone()['c']
     last = db.execute("SELECT MAX(crawled_at) as d FROM khamenei_speeches").fetchone()['d']
     complete = queued > 0 and pending == 0
+    # PCM-21: which past years are still waiting (parsed from the list
+    # page source_page = .../speech?nt=2&year=YYYY). Real data only.
+    pending_by_year = {}
+    for r in db.execute(
+        "SELECT source_page FROM crawl_queue "
+        "WHERE page_type = 'khamenei_speech' AND status = 'pending'"
+    ).fetchall():
+        m = re.search(r"year=(\d{4})", r['source_page'] or '')
+        y = m.group(1) if m else '?'
+        pending_by_year[y] = pending_by_year.get(y, 0) + 1
     return jsonify({
         "total": total,
         "pending": pending,
         "queued": queued,
         "last_crawled_at": last,
         "complete": complete,
+        "pending_by_year": pending_by_year,
     })
 
 
@@ -1317,6 +1454,96 @@ def khamenei_recent():
     ).fetchall()
     return jsonify([dict(r) for r in rows])
 
+_TASNIM_LINE_CACHE = {}
+_TASNIM_DATA_DIRS = (
+    os.path.join(os.path.dirname(__file__), '..', 'data', 'tasnim'),
+    os.path.join(os.path.dirname(__file__), '..', 'data-files', 'tasnim'),
+    '/data-files/tasnim',
+    '/data/tasnim',
+)
+
+
+def _jsonl_line_count(path):
+    """Cached line count for large .jsonl artifacts — the dashboard polls
+    /api/corpus/list every 10 s and corpus files are tens of MB."""
+    try:
+        st = os.stat(path)
+    except OSError:
+        return 0
+    cached = _TASNIM_LINE_CACHE.get(path)
+    if cached and cached[0] == st.st_mtime and cached[1] == st.st_size:
+        return cached[2]
+    n = 0
+    try:
+        with open(path, 'r', encoding='utf-8') as fh:
+            for _ in fh:
+                n += 1
+    except OSError:
+        return 0
+    _TASNIM_LINE_CACHE[path] = (st.st_mtime, st.st_size, n)
+    return n
+
+
+def _tasnim_corpus_artifacts():
+    """PCM-21: list built, versioned outputs of corpus/tasnim
+    (data/tasnim/<root>/{corpus,datasets,dumps}/...). Returns an empty
+    list when the data dir is absent (fresh hosts) — never an error."""
+    items = []
+    base = next((d for d in _TASNIM_DATA_DIRS if os.path.isdir(d)), None)
+    if base is None:
+        return items
+    kind_desc = {
+        'corpus': 'پیکره canonical (جریان RAW/NORMALIZED جدا)',
+        'dataset': 'دیتاست نسخه‌شده (HF)',
+        'dump': 'دامپ رسمی (d-1)',
+    }
+    for root in sorted(os.listdir(base)):
+        root_dir = os.path.join(base, root)
+        if not os.path.isdir(root_dir):
+            continue
+        specs = []
+        builds = os.path.join(root_dir, 'corpus', 'builds')
+        if os.path.isdir(builds):
+            for v in sorted(os.listdir(builds)):
+                if os.path.isdir(os.path.join(builds, v)):
+                    specs.append(('corpus', v, os.path.join(builds, v)))
+        for pct in ('1pct', '10pct', '50pct', '90pct', '100pct'):
+            for kind, sub in (('dataset', 'datasets'), ('dump', 'dumps')):
+                d = os.path.join(root_dir, sub, pct)
+                if os.path.isdir(d):
+                    for v in sorted(os.listdir(d)):
+                        if os.path.isdir(os.path.join(d, v)):
+                            specs.append((kind, pct + ' ' + v, os.path.join(d, v)))
+        for kind, ver, path in specs:
+            total_size = 0
+            entries = 0
+            try:
+                for fn in sorted(os.listdir(path)):
+                    fp = os.path.join(path, fn)
+                    if not os.path.isfile(fp):
+                        continue
+                    total_size += os.path.getsize(fp)
+                    if fn.endswith('.jsonl'):
+                        entries += _jsonl_line_count(fp)
+            except OSError:
+                continue
+            if total_size == 0:
+                continue
+            size_str = (f"{total_size/1024:.1f} KB" if total_size < 1024 * 1024
+                        else f"{total_size/1024/1024:.1f} MB")
+            items.append({
+                "name": f"tasnim/{root} — {kind} {ver}",
+                "root": root,
+                "kind": kind,
+                "version": ver,
+                "size": size_str,
+                "entries": entries,
+                "description": kind_desc[kind],
+                "detail": "",
+            })
+    return items
+
+
 @app.route('/api/corpus/list')
 def corpus_list():
     import glob
@@ -1342,6 +1569,9 @@ def corpus_list():
         size_str = f"{size/1024:.1f} KB" if size < 1024*1024 else f"{size/1024/1024:.1f} MB"
         desc, detail = descriptions.get(name, ('', ''))
         files.append({"name": name, "size": size_str, "entries": entries, "description": desc, "detail": detail})
+    # PCM-21: also list built, versioned tasnim corpora/datasets/dumps
+    # (empty when data/tasnim is absent on this host).
+    files.extend(_tasnim_corpus_artifacts())
     return jsonify({"files": files})
 
 @app.route('/api/queue')

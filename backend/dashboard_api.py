@@ -8,6 +8,7 @@ Read-only: no mutation, no deletes. All queries parameterized with
 LIMIT/OFFSET pagination so the whole table is never loaded into memory.
 """
 import json
+import re
 
 from flask import jsonify, request
 
@@ -29,6 +30,39 @@ _PAGES_SORTABLE = {
     "captured_at": "p.captured_at",
     "url": "p.url",
 }
+
+
+def _last_page_number(last_page):
+    """PCM-21: the REAL last page number captured for a project — not the
+    configured stop_number (that is a stop limit, not the last page).
+    Source priority:
+      1. item_index=<n> in the last page URL
+         (e.g. .../payload?file_id=tasnim&item_index=82773)
+      2. largest integer among the last page's captured values
+      3. None (never invented)
+    """
+    if not last_page:
+        return None
+    url = last_page["url"] or ""
+    m = re.search(r"item_index=(\d+)", url)
+    if m:
+        return int(m.group(1))
+    try:
+        values = json.loads(last_page["values_json"] or "")
+    except Exception:
+        values = None
+    if isinstance(values, dict):
+        nums = []
+        for v in values.values():
+            if isinstance(v, bool):
+                continue
+            if isinstance(v, (int, float)):
+                nums.append(int(v))
+            elif isinstance(v, str) and v.strip().isdigit():
+                nums.append(int(v.strip()))
+        if nums:
+            return max(nums)
+    return None
 
 
 def ensure_dashboard_schema(db):
@@ -130,7 +164,7 @@ def register_dashboard_routes(app, get_db):
             (project_id,),
         ).fetchone()
         last_page = db.execute(
-            "SELECT url, captured_at FROM project_pages WHERE project_id=? "
+            "SELECT url, captured_at, values_json FROM project_pages WHERE project_id=? "
             "ORDER BY id DESC LIMIT 1",
             (project_id,),
         ).fetchone()
@@ -139,6 +173,7 @@ def register_dashboard_routes(app, get_db):
             "first_captured": pages["first_captured"],
             "last_captured": pages["last_captured"],
             "last_url": last_page["url"] if last_page else "",
+            "last_page_number": _last_page_number(last_page),
         }
         try:
             item["values_sample"] = json.loads(
