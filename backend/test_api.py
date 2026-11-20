@@ -286,6 +286,53 @@ class PCM21Tests(unittest.TestCase):
         self.assertEqual(body["content"]["items_saved"], 1)
         self.assertEqual(body["content"]["by_main_type"]["اصطلاح‌نامه"], 1)
 
+    # T3b — PCM-25 DC#2: per-science content_items must attribute by the REAL
+    # science id (full_data.science_id). Production rows store the science
+    # *title* in the science_field column, so grouping on that column made
+    # every science show 0 saved items while items_saved was 146k+.
+    def test_thesaurus_progress_content_items_by_real_id(self):
+        import json as _json
+        fd = _json.dumps({"url": "https://x/fa/term/99", "item_id": "99",
+                          "item_type": "term", "title": "ت",
+                          "science_id": "040",
+                          "science_field": "معرفت‌شناسی"}, ensure_ascii=False)
+        db = self._db()
+        # production shape: science_field = title (must NOT win attribution)
+        db.execute(
+            "INSERT INTO crawled_data (url, item_id, item_type, title, "
+            "full_data, content_hash, science_field) "
+            "VALUES ('https://thesaurus.eiis.iki.ac.ir/fa/term/99', '99', "
+            "'term', 'ت', ?, 'hA', 'معرفت‌شناسی')", (fd,))
+        # legacy shape: no id in full_data, science_field holds the id
+        db.execute(
+            "INSERT INTO crawled_data (url, item_id, item_type, title, "
+            "full_data, content_hash, science_field) "
+            "VALUES ('https://thesaurus.eiis.iki.ac.ir/fa/term/98', '98', "
+            "'term', 'ت', NULL, 'hB', '050')")
+        db.commit()
+        db.close()
+        body = self.client.get("/api/thesaurus/progress").get_json()
+        by_id = {s["id"]: s for s in body["sciences"]}
+        self.assertEqual(by_id["040"]["content_items"], 1)
+        self.assertEqual(by_id["050"]["content_items"], 1)
+        self.assertEqual(body["content"]["items_saved"], 2)
+        self.assertEqual(sum(s["content_items"] for s in body["sciences"]), 2)
+
+    # T3c — PCM-25 DC#2: the harvest default covers ALL 13 sciences.
+    # Before the fix the hard-coded list stopped at 120, so کلام (140) and
+    # 150/170/180 were never list-scanned by the server and the
+    # «اسکن / ادامه اسکن» button could never finish them.
+    def test_harvest_default_science_ids_all_thirteen(self):
+        import os as _os
+        with open(
+            _os.path.join(_os.path.dirname(_os.path.abspath(__file__)),
+                          "server.py"), encoding="utf-8") as fh:
+            src = fh.read()
+        self.assertIn(
+            "data.get('science_ids') or list(THESAURUS_SCIENCE_IDS)", src)
+        self.assertNotIn("'040', '050', '060', '070', '080', '090', '100', '110', '120'",
+                         src)
+
     # T4 — pending past years (source: crawl_queue.source_page year=YYYY)
     def test_khamenei_crawl_status_pending_by_year(self):
         db = self._db()

@@ -852,9 +852,10 @@ def thesaurus_elastic_harvest_status():
 
 def _run_elastic_harvest(data):
     import urllib.request
-    science_ids = data.get('science_ids') or [
-        '040', '050', '060', '070', '080', '090', '100', '110', '120'
-    ]
+    # PCM-25 DC#2: default to ALL known sciences (the old hard-coded list
+    # stopped at 120, which is why کلام/140 + 150/170/180 were never
+    # list-scanned by the server and the button could never "finish" them).
+    science_ids = data.get('science_ids') or list(THESAURUS_SCIENCE_IDS)
     page_size = int(data.get('page_size') or 100)
     max_pages = data.get('max_pages')
     resume = data.get('resume', True)
@@ -1057,12 +1058,23 @@ def thesaurus_progress():
     ).fetchall():
         queue_map[r['sid']] = r
 
+    # Per-science saved items. Production rows carry the science id in
+    # full_data.science_id (the science_field column holds the *title*, not the
+    # id, so grouping on it would never match the id-keyed table below). We
+    # therefore attribute by the real id, falling back to science_field for
+    # legacy rows that stored the id there. This is why the per-science
+    # "آیتم‌های ذخیره" column previously rendered all zeros while the total
+    # items_saved was 146k+.
     content_map = {}
     for r in db.execute(
-        "SELECT COALESCE(NULLIF(science_field, ''), '_') AS sf, COUNT(*) AS c "
-        "FROM crawled_data GROUP BY COALESCE(NULLIF(science_field, ''), '_')"
+        "SELECT sci, COUNT(*) AS c FROM ("
+        "  SELECT COALESCE("
+        "    NULLIF(json_extract(full_data, '$.science_id'), ''), "
+        "    COALESCE(NULLIF(science_field, ''), '_')"
+        "  ) AS sci FROM crawled_data"
+        ") GROUP BY sci"
     ).fetchall():
-        content_map[r['sf']] = r['c']
+        content_map[r['sci']] = r['c']
 
     main_types = {}
     for r in db.execute(
