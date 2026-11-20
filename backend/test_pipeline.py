@@ -1038,6 +1038,11 @@ class _StageDPrep(Base):
         self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
         return r.get_json()["builds"]
 
+    def _audit_actions(self, coll_pk):
+        a = self.client.get(
+            f"/api/knowledge/collections/{coll_pk}/audit").get_json()
+        return a["entries"]
+
 
 class TestPF_D01_CorpusBuildReal(_StageDPrep):
     """PF-D01 — Stage D: the REAL build.
@@ -2117,6 +2122,356 @@ class TestPF_F07_AuditTrail(_StageFPrep):
         a2 = self.client.get(
             f"/api/knowledge/collections/{other['id']}/audit").get_json()
         self.assertEqual(a2["count"], 0)
+
+
+# ---------------------------------------------------------------------------
+# PCM-22 — guarded embedding export (emb-1) for the canonical corpus
+# ---------------------------------------------------------------------------
+# The embedding factory is config-guarded exactly like the ES factory:
+# without PCT_EMBEDDING_URL + PCT_EMBEDDING_MODEL the step is recorded
+# 'blocked' (the endpoint is NEVER called, nothing claimed). When
+# configured, the UNIQUE normalized stream is embedded through the single
+# _embedding_request seam (OpenAI-compatible /v1/embeddings) and written
+# as embeddings.jsonl + embedding-manifest.json (contract 'emb-1') beside
+# the corpus — the deterministic archive sha256 is UNCHANGED.
+
+EM_URL = "http://embed.fake:9999/v1"
+EM_MODEL = "test-embed-model"
+EM_DIM = 8
+
+
+class _EmbedPrep(_StageDPrep):
+    """Shared PCM-22 setup: 2 Persian books + PCT_EMBEDDING_* configured."""
+
+    def setUp(self):
+        super().setUp()
+        self._enable_embed_env(dim=EM_DIM)
+
+    def _enable_embed_env(self, dim=EM_DIM):
+        for v in ("PCT_ES_URL", "PCT_EMBEDDING_URL", "PCT_EMBEDDING_MODEL",
+                  "PCT_EMBEDDING_DIM"):
+            os.environ.pop(v, None)
+        os.environ["PCT_EMBEDDING_URL"] = EM_URL
+        os.environ["PCT_EMBEDDING_MODEL"] = EM_MODEL
+        if dim is not None:
+            os.environ["PCT_EMBEDDING_DIM"] = str(dim)
+        for v in ("PCT_EMBEDDING_URL", "PCT_EMBEDDING_MODEL",
+                  "PCT_EMBEDDING_DIM", "PCT_ES_URL"):
+            self.addCleanup(lambda v=v: os.environ.pop(v, None))
+
+    class _FakeEmbed:
+        """OpenAI-compatible /v1/embeddings fake; records every call."""
+
+        def __init__(self, dim=EM_DIM, fail=False):
+            self.dim = dim
+            self.fail = fail
+            self.calls = []  # one list-of-inputs per call
+
+        def __call__(self, url, path, body=None):
+            assert url == EM_URL
+            assert path == "/v1/embeddings"
+            assert body["model"] == EM_MODEL
+            texts = body["input"]
+            self.calls.append(list(texts))
+            if self.fail:
+                raise RuntimeError("endpoint boom")
+            return {"data": [
+                {"index": i,
+                 "embedding": [round(0.01 * (i + 1) * (k + 1), 4)
+                               for k in range(self.dim)]}
+                for i in range(len(texts))]
+            }
+
+        @property
+        def total_inputs(self):
+            return sum(len(c) for c in self.calls)
+
+    def _unique_count(self, corpus_dir):
+        with open(os.path.join(corpus_dir, "normalized.unique.jsonl"),
+                  encoding="utf-8") as fh:
+            return sum(1 for l in fh if l.strip())
+
+    def _set_row(self, cid, embedding_status):
+        conn = self._db()
+        try:
+            conn.execute(
+                "UPDATE knowledge_index_builds SET embedding_status=? "
+                "WHERE collection_id=?", (embedding_status, cid))
+            conn.commit()
+        finally:
+            conn.close()
+
+
+class TestPCM22_EM01_BlockWithoutConfig(_StageDPrep):
+    """PCM-22 EM-01 — no PCT_EMBEDDING_* config -> 'blocked', endpoint
+    NEVER called, no export files, honest audit row (mirrors PF-D01's
+    ES 'blocked' semantics)."""
+
+    def test_blocked_without_config(self):
+        import unittest.mock
+        for v in ("PCT_ES_URL", "PCT_EMBEDDING_URL", "PCT_EMBEDDING_MODEL",
+                  "PCT_EMBEDDING_DIM"):
+            os.environ.pop(v, None)
+            self.addCleanup(lambda v=v: os.environ.pop(v, None))
+        coll, _rows = self._prep(2)
+        cid = coll["collection_id"]
+
+        calls = []
+
+        def spy(url, path, body=None):
+            calls.append((url, path))
+            self.fail("embedding endpoint called without config")
+
+        with unittest.mock.patch.object(
+                knowledge_api, "_embedding_request", side_effect=spy):
+            _r, _j, job = self.corpus_build(coll["id"])
+        self.assertEqual(job["status"], "succeeded", job)
+        self.assertEqual(calls, [])
+
+        b = self.corpus_builds(coll["id"])[0]
+        self.assertEqual(b["es_index_status"], "blocked")
+        self.assertEqual(b["embedding_status"], "blocked")
+        self.assertIsNone(b["embedding_model"])
+        self.assertIsNone(b["embedding_dim"])
+        det = json.loads(b["embedding_detail"])
+        self.assertEqual(det["status"], "blocked")
+        self.assertIn("PCT_EMBEDDING", det["reason"])
+
+        # nothing on disk: no vectors claimed without a live endpoint
+        _root, _d, corpus_dir = _corpus_build_paths(coll["id"], cid)
+        self.assertFalse(os.path.exists(
+            os.path.join(corpus_dir, "embeddings.jsonl")))
+        self.assertFalse(os.path.exists(
+            os.path.join(corpus_dir, "embedding-manifest.json")))
+
+        emb = [e for e in self._audit_actions(coll["id"])
+               if e["action"] == "embeddings"]
+        self.assertEqual(len(emb), 1)
+        self.assertEqual(emb[0]["status"], "blocked")
+
+
+class TestPCM22_EM02_Success(_EmbedPrep):
+    """PCM-22 EM-02 — configured endpoint (mocked at the seam): the
+    ES-blocked path STILL settles embeddings — emb-1 manifest +
+    embeddings.jsonl, row success/model/dim, archive sha256 UNCHANGED."""
+
+    def test_success_writes_emb1_export(self):
+        import unittest.mock
+        coll, _rows = self._prep(2)
+        cid = coll["collection_id"]
+        fake = self._FakeEmbed(dim=EM_DIM)
+        with unittest.mock.patch.object(
+                knowledge_api, "_embedding_request", side_effect=fake):
+            _r, _j, job = self.corpus_build(coll["id"])
+        self.assertEqual(job["status"], "succeeded", job)
+
+        b = self.corpus_builds(coll["id"])[0]
+        # ES honestly blocked (no PCT_ES_URL) — embedding is independent
+        self.assertEqual(b["es_index_status"], "blocked")
+        self.assertEqual(b["embedding_status"], "success")
+        self.assertEqual(b["embedding_model"], EM_MODEL)
+        self.assertEqual(b["embedding_dim"], EM_DIM)
+        self.assertEqual(json.loads(b["embedding_detail"])["status"],
+                         "success")
+
+        _root, _d, corpus_dir = _corpus_build_paths(coll["id"], cid)
+        n_uniq = self._unique_count(corpus_dir)
+        self.assertGreater(n_uniq, 0)
+        # every unique normalized block was sent (batched, no more)
+        self.assertEqual(fake.total_inputs, n_uniq)
+
+        emb_path = os.path.join(corpus_dir, "embeddings.jsonl")
+        with open(emb_path, encoding="utf-8") as fh:
+            lines = [json.loads(l) for l in fh if l.strip()]
+        self.assertEqual(len(lines), n_uniq)
+
+        # line-by-line provenance: each vector is bound to a real block
+        src = {}
+        with open(os.path.join(corpus_dir, "normalized.unique.jsonl"),
+                  encoding="utf-8") as fh:
+            for l in fh:
+                if l.strip():
+                    r = json.loads(l)
+                    src[r["record_id"]] = r
+        for line in lines:
+            s = src[line["record_id"]]
+            self.assertEqual(line["block_id"], s["block_id"])
+            self.assertEqual(line["content_hash"], s["content_hash"])
+            self.assertEqual(line["model"], EM_MODEL)
+            self.assertEqual(line["dim"], EM_DIM)
+            self.assertEqual(len(line["vector"]), EM_DIM)
+        # first vector is exactly the fake's deterministic output
+        self.assertEqual(lines[0]["vector"],
+                         [round(0.01 * 1 * (k + 1), 4) for k in range(EM_DIM)])
+
+        with open(os.path.join(corpus_dir, "embedding-manifest.json"),
+                  encoding="utf-8") as fh:
+            man = json.load(fh)
+        self.assertEqual(man["contract"], "emb-1")
+        self.assertEqual(man["collection_id"], cid)
+        self.assertEqual(man["corpus_sha256"], b["content_sha256"])
+        self.assertEqual(man["model"], EM_MODEL)
+        self.assertEqual(man["dim"], EM_DIM)
+        self.assertEqual(man["count"], n_uniq)
+        self.assertEqual(man["stream"], "normalized.unique.jsonl")
+        self.assertEqual(man["embeddings_sha256"], self.sha256_file(emb_path))
+        self.assertTrue(man["generated_at"])
+
+        # the deterministic archive is UNCHANGED by the embedding export
+        h = hashlib.sha256()
+        with open(os.path.join(corpus_dir, "corpus-data.zip"), "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        self.assertEqual(h.hexdigest(), b["content_sha256"])
+
+        emb = [e for e in self._audit_actions(coll["id"])
+               if e["action"] == "embeddings"]
+        self.assertEqual(len(emb), 1)
+        self.assertEqual(emb[0]["status"], "ok")
+
+
+class TestPCM22_EM03_IdempotentReuse(_EmbedPrep):
+    """PCM-22 EM-03 — idempotency: same-content rebuild short-circuits
+    (no second embed call); a row whose embedding is NOT settled yet is
+    settled on the REUSE branch from the valid manifest (still no
+    endpoint call, still one row)."""
+
+    def test_rebuild_reuses_export(self):
+        import unittest.mock
+        coll, _rows = self._prep(2)
+        cid = coll["collection_id"]
+        fake = self._FakeEmbed(dim=EM_DIM)
+        with unittest.mock.patch.object(
+                knowledge_api, "_embedding_request", side_effect=fake):
+            _r, _j, job1 = self.corpus_build(coll["id"])
+            self.assertEqual(job1["status"], "succeeded", job1)
+            n1 = fake.total_inputs
+            self.assertGreater(n1, 0)
+
+            # same content again -> REUSED row; embeddings already
+            # settled -> the whole build short-circuits, no call
+            _r2, _j2, job2 = self.corpus_build(coll["id"])
+            self.assertEqual(job2["status"], "succeeded", job2)
+            self.assertIn("reused", job2.get("stage") or "", job2)
+            self.assertEqual(fake.total_inputs, n1)
+            self.assertEqual(len(self.corpus_builds(coll["id"])), 1)
+
+            # simulate an unsettled row (pre-PCM-22 build / a failed
+            # earlier export): the REUSE branch settles from the valid
+            # manifest — NO re-embedding, file untouched
+            _root, _d, corpus_dir = _corpus_build_paths(coll["id"], cid)
+            emb_path = os.path.join(corpus_dir, "embeddings.jsonl")
+            sha_before = self.sha256_file(emb_path)
+            self._set_row(cid, "blocked")
+            _r3, _j3, job3 = self.corpus_build(coll["id"])
+            self.assertEqual(job3["status"], "succeeded", job3)
+            b = self.corpus_builds(coll["id"])[0]
+            self.assertEqual(b["embedding_status"], "success")
+            self.assertEqual(json.loads(b["embedding_detail"])["reused"],
+                             True)
+            self.assertEqual(fake.total_inputs, n1)
+            self.assertEqual(self.sha256_file(emb_path), sha_before)
+            self.assertEqual(len(self.corpus_builds(coll["id"])), 1)
+
+
+class TestPCM22_EM04_DimMismatch(_EmbedPrep):
+    """PCM-22 EM-04 — PCT_EMBEDDING_DIM set and the endpoint returns a
+    different dim -> the job FAILS honestly (no 'success' claimed)."""
+
+    def test_dim_mismatch_fails_job(self):
+        import unittest.mock
+        os.environ["PCT_EMBEDDING_DIM"] = str(EM_DIM * 2)  # expect 16
+        coll, _rows = self._prep(2)
+        fake = self._FakeEmbed(dim=EM_DIM)  # endpoint returns 8
+        with unittest.mock.patch.object(
+                knowledge_api, "_embedding_request", side_effect=fake):
+            _r, _j, job = self.corpus_build(coll["id"])
+        self.assertEqual(job["status"], "failed", job)
+        self.assertIn("dim mismatch", job["error"] or "")
+        b = self.corpus_builds(coll["id"])[0]
+        self.assertNotEqual(b["embedding_status"], "success")
+        self.assertIsNone(b["embedding_model"])
+        self.assertEqual(b["es_index_status"], "blocked")
+
+
+class TestPCM22_EM05_EndpointError(_EmbedPrep):
+    """PCM-22 EM-05 — endpoint failure -> job failed with the recorded
+    error, nothing claimed; the SAME-content rebuild is retryable and
+    settles once the endpoint works (still one build row)."""
+
+    def test_endpoint_error_fails_then_retry_succeeds(self):
+        import unittest.mock
+        coll, _rows = self._prep(2)
+        cid = coll["collection_id"]
+        bad = self._FakeEmbed(dim=EM_DIM, fail=True)
+        with unittest.mock.patch.object(
+                knowledge_api, "_embedding_request", side_effect=bad):
+            _r, _j, job = self.corpus_build(coll["id"])
+        self.assertEqual(job["status"], "failed", job)
+        self.assertIn("endpoint boom", job["error"] or "")
+        b = self.corpus_builds(coll["id"])[0]
+        self.assertEqual(b["es_index_status"], "blocked")
+        self.assertNotEqual(b["embedding_status"], "success")
+        _root, _d, corpus_dir = _corpus_build_paths(coll["id"], cid)
+        self.assertFalse(os.path.exists(
+            os.path.join(corpus_dir, "embeddings.jsonl")))
+
+        # endpoint fixed -> rebuild (same content) settles via the
+        # REUSE branch, no second row
+        good = self._FakeEmbed(dim=EM_DIM)
+        with unittest.mock.patch.object(
+                knowledge_api, "_embedding_request", side_effect=good):
+            _r2, _j2, job2 = self.corpus_build(coll["id"])
+        self.assertEqual(job2["status"], "succeeded", job2)
+        b2 = self.corpus_builds(coll["id"])[0]
+        self.assertEqual(b2["embedding_status"], "success")
+        self.assertEqual(len(self.corpus_builds(coll["id"])), 1)
+        self.assertEqual(len(good.calls), 1)
+
+
+class TestPCM22_EM06_ESSuccessPath(_EmbedPrep):
+    """PCM-22 EM-06 — the ES-SUCCESS tail also settles embeddings
+    (third wiring point): ES mocked + embedding mocked -> both
+    'success' on the same row."""
+
+    def test_es_and_embeddings_both_settle(self):
+        import unittest.mock
+        os.environ["PCT_ES_URL"] = "http://es.fake:9200"
+        self.addCleanup(lambda: os.environ.pop("PCT_ES_URL", None))
+        coll, _rows = self._prep(2)
+        cid = coll["collection_id"]
+        # approve the default schema (same flow as PF-D04)
+        r = self.client.post(
+            f"/api/knowledge/collections/{cid}/schema", json={})
+        self.assertEqual(r.status_code, 201, r.get_data(as_text=True))
+        sv = r.get_json()["schema"]
+        r = self.client.post(
+            f"/api/knowledge/collections/{cid}/schema/"
+            f"{sv['schema_id']}/validate")
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+        r = self.client.post(
+            f"/api/knowledge/collections/{cid}/schema/"
+            f"{sv['schema_id']}/approve")
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+
+        es = TestPF_D04_ESFactoryMocked._FakeES()
+        fake = self._FakeEmbed(dim=EM_DIM)
+        with unittest.mock.patch.object(
+                knowledge_api, "_es_request", side_effect=es), \
+                unittest.mock.patch.object(
+                    knowledge_api, "_embedding_request", side_effect=fake):
+            _r, _j, job = self.corpus_build(coll["id"])
+        self.assertEqual(job["status"], "succeeded", job)
+        b = self.corpus_builds(coll["id"])[0]
+        self.assertEqual(b["es_index_status"], "success")
+        self.assertEqual(b["es_index"], f"knowledge_{coll['slug']}_v0001")
+        self.assertEqual(b["embedding_status"], "success")
+        self.assertEqual(b["embedding_model"], EM_MODEL)
+        self.assertEqual(b["embedding_dim"], EM_DIM)
+        self.assertGreater(fake.total_inputs, 0)
+        actions = {e["action"] for e in self._audit_actions(coll["id"])}
+        self.assertIn("es_index_success", actions)
+        self.assertIn("embeddings", actions)
 
 
 if __name__ == "__main__":

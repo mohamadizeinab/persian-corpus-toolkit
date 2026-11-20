@@ -668,6 +668,15 @@ def _ensure_build_columns(db):
         ("search_status", "TEXT"),
         # JSON report of the 10-category search acceptance run
         ("search_detail", "TEXT"),
+        # PCM-22 — embedding export outcome: blocked / success / failed
+        # (NULL = built before PCM-22, never exported)
+        ("embedding_status", "TEXT"),
+        # embedding model name used for the export
+        ("embedding_model", "TEXT"),
+        # vector dimension of the export
+        ("embedding_dim", "INTEGER"),
+        # JSON detail of the embedding factory outcome
+        ("embedding_detail", "TEXT"),
     ]
     for col, decl in wanted:
         if col not in existing:
@@ -1399,6 +1408,56 @@ def _es_request(es_url, method, path, body=None, ndjson=False):
     return json.loads(raw.decode("utf-8"))
 
 
+def _embedding_url():
+    """PCM-22 — embedding endpoint base URL (empty = factory disabled).
+
+    CONFIG-GUARDED, exactly like PCT_ES_URL: without PCT_EMBEDDING_URL
+    (and a model) the embedding export is recorded as 'blocked' — the
+    server never calls an endpoint it was not configured for, and
+    nothing is claimed (stop rule: no fabricated vectors).
+    """
+    return os.environ.get("PCT_EMBEDDING_URL", "").strip()
+
+
+def _embedding_model():
+    """PCM-22 — embedding model name (e.g. 'mxbai-embed-large')."""
+    return os.environ.get("PCT_EMBEDDING_MODEL", "").strip()
+
+
+def _embedding_dim():
+    """PCM-22 — expected vector dimension (None = verify from response)."""
+    v = os.environ.get("PCT_EMBEDDING_DIM", "").strip()
+    if not v:
+        return None
+    try:
+        return int(v)
+    except ValueError:
+        return None
+
+
+def _embedding_request(url, path, body=None):
+    """PCM-22 — the single embedding HTTP seam (stdlib urllib).
+
+    `url` is the base (PCT_EMBEDDING_URL), `path` is absolute
+    ('/v1/embeddings', ...). OpenAI-compatible contract:
+    POST {"model": ..., "input": [texts]} ->
+    {"data": [{"index": n, "embedding": [...]}]}.
+    Tests patch THIS ONE function to simulate an embedding endpoint.
+    """
+    import urllib.request
+    req_url = url.rstrip("/") + path
+    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    req = urllib.request.Request(
+        req_url, data=data, method="POST",
+        headers={"Content-Type": "application/json",
+                 "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        raw = resp.read()
+    if not raw:
+        return {}
+    return json.loads(raw.decode("utf-8"))
+
+
 def _es_next_index_name(conn, collection_id, slug):
     """Versioned physical index name: knowledge_<slug>_vNNNN.
 
@@ -1563,6 +1622,138 @@ def _es_build_index(conn, coll, fields, corpus_dir):
     _es_request(es_url, "POST", "/_aliases", {"actions": actions})
     return {"es_index": es_index, "docs": sent, "alias": alias,
             "previous_index": prev[-1] if prev else None}
+
+
+def _embed_corpus_factory(conn, coll_id, iv_id, corpus_dir):
+    """PCM-22 — guarded embedding export for the canonical corpus.
+
+    Mirrors the ES factory guard: without PCT_EMBEDDING_URL +
+    PCT_EMBEDDING_MODEL the step is recorded 'blocked' (nothing called,
+    nothing claimed). When configured, the UNIQUE normalized stream
+    (normalized.unique.jsonl) is embedded through the OpenAI-compatible
+    /v1/embeddings seam and written as embeddings.jsonl +
+    embedding-manifest.json next to the corpus files. The deterministic
+    archive is already built, so the archive sha256 is UNCHANGED.
+
+    Idempotent: a prior valid export for the same corpus content + model
+    is REUSED (no re-embedding, no second manifest). A dim mismatch
+    against PCT_EMBEDDING_DIM (when set) fails the job honestly.
+    Returns the recorded status: 'success' | 'blocked'. Raises on
+    endpoint/content errors (the job fails and is retryable).
+    """
+    url = _embedding_url()
+    model = _embedding_model()
+    if not (url and model):
+        detail = json.dumps(
+            {"status": "blocked",
+             "reason": ("PCT_EMBEDDING_URL / PCT_EMBEDDING_MODEL تنظیم "
+                        "نیست — embedding factory غیرفعال (خروجی "
+                        "پیکره/ES قابل استفاده است)")},
+            ensure_ascii=False)
+        conn.execute(
+            "UPDATE knowledge_index_builds SET embedding_status=?, "
+            "embedding_detail=? WHERE iv_id=?",
+            ("blocked", detail, iv_id))
+        conn.commit()
+        return "blocked"
+
+    corpus_sha = conn.execute(
+        "SELECT content_sha256 FROM knowledge_index_builds WHERE iv_id=?",
+        (iv_id,)).fetchone()["content_sha256"]
+    out_path = os.path.join(corpus_dir, "embeddings.jsonl")
+    man_path = os.path.join(corpus_dir, "embedding-manifest.json")
+
+    # --- idempotent reuse: valid prior export for the same content ------
+    if os.path.isfile(man_path) and os.path.isfile(out_path):
+        try:
+            with open(man_path, encoding="utf-8") as fh:
+                man = json.load(fh)
+            if (isinstance(man, dict)
+                    and man.get("corpus_sha256") == corpus_sha
+                    and man.get("model") == model
+                    and _sha256_file(out_path) == man.get("embeddings_sha256")):
+                conn.execute(
+                    "UPDATE knowledge_index_builds "
+                    "SET embedding_status=?, embedding_model=?, "
+                    "embedding_dim=?, embedding_detail=? WHERE iv_id=?",
+                    ("success", model, man.get("dim"),
+                     json.dumps({"status": "success", "reused": True,
+                                 "count": man.get("count")},
+                                ensure_ascii=False), iv_id))
+                conn.commit()
+                return "success"
+        except Exception:  # noqa: BLE001 — corrupt manifest: rewrite below
+            pass
+
+    # --- embed the unique normalized stream ------------------------------
+    src = os.path.join(corpus_dir, "normalized.unique.jsonl")
+    recs = []
+    with open(src, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if line:
+                recs.append(json.loads(line))
+    if not recs:
+        raise RuntimeError("normalized.unique.jsonl is empty — "
+                           "nothing to embed")
+    batch = max(1, int(os.environ.get("PCT_EMBEDDING_BATCH", "32") or 32))
+    vectors = []
+    for i in range(0, len(recs), batch):
+        chunk = recs[i:i + batch]
+        resp = _embedding_request(
+            url, "/v1/embeddings",
+            {"model": model,
+             "input": [r.get("normalized_text") or "" for r in chunk]})
+        data = sorted(resp.get("data") or [],
+                      key=lambda d: d.get("index", 0))
+        if len(data) != len(chunk):
+            raise RuntimeError(
+                f"embedding count mismatch: sent {len(chunk)}, "
+                f"got {len(data)}")
+        vectors.extend(d.get("embedding") for d in data)
+    if any(v is None for v in vectors):
+        raise RuntimeError("embedding endpoint returned null vectors")
+    dim = len(vectors[0])
+    if not all(len(v) == dim for v in vectors):
+        raise RuntimeError("inconsistent embedding dims in responses")
+    dim_cfg = _embedding_dim()
+    if dim_cfg is not None and dim != dim_cfg:
+        raise RuntimeError(
+            f"embedding dim mismatch: PCT_EMBEDDING_DIM={dim_cfg}, "
+            f"endpoint returned {dim}")
+
+    with open(out_path, "w", encoding="utf-8") as fh:
+        for r, v in zip(recs, vectors):
+            fh.write(json.dumps(
+                {"record_id": r.get("record_id"),
+                 "block_id": r.get("block_id"),
+                 "content_hash": r.get("content_hash"),
+                 "type": r.get("type"),
+                 "model": model, "dim": dim,
+                 "vector": v}, ensure_ascii=False) + "\n")
+    man = {
+        "contract": "emb-1",
+        "collection_id": coll_id,
+        "corpus_sha256": corpus_sha,
+        "model": model,
+        "dim": dim,
+        "count": len(vectors),
+        "stream": "normalized.unique.jsonl",
+        "embeddings_sha256": _sha256_file(out_path),
+        "generated_at": _now(),
+    }
+    with open(man_path, "w", encoding="utf-8") as fh:
+        json.dump(man, fh, ensure_ascii=False, indent=2)
+    conn.execute(
+        "UPDATE knowledge_index_builds SET embedding_status=?, "
+        "embedding_model=?, embedding_dim=?, embedding_detail=? "
+        "WHERE iv_id=?",
+        ("success", model, dim,
+         json.dumps({"status": "success", "model": model,
+                     "dim": dim, "count": len(vectors)},
+                    ensure_ascii=False), iv_id))
+    conn.commit()
+    return "success"
 
 
 def _batch_scope_clause(conn, batch_id, alias=None):
@@ -1997,7 +2188,8 @@ def _job_kind_corpus_build(conn, job_id):
 
     # --- 3. build row, content-idempotent (REUSED on same archive sha) ---
     reuse = conn.execute(
-        """SELECT iv_id, es_index_status FROM knowledge_index_builds
+        """SELECT iv_id, es_index_status, embedding_status, out_dir
+           FROM knowledge_index_builds
            WHERE collection_id=? AND content_sha256=?""",
         (coll_id, content_sha)).fetchone()
     if reuse and (reuse["es_index_status"] or "pending") != "failed":
@@ -2008,6 +2200,22 @@ def _job_kind_corpus_build(conn, job_id):
             "UPDATE knowledge_index_builds SET status='succeeded', "
             "completed_at=? WHERE iv_id=?", (_now(), iv_id))
         conn.commit()
+        if (reuse["embedding_status"] or "") != "success":
+            # PCM-22: embeddings not settled yet (NULL / blocked /
+            # failed) -> settle them now. Idempotent: a valid prior
+            # export (manifest match) is reused; no PCT_EMBEDDING_*/
+            # MODEL config -> 'blocked'; endpoint error -> raise
+            # (job retryable).
+            reuse_dir = reuse["out_dir"] or ""
+            e_dir = (os.path.join(knowledge_data_dir(), reuse_dir)
+                     if reuse_dir else corpus_dir)
+            st = _embed_corpus_factory(conn, coll_id, iv_id, e_dir)
+            _audit_log(conn, coll_id, "build", "embeddings",
+                       "ok" if st == "success" else "blocked",
+                       {"iv_id": iv_id, "status": st})
+            _job_progress(conn, job_id, total, total,
+                          f"reused {iv_id}; embeddings {st}")
+            return
         _audit_log(conn, coll_id, "build", "corpus_reused", "ok",
                    {"iv_id": iv_id, "content_sha256": content_sha})
         _job_progress(conn, job_id, total, total, f"reused {iv_id}")
@@ -2060,6 +2268,14 @@ def _job_kind_corpus_build(conn, job_id):
         _audit_log(conn, coll_id, "build", "corpus_built", "blocked",
                    {"iv_id": iv_id, "content_sha256": content_sha,
                     "es": "blocked: PCT_ES_URL not set"})
+        # PCM-22: the embedding factory is independent of ES — settle
+        # the normalized stream too (idempotent; 'blocked' when the
+        # PCT_EMBEDDING_URL/MODEL config is absent).
+        st = _embed_corpus_factory(conn, coll_id, iv_id, corpus_dir)
+        _audit_log(conn, coll_id, "build", "embeddings",
+                   "ok" if st == "success" else "blocked",
+                   {"iv_id": iv_id, "status": st})
+        _job_progress(conn, job_id, total, total, f"embeddings {st}")
         return
 
     schema_row = _collection_approved_schema(conn, coll_id)
@@ -2093,7 +2309,15 @@ def _job_kind_corpus_build(conn, job_id):
     _audit_log(conn, coll_id, "build", "es_index_success", "ok",
                {"iv_id": iv_id, "es_index": info["es_index"],
                 "es_alias": info.get("es_alias")})
-    _job_progress(conn, job_id, total, total, f"es {info['es_index']}")
+    # PCM-22: the embedding factory is independent of ES — settle the
+    # normalized stream too (idempotent; 'blocked' when the
+    # PCT_EMBEDDING_URL/MODEL config is absent).
+    st = _embed_corpus_factory(conn, coll_id, iv_id, corpus_dir)
+    _audit_log(conn, coll_id, "build", "embeddings",
+               "ok" if st == "success" else "blocked",
+               {"iv_id": iv_id, "status": st})
+    _job_progress(conn, job_id, total, total,
+                  f"es {info['es_index']}; embeddings {st}")
 
 
 # ---------------------------------------------------------------------------
@@ -4121,7 +4345,9 @@ def register_knowledge_routes(app, get_db):
                           norm_version, chunking_version, chunk_count,
                           status, created_at, completed_at,
                           content_sha256, out_dir, es_index_status,
-                          es_detail, search_status, search_detail
+                          es_detail, search_status, search_detail,
+                          embedding_status, embedding_model,
+                          embedding_dim, embedding_detail
                    FROM knowledge_index_builds
                    WHERE collection_id = ?
                      AND content_sha256 IS NOT NULL

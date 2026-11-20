@@ -70,6 +70,15 @@
   .badge.info { background: #0c4a6e; color: var(--accent); }
   .badge.dim { background: #1e293b; color: var(--dim); }
 
+  /* ── PCM-22: stage strip (A→B→C→D→E→RELEASE) ── */
+  .stage-strip { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stage { flex: 1 1 128px; min-width: 128px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--panel); padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+  .stage-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .stage-code { font: 700 12px Consolas, monospace; color: var(--accent); direction: ltr; }
+  .stage-name { font-size: 11px; font-weight: 600; }
+  .stage-meta { font-size: 10px; color: var(--dim); min-height: 14px; }
+  .stage .btn { align-self: flex-start; }
+
   /* ── workspace ── */
   .ws-head { display: flex; align-items: flex-start; gap: var(--sp-3); margin-bottom: var(--sp-4); flex-wrap: wrap; }
   .ws-head h2 { font-size: 20px; margin-bottom: 4px; }
@@ -353,6 +362,11 @@
     </div>
 
     <div id="stContent" style="display:none">
+      <!-- ═══ PCM-22: stage cards A→B→C→D→E→RELEASE (مسیر پیکره‌سازی) ═══ -->
+      <div class="card" id="stageCard">
+        <h3><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg> مسیر ساخت پیکره: A → B → C → D → E → RELEASE</h3>
+        <div id="stageStrip"></div>
+      </div>
       <div class="card">
         <h3><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5Zm-9 10 9 5 9-5m-18 5 9 5 9-5"/></svg> نسخه‌ها</h3>
         <dl class="kv" id="stVersions"></dl>
@@ -585,6 +599,11 @@ const state = {
   docDetail: null,
   docTab: 'overview',
   docs: [],
+  // PCM-22 — stage strip (A→B→C→D→E→RELEASE) real counters
+  docsTotal: 0,
+  builds: [],
+  releases: [],
+  queueCounters: {},
   jobs: [],
   _jobTimer: null,
   queueTimer: null,
@@ -753,6 +772,12 @@ async function openCollection(id) {
   state.activeDocId = null;
   state.docDetail = null;
   state.docTab = 'overview';
+  // PCM-22: reset stage-strip state so the previous collection's data
+  // does not flash in the strip before the loaders respond
+  state.docs = []; state.docsTotal = 0; state.builds = [];
+  state.releases = []; state.queueCounters = {};
+  SCHEMA_STATE.approved = null;
+  renderStageStrip();
   $('docDetailCard').style.display = 'none';
   setHash(id);
   stopQueuePolling();
@@ -923,6 +948,7 @@ async function loadSchema() {
     if (!j) return;
     SCHEMA_STATE.versions = j.versions;
     SCHEMA_STATE.approved = j.approved;
+    renderStageStrip();
     if (!SCHEMA_STATE.sel || !j.versions.some((v) => v.schema_id === SCHEMA_STATE.sel)) {
       SCHEMA_STATE.sel = j.versions.length ? j.versions[0].schema_id : null;
     }
@@ -973,15 +999,93 @@ const SEARCH_BADGE = {
   pass: ['جستجو: قبول', 'ok'], fail: ['جستجو: مردود', 'err'],
   blocked: ['جستجو: بلاک', 'warn'],
 };
+const EMBED_BADGE = {
+  pending: ['Embedding: در انتظار', 'dim'], blocked: ['Embedding: بلاک', 'warn'],
+  success: ['Embedding: موفق', 'ok'], failed: ['Embedding: خطا', 'err'],
+};
+/* ═══════ PCM-22: stage cards A→B→C→D→E→RELEASE ═══════ */
+function badgeSpan(label, cls) {
+  return '<span class="badge ' + escHtml(cls) + '">' + escHtml(label) + '</span>';
+}
+function renderStageStrip() {
+  const strip = $('stageStrip');
+  if (!strip) return;
+  if (!state.collection) { strip.innerHTML = ''; return; }
+  const q = state.queueCounters || {};
+  const approved = SCHEMA_STATE.approved || null;
+  const latest = (state.builds || [])[0] || null;
+  const rels = state.releases || [];
+  const latestRel = rels[0] || null;
+  const dBadge = !latest ? ['در انتظار', 'dim']
+    : (latest.es_index_status === 'failed' || latest.embedding_status === 'failed')
+      ? ['خطا', 'err']
+    : (latest.es_index_status === 'success' && latest.embedding_status === 'success')
+      ? ['آماده', 'ok']
+    : ['در حال ساخت/بلاک', 'warn'];
+  const stages = [
+    { code: 'A', name: 'A · Import',
+      meta: faNum(state.docsTotal || 0) + ' سند در کتابخانه',
+      badge: (state.docsTotal || 0) > 0 ? ['آماده', 'ok'] : ['خالی', 'dim'],
+      btn: 'سند بارگذاری کن', act: 'import' },
+    { code: 'B', name: 'B · Process',
+      meta: faNum(q.pending || 0) + ' در صف · ' + faNum(q.succeeded || 0) + ' موفق',
+      badge: (q.pending || 0) > 0 ? ['در صف', 'warn']
+        : ((q.failed || 0) > 0 ? ['اشکال', 'err'] : ['تمیز', 'ok']),
+      btn: 'صف پردازش', act: 'process' },
+    { code: 'C', name: 'C · Schema',
+      meta: approved ? 'نسخه v' + faNum(approved.version) + ' تأییدشده' : 'هنوز تأیید نشده',
+      badge: approved ? ['تأییدشده', 'ok'] : ['در انتظار', 'warn'],
+      btn: 'طراحی و تأیید', act: 'schema' },
+    { code: 'D', name: 'D · Build',
+      meta: latest
+        ? faNum(latest.chunk_count || 0) + ' بلوک · '
+          + ((CORPUS_ES_BADGE[latest.es_index_status] || [latest.es_index_status || '—'])[0])
+          + ' · ' + ((EMBED_BADGE[latest.embedding_status || 'pending'])[0])
+        : 'هنوز پیکره‌ای ساخته نشده',
+      badge: dBadge,
+      btn: 'ساخت پیکره', act: 'build' },
+    { code: 'E', name: 'E · Accept',
+      meta: latest ? 'اعتبارسنجی جستجو (10 دسته)' : 'ابتدا پیکره باید ساخته شود',
+      badge: latest ? (SEARCH_BADGE[latest.search_status || ''] || ['در انتظار', 'dim'])
+                    : ['در انتظار', 'dim'],
+      btn: 'اعتبارسنجی جستجو', act: 'accept' },
+    { code: 'R', name: 'R · Release',
+      meta: rels.length ? faNum(rels.length) + ' بسته خروجی' : 'هنوز بسته‌ای ساخته نشده',
+      badge: latestRel ? (RAG_BADGE[latestRel.rag_status] || [latestRel.rag_status || '—', 'dim'])
+                       : ['در انتظار', 'dim'],
+      btn: 'ساخت Release', act: 'release' },
+  ];
+  strip.innerHTML = stages.map((s) =>
+    '<div class="stage">' +
+      '<div class="stage-top"><span class="stage-code">' + s.code + '</span>' +
+      badgeSpan(s.badge[0], s.badge[1]) + '</div>' +
+      '<div class="stage-name">' + escHtml(s.name) + '</div>' +
+      '<div class="stage-meta">' + escHtml(s.meta) + '</div>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-stage-act="' + s.act + '">' +
+      escHtml(s.btn) + '</button>' +
+    '</div>').join('');
+}
+async function stageAct(act) {
+  if (!state.activeId) return;
+  if (act === 'import') { $('docFileInput').click(); return; }
+  if (act === 'process') { $('queueCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (act === 'schema') { $('schemaCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (act === 'build') { await corpusBuild(); return; }
+  if (act === 'accept') { await runAcceptance(); return; }
+  if (act === 'release') { await buildRelease(); return; }
+}
 function renderCorpusBuilds(builds) {
   const bb = $('stBuildsBox');
   if (!builds.length) {
     bb.innerHTML = '<div class="empty" style="padding:16px"><div class="t2">هنوز پیکره canonical ساخته نشده است. با دکمه «ساخت پیکره» از روی اسناد پردازش‌شده، پیکره رسمی (قرارداد c-1) ساخته می‌شود.</div></div>';
     return;
   }
-  bb.innerHTML = '<table class="docs-table"><thead><tr><th>Build</th><th>ایندکس ES</th><th>بلوک</th><th>ES</th><th>اعتبارسنجی</th><th>تأیید</th></tr></thead><tbody>' +
+  bb.innerHTML = '<table class="docs-table"><thead><tr><th>Build</th><th>ایندکس ES</th><th>بلوک</th><th>ES</th><th>Embedding</th><th>اعتبارسنجی</th><th>تأیید</th></tr></thead><tbody>' +
     builds.map((b) => {
       const bes = CORPUS_ES_BADGE[b.es_index_status] || [b.es_index_status || '—', 'dim'];
+      const emb = b.embedding_status
+        ? (EMBED_BADGE[b.embedding_status] || [b.embedding_status, 'dim'])
+        : ['نیست', 'dim'];
       const sb = SEARCH_BADGE[b.search_status || ''] || ['—', 'dim'];
       let sTitle = b.search_detail || '';
       if (b.search_status === 'fail' && b.search_detail) {
@@ -998,6 +1102,7 @@ function renderCorpusBuilds(builds) {
         '<td class="c-slug">' + ((b.es_index && b.es_index !== 'none') ? escHtml(b.es_index) : '<span style="color:var(--dim)">—</span>') + '</td>' +
         '<td>' + faNum(b.chunk_count) + '</td>' +
         '<td><span class="badge ' + bes[1] + '" title="' + escHtml(b.es_detail || '') + '">' + bes[0] + '</span></td>' +
+        '<td><span class="badge ' + emb[1] + '" title="' + escHtml(b.embedding_detail || '') + '">' + emb[0] + '</span></td>' +
         '<td><span class="badge ' + sb[1] + '" title="' + escHtml(sTitle) + '">' + sb[0] + '</span></td>' +
         '<td>' + approveBtn + '</td></tr>';
     }).join('') +
@@ -1012,7 +1117,9 @@ async function loadCorpusBuilds() {
   try {
     const j = await fetchAPI('/api/knowledge/collections/' + state.activeId + '/corpus/builds');
     if (!j) return;
+    state.builds = j.builds;
     renderCorpusBuilds(j.builds);
+    renderStageStrip();
   } catch (e) {
     bb.innerHTML = '<div class="error-box" style="display:block">' + escHtml(e.message) + '</div>';
   }
@@ -1117,7 +1224,9 @@ async function loadReleases() {
   try {
     const j = await fetchAPI('/api/knowledge/collections/' + state.activeId + '/releases');
     if (!j) return;
+    state.releases = j.releases;
     renderReleases(j.releases);
+    renderStageStrip();
   } catch (e) {
     box.innerHTML = '<div class="error-box" style="display:block">' + escHtml(e.message) + '</div>';
   }
@@ -1269,6 +1378,8 @@ async function renderDocs() {
     const j = await fetchAPI('/api/knowledge/collections/' + state.activeId + '/documents?per_page=50');
     if (!j) return;
     state.docs = j.documents;
+    state.docsTotal = j.total || 0;
+    renderStageStrip();
     $('docsTotal').textContent = faNum(j.total) + ' سند';
     if (!state.docs.length) {
       body.innerHTML = '<div class="empty" style="padding:20px"><div class="t2">هنوز سندی بارگذاری نشده است.</div></div>';
@@ -1768,6 +1879,8 @@ async function loadQueue() {
       encodeURIComponent(state.collection.collection_id) + '&per_page=20');
     if (!j) return;
     const c = j.queue.counters;
+    state.queueCounters = c;
+    renderStageStrip();
     strip.innerHTML =
       '<span class="q-chip"><b>' + faNum(c.total) + '</b> کل فایل</span>' +
       '<span class="q-chip"><b>' + faNum(c.pending) + '</b> در انتظار</span>' +
@@ -2063,6 +2176,10 @@ initSchemaCard();
 $('corpusBuildBtn').addEventListener('click', corpusBuild);
 $('acceptanceBtn').addEventListener('click', runAcceptance);
 $('releaseBtn').addEventListener('click', buildRelease);
+$('stageStrip').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-stage-act]');
+  if (btn) stageAct(btn.getAttribute('data-stage-act'));
+});
 $('auditRefreshBtn').addEventListener('click', loadAudit);
 /* ── PCM-17 listeners ── */
 $('workNewBtn').addEventListener('click', openWorkModal);
