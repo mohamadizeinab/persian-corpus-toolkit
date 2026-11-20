@@ -16,6 +16,15 @@ services:
       # PCM-14B: writable store for uploaded DOCX originals + Word Factory
       # outputs (data/knowledge/{files,out}). Must be a writable volume.
       PCT_KNOWLEDGE_DATA_DIR: /data-files/knowledge
+      # PCM-25 DC#5: knowledge studio pipeline (config-guarded — empty values
+      # keep the ES/embedding factories 'blocked', exactly as before). On s52
+      # the real values live in .env: a standalone ES container (cached image
+      # elasticsearch:8.13.4, data at data/es) and the shared Ollama
+      # embedding endpoint (172.20.1.53, the same one the RAG stack uses).
+      PCT_ES_URL: ${PCT_ES_URL:-}
+      PCT_EMBEDDING_URL: ${PCT_EMBEDDING_URL:-}
+      PCT_EMBEDDING_MODEL: ${PCT_EMBEDDING_MODEL:-}
+      PCT_EMBEDDING_DIM: ${PCT_EMBEDDING_DIM:-}
     volumes:
       - ./backend/thesaurus.db:/data/thesaurus.db
       - ./dashboard:/dashboard:ro

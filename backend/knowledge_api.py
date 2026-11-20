@@ -2098,6 +2098,10 @@ def _job_kind_corpus_build(conn, job_id):
     second row). The ES part is config-guarded (PCT_ES_URL): absent ->
     es_index_status='blocked'; present -> versioned index + atomic alias
     switch (see _es_build_index); ES failure keeps the alias untouched.
+    A row whose ES part was only 'blocked' (PCT_ES_URL unset at the time)
+    is re-run through the ES factory on the SAME row as soon as PCT_ES_URL
+    is configured (PCM-25 DC#5): 'blocked' is a deferral, not a settled
+    state.
     """
     r = conn.execute(
         "SELECT job_key, collection_id FROM knowledge_jobs WHERE job_id=?",
@@ -2192,9 +2196,20 @@ def _job_kind_corpus_build(conn, job_id):
            FROM knowledge_index_builds
            WHERE collection_id=? AND content_sha256=?""",
         (coll_id, content_sha)).fetchone()
-    if reuse and (reuse["es_index_status"] or "pending") != "failed":
-        # same corpus content, ES part already settled (success or
-        # blocked) -> nothing to do (no rewrite, no second row)
+    # PCM-25 DC#5: 'blocked' means the ES part was DEFERRED (PCT_ES_URL
+    # unset at the time), not settled. Once PCT_ES_URL is configured the
+    # SAME row must go through the ES factory again (never a second row).
+    es_unblocked = bool(reuse) and \
+        reuse["es_index_status"] == "blocked" and _es_url()
+    if es_unblocked:
+        _audit_log(conn, coll_id, "build", "es_retry_after_unblock", "ok",
+                   {"iv_id": reuse["iv_id"],
+                    "content_sha256": content_sha})
+    if reuse and (reuse["es_index_status"] or "pending") != "failed" \
+            and not es_unblocked:
+        # same corpus content, ES part already settled ('success', or
+        # still 'blocked' because PCT_ES_URL is unset) -> nothing to do
+        # (no rewrite, no second row)
         iv_id = reuse["iv_id"]
         conn.execute(
             "UPDATE knowledge_index_builds SET status='succeeded', "
@@ -2227,7 +2242,8 @@ def _job_kind_corpus_build(conn, job_id):
     rel_out = os.path.relpath(corpus_dir, knowledge_data_dir())
     rel_out = rel_out.replace(os.sep, "/")
     if reuse:
-        # same content but the previous ES attempt FAILED: the corpus on
+        # same content but the previous ES attempt FAILED, or was BLOCKED
+        # before PCT_ES_URL was configured (PCM-25 DC#5): the corpus on
         # disk is unchanged — keep the same row and re-run the ES part
         # below (never a second row for the same content).
         conn.execute(

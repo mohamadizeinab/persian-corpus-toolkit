@@ -1415,6 +1415,102 @@ class TestPF_D04_ESFactoryMocked(_StageDPrep):
                          r"^knowledge_" + coll["slug"] + r"_v\d{4}$")
 
 
+class TestPF_D05_ESBlockedRetry(_StageDPrep):
+    """PF-D05 — PCM-25 DC#5: an ES part that was DEFERRED ('blocked',
+    PCT_ES_URL unset at build time) is re-run through the ES factory on
+    the SAME row as soon as PCT_ES_URL is configured.
+
+    - build 1 (no PCT_ES_URL) -> succeeded, es_index_status 'blocked',
+      the ES endpoint is NEVER touched;
+    - build 2 (PCT_ES_URL now set, mocked at the seam) -> the SAME single
+      row flips to 'success': versioned index + one atomic alias switch,
+      an 'es_retry_after_unblock' audit row;
+    - build 3 -> plain REUSED again: no new index version, no second
+      alias switch, no second retry audit row.
+    """
+
+    def _approve_default_schema(self, cid):
+        r = self.client.post(
+            f"/api/knowledge/collections/{cid}/schema", json={})
+        self.assertEqual(r.status_code, 201, r.get_data(as_text=True))
+        sv = r.get_json()["schema"]
+        r = self.client.post(
+            f"/api/knowledge/collections/{cid}/schema/{sv['schema_id']}"
+            "/validate")
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+        r = self.client.post(
+            f"/api/knowledge/collections/{cid}/schema/{sv['schema_id']}"
+            "/approve")
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+
+    def test_blocked_row_is_retried_once_es_configured(self):
+        import unittest.mock
+        coll = self.make_collection(name="کتابخانه DC5", slug="dc5-retry")
+        cid = coll["collection_id"]
+        for v in ("PCT_ES_URL", "PCT_EMBEDDING_URL", "PCT_EMBEDDING_MODEL",
+                  "PCT_EMBEDDING_DIM"):
+            os.environ.pop(v, None)
+            self.addCleanup(lambda v=v: os.environ.pop(v, None))
+        tmp = tempfile.mkdtemp(prefix="pct-pf-d5-")
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        from factory._smoke_fixtures import make_docx
+        p = os.path.join(tmp, "کتاب-DC5.docx")
+        make_docx(p, [
+            ("Normal", "عنوان: کتاب DC5"),
+            ("Normal", "متن فارسی کتاب DC5."),
+        ])
+        self.upload_and_process(p)
+        self._approve_default_schema(cid)
+
+        # --- build 1: ES unconfigured -> corpus-only, honestly blocked ---
+        def no_es(es_url, method, path, body=None, ndjson=False):
+            raise AssertionError(f"ES endpoint touched without PCT_ES_URL: "
+                                 f"{method} {path}")
+
+        with unittest.mock.patch.object(
+                knowledge_api, "_es_request", side_effect=no_es):
+            _r, _j, job1 = self.corpus_build(coll["id"])
+        self.assertEqual(job1["status"], "succeeded", job1)
+        builds = self.corpus_builds(coll["id"])
+        self.assertEqual(len(builds), 1)
+        b1 = builds[0]
+        self.assertEqual(b1["es_index_status"], "blocked")
+        self.assertEqual(b1["es_index"], "none")
+        self.assertEqual(b1["embedding_status"], "blocked")
+
+        # --- build 2: PCT_ES_URL now configured -> SAME row, ES built ---
+        os.environ["PCT_ES_URL"] = "http://es.fake:9200"
+        fake = TestPF_D04_ESFactoryMocked._FakeES()
+        with unittest.mock.patch.object(
+                knowledge_api, "_es_request", side_effect=fake):
+            _r, _j, job2 = self.corpus_build(coll["id"])
+        self.assertEqual(job2["status"], "succeeded", job2)
+        builds = self.corpus_builds(coll["id"])
+        self.assertEqual(len(builds), 1)              # still ONE row
+        b2 = builds[0]
+        self.assertEqual(b2["iv_id"], b1["iv_id"])    # updated in place
+        self.assertEqual(b2["es_index_status"], "success")
+        self.assertEqual(b2["es_index"], "knowledge_dc5-retry_v0001")
+        # one ATOMIC alias call; the alias now holds the new index
+        self.assertEqual(len(fake.alias_calls), 1)
+        self.assertEqual(fake.alias_holders.get(coll["es_alias"]),
+                         b2["es_index"])
+        self.assertGreater(fake.bulk_docs, 0)
+        actions = [e["action"] for e in self._audit_actions(coll["id"])]
+        self.assertEqual(actions.count("es_retry_after_unblock"), 1)
+
+        # --- build 3: now settled -> plain REUSED, nothing new ---------
+        with unittest.mock.patch.object(
+                knowledge_api, "_es_request", side_effect=fake):
+            _r, _j, job3 = self.corpus_build(coll["id"])
+        self.assertEqual(job3["status"], "succeeded", job3)
+        self.assertEqual(len(self.corpus_builds(coll["id"])), 1)
+        self.assertEqual(len(fake.indices), 1)
+        self.assertEqual(len(fake.alias_calls), 1)
+        actions3 = [e["action"] for e in self._audit_actions(coll["id"])]
+        self.assertEqual(actions3.count("es_retry_after_unblock"), 1)
+
+
 # ---------------------------------------------------------------------------
 # PCM-20.9 Stage E — search acceptance + approval (PF-Exx)
 # ---------------------------------------------------------------------------
