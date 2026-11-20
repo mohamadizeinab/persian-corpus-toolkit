@@ -220,6 +220,9 @@
       <h1><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg> استودیوی دانش</h1>
       <span class="count-chip" id="colCount">۰</span>
     </div>
+    <a class="back-link" href="/dashboard/" title="بازگشت به داشبورد اصلی">
+      <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg> بازگشت به داشبورد
+    </a>
     <div class="list-tools">
       <div class="search-wrap">
         <label class="sr-only" for="colSearch">جستجوی کالکشن</label>
@@ -1407,6 +1410,8 @@ async function renderDocs() {
   }
 }
 
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // = backend knowledge_api.MAX_UPLOAD_BYTES (50MB)
+
 async function uploadOne(file) {
   const fd = new FormData();
   fd.append('file', file, file.name);
@@ -1423,6 +1428,10 @@ async function onDocFile(ev) {
   const file = ev.target.files && ev.target.files[0];
   ev.target.value = '';
   if (!file || !state.activeId) return;
+  if (file.size > MAX_UPLOAD_BYTES) {
+    toast('فایل بزرگ‌تر از ۵۰ مگابایت است (' + faNum(file.size) + ' بایت) — حداکثر ۵۰MB', 'err');
+    return;
+  }
   try {
     const j = await uploadOne(file);
     if (!j) return;
@@ -1498,6 +1507,7 @@ async function computeImportPlan() {
     let status = 'pending', error = null;
     if (!/\.docx$/i.test(f.name)) { status = 'invalid_extension'; error = 'فقط DOCX مجاز است'; }
     else if (f.size === 0) { status = 'empty'; error = 'فایل خالی است'; }
+    else if (f.size > MAX_UPLOAD_BYTES) { status = 'invalid_size'; error = 'بزرگ‌تر از ۵۰ مگابایت (' + faNum(f.size) + ' بایت)'; }
     else if (!/^[0-9a-f]{64}$/.test(sha)) { status = 'invalid_sha'; error = 'SHA-256 محاسبه نشد'; }
     rows.push({ file: f, name: f.name, size: f.size, sha256: sha,
                 status, error, serverStatus: null, upload: null });
