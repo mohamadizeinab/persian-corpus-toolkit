@@ -1,7 +1,7 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════
 # PCM-EXT-03 + PCM-EXT-04 — controlled deploy of the cross-browser run lock
-# AND the content-based stop (stop_field) to s52 (172.20.1.52)
+# AND the content-based stop (stop_field) to s52 (172.30.0.133 — new vCenter IP)
 #
 # What this deploy ships:
 #   1. backend/projects.py — per-project run lock (cross-browser single-run
@@ -28,9 +28,9 @@
 # PREP (on Windows, before SSH):
 #   git archive --format=tar.gz --prefix=persian-corpus-toolkit/ \
 #       e86cd0d -o pct-code-ext03.tgz
-#   scp -P 22 pct-code-ext03.tgz saber@172.20.1.52:/tmp/
-#   scp -P 22 deploy/pcm_ext_03_deploy.sh saber@172.20.1.52:/tmp/
-#   ssh -p 22 saber@172.20.1.52 'bash /tmp/pcm_ext_03_deploy.sh'
+#   scp -P 22 pct-code-ext03.tgz saber@172.30.0.133:/tmp/
+#   scp -P 22 deploy/pcm_ext_03_deploy.sh saber@172.30.0.133:/tmp/
+#   ssh -p 22 saber@172.30.0.133 'bash /tmp/pcm_ext_03_deploy.sh'
 #
 # Safety model (AGENTS.md §2/§3):
 #   1. sqlite3 online backup (WAL-safe) + integrity_check BEFORE any change
@@ -164,7 +164,9 @@ RUN404=$(curl -s -o /tmp/ext03-run404 -w '%{http_code}' -X POST http://127.0.0.1
   -H 'Content-Type: application/json' -d '{"owner":"smoke-ext03","token":"smoke"}')
 echo "HTTP:$RUN404 body: $(cat /tmp/ext03-run404)"
 [ "$RUN404" = "404" ] || fail "expected 404 from /run probe, got $RUN404"
-grep -q 'پروژه' /tmp/ext03-run404 || fail "run probe did not return the JSON 404 body (old backend?)"
+# Flask's jsonify unicode-escapes Persian (پ = \u067e), so match the escaped
+# form as well as the literal — accept either.
+grep -q -e 'پروژه' -e 'u067e' /tmp/ext03-run404 || fail "run probe did not return the JSON 404 body (old backend?)"
 rm -f /tmp/ext03-run404
 echo "-- projects table columns AFTER probe (migration is lazy, additive) --"
 COLS=$(sqlite3 "$APP/backend/thesaurus.db" "PRAGMA table_info(projects);")

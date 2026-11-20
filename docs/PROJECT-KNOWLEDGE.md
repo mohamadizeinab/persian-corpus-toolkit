@@ -286,11 +286,11 @@ test_tasnim_readmodel 566، test_tasnim_sdk 672، test_corpus_backfill 690، tes
 
 | سرور | IP | نقش | وضعیت (2026-11) |
 |---|---|---|---|
-| **s52** | 172.20.1.52 | PCT production (`/home/saber/saberprojects/persian-corpus-toolkit` = کپی کد، نه git)، GitLab CE (port **2222**، نه SSH)، backups `/home/saber/backups/` | ❌ **OFFLINE** — deploy/بک‌فیل/TLS/GitLab-sync همه مسدود تا بازگشت |
+| **s52** | **172.30.0.133** (hostname `saber`) | PCT production (`/home/saber/saberprojects/persian-corpus-toolkit` = کپی کد، نه git)، backups `/home/saber/backups/` — جابه‌جایی vCenter (2026-11): 172.20.1.52 دیگر وجود ندارد | ✅ **LIVE** (از 2026-11-20؛ deploy PCM-EXT-03/04 انجام شد) |
 | **s53** | 172.20.1.53 («llm») | 2×H100؛ vLLM embeddings (4000/4001)؛ LLM Qwen3.8-27B-FP8 (8000/8001)؛ Neo4j enterprise (14 DB)؛ rag-portal + instances | ✅ **LIVE** — RAG تسنیم production اینجاست |
-| ingress | 172.30.0.133 | `*.ai.ismc.ir` | ✅ زنده؛ `tasnim.ai.ismc.ir` **بدون vhost** (default cert CN=admin) |
+| ingress | ⚠️ IP قدیمی (172.30.0.133 به s52 رسیده) | `*.ai.ismc.ir` | IP فعلی ingress باید دوباره چک شود |
 
-### Runbook deploy s52 (عند بازگشت آنلاینی — از AGENTS.md + `deploy/pcm04_deploy.sh`)
+### Runbook deploy s52 (از AGENTS.md + `deploy/pcm04_deploy.sh`؛ آخرین deploy 2026-11-20)
 1. بکاپ آنلاین: `sqlite3 thesaurus.db ".backup /home/saber/backups/thesaurus-<TS>.db"` + `PRAGMA integrity_check`
 2. اسنپ‌شات deploy dir (بدون DB) → `pct-deploy-<TS>.tar.gz`
 3. تضمین `.env` (chmod 600)
@@ -298,7 +298,7 @@ test_tasnim_readmodel 566، test_tasnim_sdk 672، test_corpus_backfill 690، tes
 5. `docker compose build backend && docker compose up -d backend` (**هرگز** `down -v`)
 6. health-wait + smoke test (endpointهای کلیدی + چک auth)
 7. integrity_check مجدد + مقایسه شمارش‌ها
-- SSH: `ssh -p 22 saber@172.20.1.52`
+- SSH: `ssh -p 22 saber@172.30.0.133`
 
 ### Runbook RAG Phase D (از 20.7D — rollback موجود)
 - rollback کامل: instance `tasnim` (8063/8064/5440) + corpus row `tasnim` در portal + Neo4j DB `tasnim-qwen3-embed-06b`

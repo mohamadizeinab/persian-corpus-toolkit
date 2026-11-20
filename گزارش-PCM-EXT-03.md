@@ -100,12 +100,17 @@ APIهای جدید (همه open مثل بقیه‌ی `/api/projects*`، طبق A
 
 ## ۶. نتیجه‌ی production
 
-**اجرای deploy روی s52 هنوز انجام نشده** — در زمان این گزارش
-`ssh -p 22 saber@172.20.1.52` و ping هر دو **unreachable** بودند
-(«Destination host unreachable» از gateway؛ همان وضعیت PCM-18). کد + تست +
-اسکریپت دپلوی آماده است (بخش ۱۰). تا قبل از deploy، اکستنشن 3.8 روی
-backend قدیمی رفتار v3.7 را نگه می‌دارد (404 fallback) — هیچ breakage‌ای
-ایجاد نمی‌شود.
+**✅ دپلوی شد (2026-11-20)** — سرور با جابه‌جایی vCenter به IP جدید
+**172.30.0.133** رفته بود (آدرس قدیمی 172.20.1.52 دیگر وجود نداشت؛ به همین
+دلیل probe‌های قدیمی unreachable می‌دادند). دپلوی ترکیبی PCM-EXT-03 +
+PCM-EXT-04 (commit `e86cd0d`) با اسکریپت کنترل‌شده اجرا شد — جزئیات در
+`docs/گزارش-PCM-EXT-04.md` بخش ۶. Routes lock روی production زنده‌اند و
+round-trip claim/heartbeat/release روی پروژهٔ زنده تأیید شد.
+
+(در زمان نگارش این گزارش، در `ssh -p 22 saber@172.20.1.52` و ping هر دو
+unreachable بودند — «Destination host unreachable» از gateway؛ همان وضعیت
+PCM-18. تا قبل از deploy، اکستنشن 3.8 روی backend قدیمی رفتار v3.7 را نگه
+می‌داشت (404 fallback) — هیچ breakage‌ای ایجاد نمی‌شد.)
 
 ## ۷. SHA + لینک
 
@@ -141,8 +146,9 @@ backend قدیمی رفتار v3.7 را نگه می‌دارد (404 fallback) �
 
 ## ۱۰. موارد باقی‌مانده
 
-1. **اجرای deploy روی s52** (مسدود: host unreachable). وقتی شبکه در دسترس
-   شد:
+1. ~~اجرای deploy روی s52~~ — **انجام شد 2026-11-20** با IP جدید
+   172.30.0.133 (همزمان با PCM-EXT-04؛ commit `e86cd0d`). دستورهای زیر
+   نسخه‌ی تاریخی هستند (آدرس قدیمی):
    ```bat
    git archive --format=tar.gz --prefix=persian-corpus-toolkit/ e38f914 -o pct-code-ext03.tgz
    scp -P 22 pct-code-ext03.tgz saber@172.20.1.52:/tmp/

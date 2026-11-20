@@ -26,10 +26,10 @@
 8. خروج‌های DOM در کلاینت از `escHtml` (XSS)؛ هیچ HTML خام بدون sanitize.
 9. عدد آمار/درصد ساختگی ندهید — فقط شمارنده‌های واقعی DB، با تعریف مکتوب.
 
-## ۳. دپلوی (s52 = 172.20.1.52)
+## ۳. دپلوی (s52 = 172.30.0.133 — IP جدید vCenter؛ 172.20.1.52 دیگر وجود ندارد)
 
 ```text
-SSH:     ssh -p 22 saber@172.20.1.52          # 2222 = GitLab، نه SSH
+SSH:     ssh -p 22 saber@172.30.0.133          # 2222 = GitLab، نه SSH
 DIR:     /home/saber/saberprojects/persian-corpus-toolkit   # کپی کد (نه git repo)
 DB:      backend/thesaurus.db  (bind-mount به /data/thesaurus.db در container)
 NGINX:   443 ssl → 127.0.0.1:5055 با X-Forwarded-Proto

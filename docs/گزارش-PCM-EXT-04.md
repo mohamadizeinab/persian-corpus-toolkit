@@ -93,16 +93,30 @@ ALTER TABLE projects ADD COLUMN stop_field TEXT DEFAULT ''
 نمی‌شود)، trim، list، مهاجرت افزایشی روی DB legacy (has `stop_number`، بدون
 `stop_field`) با حفظ ردیف + idempotent.
 
-## ۶. نتیجه‌ی production (s52)
+## ۶. نتیجه‌ی production (s52) — ✅ دپلوی شد (2026-11-20 11:47 +03:30)
 
-**اجرا مسدود است** — s52 (172.20.1.52) در زمان این مأموریت reachable نبود
-(همان وضعیت PCM-18/EXT-03): `ssh: connect to host 172.20.1.52 port 22:
-Connection timed out`. دپلوی به‌صورت یک اسکریپت کنترل‌شده آماده است
-(بکاپ → snapshot → extract → blob-verify → build فقط backend → health →
-smoke → integrity → counters) و در بخش ۱۰ آمده است. تا اجرای دپلوی، backend
-زنده هنوز `stop_field` را نمی‌شناسد؛ اکستنشن 3.9 روی backend قدیمی هم کار می‌کند
-(فیلد در JSON بی‌درد می‌ماند چون backend کلیدهای ناشناخته را نادیده می‌گیرد —
-ولی برای ذخیره‌ی واقعی `stop_field` باید دپلوی انجام شود).
+سرور با جابه‌جایی vCenter به شبکه‌ی جدید رفته بود و IP جدیدش
+**172.30.0.133** است (hostname فعلی `saber`؛ آدرس قدیمی 172.20.1.52 دیگر
+وجود ندارد). دپلوی ترکیبی PCM-EXT-03 + PCM-EXT-04 با اسکریپت کنترل‌شده
+اجرا شد (TS=20261120-081713):
+
+| مرحله | نتیجه |
+|---|---|
+| بکاپ آنلاین + integrity | `thesaurus-20261120-081713.db` ok |
+| snapshot deploy dir | `pct-deploy-20261120-081713.tar.gz` |
+| BEFORE counters | projects=10, project_pages=139265, crawl_queue=352785 |
+| extract + blob-verify (9 فایل vs `e86cd0d`) | همه ok |
+| build + recreate فقط backend | image `2a0f605…` → `3849ce4…`، health ~2s |
+| smoke: auth 401 / extension API open 200 / studio 200 / run-probe 404 | ok |
+| **مهاجرت lazy** | ستون‌های `run_owner/run_token/run_heartbeat/stop_number/stop_field` روی DB production اضافه شدند |
+| integrity بعد از دپلوی | ok |
+| AFTER counters | 10 / 139265 / 352785 — **تغییری نکرده** |
+
+**دستکاری زنده (round-trip روی پروژهٔ paused «تفسیر تسنیم همتا»):**
+claim → `claimed:true` · claim دوم (owner دیگر) → **409 + locked_by** ·
+heartbeat → ok · update با `stop_field` → ok · release → ok · وضعیت نهایی:
+`paused` بدون هیچ اثر lock. (یک خطای ظاهری در grep اسکریپت — فرم JSON-escaped
+فارسی — بعداً در اسکریپت اصلاح شد؛ روی خود دپلوی تأثیر نداشت.)
 
 ## ۷. SHA + لینک
 
@@ -139,18 +153,18 @@ M extension/test_next.js         (+84)
   گرفته می‌شوند → **rollback DB لازم نیست**.
 - Rollback DB (فقط اگر ردیف خراب شود): `.restore` از بکاپ.
 
-## ۱۰. موارد باقی‌مانده (دپلوی — وقتی s52 برگشت)
+## ۱۰. دپلوی (انجام شد 2026-11-20)
 
 ```bash
-# روی Windows:
+# روی Windows (IP جدید vCenter):
 git archive --format=tar.gz --prefix=persian-corpus-toolkit/ e86cd0d -o pct-code-ext03.tgz
-scp -P 22 pct-code-ext03.tgz saber@172.20.1.52:/tmp/
-scp -P 22 deploy\pcm_ext_03_deploy.sh saber@172.20.1.52:/tmp/
-ssh -p 22 saber@172.20.1.52 "bash /tmp/pcm_ext_03_deploy.sh"
+scp -P 22 pct-code-ext03.tgz saber@172.30.0.133:/tmp/
+scp -P 22 deploy\pcm_ext_03_deploy.sh saber@172.30.0.133:/tmp/
+ssh -p 22 saber@172.30.0.133 "bash /tmp/pcm_ext_03_deploy.sh"
 ```
-این دپلوی **هر دو** PCM-EXT-03 (lock) + PCM-EXT-04 (stop_field) را با هم می‌رساند
-(اسکریپت به‌روزرسانی شده: commit `e86cd0d` + 9 blob EXPECT + assert هر سه
-ستون lock و `stop_number`/`stop_field` بعد از smoke probe).
+اجرا شد و هر دو PCM-EXT-03 (lock) + PCM-EXT-04 (stop_field) روی production
+رسیدند (جزئیات در بخش ۶). اسکریپت نسخه‌ی اصلاح‌شده (grep فرم escaped) در
+commit بعدی همین مأموریت.
 
 ## ۱۱. روش تست دستی
 
