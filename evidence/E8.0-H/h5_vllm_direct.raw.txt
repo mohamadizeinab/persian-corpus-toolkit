@@ -1,0 +1,9 @@
+=== time/host ===
+2026-11-17T19:20:09Z
+AI-TOOLS
+=== s52 -> s53:8000 /v1/models (no auth; vllm has no --api-key) ===
+model id: /models/Qwen3.8-27B-FP8
+=== s52 -> s53:8000 /health ===
+vllm /health -> 200
+END VLLM-DIRECT
+exit=0

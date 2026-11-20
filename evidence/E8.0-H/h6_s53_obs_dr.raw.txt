@@ -1,0 +1,46 @@
+=== time/host ===
+2026-11-17T18:46:15Z
+llm
+=== monitoring containers ===
+dcgm-exporter	nvcr.io/nvidia/k8s/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04	Up 5 days	0.0.0.0:9400->9400/tcp, [::]:9400->9400/tcp
+promtail	grafana/promtail:3.4.2	Up 5 days	
+node-exporter	prom/node-exporter:v1.8.2	Up 5 days	
+=== prometheus targets ===
+targets parse-fail: Expecting value: line 1 column 1 (char 0)
+=== RAG metrics endpoints (s52 only; skip if absent) ===
+gateway :8210 /metrics -> 000
+registry :8200 /metrics -> 000
+=== grafana auth wall ===
+grafana :3001 / -> 200
+=== alertmanager ===
+alertmanager: ABSENT
+=== backup dir ===
+34G	/home/saber/backups
+total 124
+drwxr-x--x 75 saber saber 12288 Nov 17 18:45 ..
+drwxrwxr-x  2 saber saber  4096 Nov 14 16:51 e61-20261114-165143
+drwxrwxr-x 29 saber saber  4096 Nov 14 16:51 .
+drwxrwxr-x  2 saber saber  4096 Nov 12 20:02 m26nb_api_backup
+drwx------  7 saber saber  4096 Nov 12 15:33 radio
+drwxrwxr-x  3 saber saber  4096 Nov 12 10:08 m25r_brand_20261112T100401Z
+drwxrwxr-x  3 saber saber  4096 Nov 12 08:32 m25_secret_backup
+drwxrwxr-x  2 saber saber  4096 Nov 12 07:49 m25_api_backup
+drwxrwxr-x  2 saber saber  4096 Oct 22 16:50 v4m-p5-20261022-165010
+drwxrwxr-x  2 saber saber  4096 Oct 21 07:38 v4m1-p4-dnsfix-20261021-073845
+drwxrwxr-x  3 saber saber  4096 Oct 21 07:28 v4m1-p4-20261021-072831
+=== offsite tooling ===
+rclone: absent
+restic: absent
+borg: absent
+rsync: present
+no rclone.conf
+=== cron (non-comment) ===
+*/30 * * * * /home/saber/saberprojects/iranseda-crawler-golang-/scripts/refresh_site.sh >/dev/null 2>&1
+15,45 * * * * /home/saber/saberprojects/iranseda-crawler-golang-/scripts/run_pipeline.sh >/dev/null 2>&1
+=== network mounts ===
+no network filesystem mounts
+=== outbound 443 endpoints (peer ip counts) ===
+=== RAG-related backup timers (s52) ===
+Wed 2026-11-18 00:00:00 UTC 5h 13min Tue 2026-11-17 00:00:00 UTC       18h ago dpkg-db-backup.timer           dpkg-db-backup.service
+END H6
+exit=0

@@ -1,0 +1,64 @@
+=== time/host ===
+2026-11-17T18:45:15Z
+AI-TOOLS
+=== address + route to s53 ===
+2: ens33    inet 172.30.0.133/20 brd 172.30.15.255 scope global ens33\       valid_lft forever preferred_lft forever
+172.20.1.53 via 172.30.15.254 dev ens33 src 172.30.0.133 uid 1001 
+    cache expires 123sec mtu 1476 
+=== listeners: RAG chain + legacy + 4102 ===
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096    172.30.0.133:4102       0.0.0.0:*          
+LISTEN 0      128          0.0.0.0:8210       0.0.0.0:*          
+LISTEN 0      128          0.0.0.0:8200       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8000       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:4101       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:4000       0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:8102       0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:8101       0.0.0.0:*          
+LISTEN 0      4096            [::]:8000          [::]:*          
+LISTEN 0      4096            [::]:4101          [::]:*          
+LISTEN 0      4096            [::]:4000          [::]:*          
+=== firewall framework ===
+ufw 0.36.2
+Copyright 2008-2023 Canonical Ltd.
+ERROR: You need to be root to run this script
+netfilter-persistent: ABSENT
+ls: cannot access '/etc/iptables': No such file or directory
+total 68
+drwxr-xr-x   4 root root  4096 Aug 26 16:15 .
+drwxr-xr-x 136 root root 12288 Nov 16 05:17 ..
+-rw-r-----   1 root root   915 Aug 26 16:12 after6.rules
+-rw-r-----   1 root root  1126 Apr 23  2024 after.init
+-rw-r-----   1 root root  1004 Aug 26 16:12 after.rules
+drwxr-xr-x   2 root root  4096 Oct 16 06:02 applications.d
+-rw-r-----   1 root root  6700 Apr 23  2024 before6.rules
+-rw-r-----   1 root root  1130 Apr 23  2024 before.init
+-rw-r-----   1 root root  2537 Apr 23  2024 before.rules
+drwxr-xr-x   2 root root  4096 Aug 26 16:15 btsh
+-rw-r--r--   1 root root  1391 Apr 23  2024 sysctl.conf
+--- /etc/ufw/user.rules (first 40 lines, if readable as non-root) ---
+head: cannot open '/etc/ufw/user.rules' for reading: Permission denied
+=== DOCKER-USER chain (root required) ===
+iptables v1.8.10 (nf_tables): Could not fetch rule set generation id: Permission denied (you must be root)
+=== RAG containers ===
+rag-keyfwd	Up 18 hours	
+rag-gateway	Up 22 hours (healthy)	
+litellm-personal	Up 22 hours	0.0.0.0:4101->4000/tcp, [::]:4101->4000/tcp
+rag-registry	Up 3 days (healthy)	
+fiqh-rag	Up 4 days (healthy)	127.0.0.1:8102->8100/tcp
+mizan-rag	Up 4 days (healthy)	127.0.0.1:8101->8100/tcp
+learn-lite-llm-litellm-1	Up 3 days	0.0.0.0:4000->4000/tcp, [::]:4000->4000/tcp, 0.0.0.0:4010->4010/tcp, [::]:4010->4010/tcp
+llmhub-litellm-public	Up 2 weeks	172.30.0.133:4102->4000/tcp
+bot-gateway	Up 2 weeks (healthy)	0.0.0.0:8087->8000/tcp, [::]:8087->8000/tcp
+bot-gateway-candidate	Up 2 weeks (healthy)	0.0.0.0:8088->8000/tcp, [::]:8088->8000/tcp
+litellm-personal-db	Up 2 weeks	5432/tcp
+litellm-postgres	Up 3 days (healthy)	0.0.0.0:5435->5432/tcp, [::]:5435->5432/tcp
+=== RAG health (local) ===
+gateway :8210 /health -> 200
+registry :8200 /health -> 200
+provider :8101 /health -> 200
+provider :8102 /health -> 200
+=== 4102 owner (do NOT open) ===
+llmhub-litellm-public	172.30.0.133:4102->4000/tcp
+END H1-PREFLIGHT
+exit=0

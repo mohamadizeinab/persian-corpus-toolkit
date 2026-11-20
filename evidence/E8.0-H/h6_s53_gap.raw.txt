@@ -1,0 +1,16 @@
+=== time/host ===
+2026-11-17T19:13:54Z
+llm
+=== promtail container (cmd + env names) ===
+cmd=["-config.file=/etc/promtail/config.yml"]
+PATH
+
+=== promtail config files (mounts) ===
+/opt/gpu-agent/promtail-config.yaml -> /etc/promtail/config.yml
+/var/lib/docker/containers -> /var/lib/docker/containers
+/var/run/docker.sock -> /var/run/docker.sock
+
+=== established connections to :3100 (loki targets) ===
+172.20.1.22:3100
+END H6-GAP-S53
+exit=0

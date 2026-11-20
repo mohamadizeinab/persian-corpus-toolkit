@@ -1,0 +1,191 @@
+=== time/host ===
+2026-11-17T18:46:13Z
+llm
+=== tunnel container ===
+1d170e8750ec	h200-public-tunnel	cloudflare/cloudflared:latest	Up 5 days
+NAME=h200-public-tunnel
+=== mounts ===
+bind: /home/saber/h200-api/cloudflared -> /etc/cloudflared (mode=ro)
+
+=== env names only ===
+PATH
+SSL_CERT_FILE
+
+=== cloudflared config files on host (bind mount source) ===
+total 20
+drwxrwxr-x 2 saber saber 4096 Jul 23 14:50 .
+drwxrwxr-x 6 saber saber 4096 Sep 17 14:39 ..
+-rw------- 1 65532 65532  275 Jul 23 14:50 config.yml
+-rw------- 1 65532 65532  161 Jul 23 14:50 credentials.json
+-rw------- 1 saber saber   62 Jul 23 14:50 public-url.txt
+config.yml readable as saber? no-permission
+public-url.txt: https://strategies-dna-unexpected-riverside.trycloudflare.com
+=== vllm-qwen38 cmd (auth flags) ===
+["--model"
+"/models/Qwen3.8-27B-FP8"
+"--tensor-parallel-size"
+"1"
+"--dtype"
+"auto"
+"--max-model-len"
+"200000"
+"--max-num-seqs"
+"8"
+"--gpu-memory-utilization"
+"0.85"
+"--kv-cache-dtype"
+"fp8"
+"--host"
+"0.0.0.0"
+"--port"
+"8000"
+"--reasoning-parser"
+"qwen3"
+"--enable-auto-tool-choice"
+"--tool-call-parser"
+"qwen3_coder"]
+=== vllm-qwen38 published ports ===
+8000/tcp -> 0.0.0.0:8000
+8000/tcp -> [::]:8000
+=== host cloudflared process ===
+   7329 cloudflared --no-autoupdate tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+=== host listening sockets (0.0.0.0) ===
+0.0.0.0:22
+0.0.0.0:80
+0.0.0.0:3000
+0.0.0.0:3001
+0.0.0.0:3308
+0.0.0.0:3929
+0.0.0.0:4000
+0.0.0.0:4001
+0.0.0.0:5432
+0.0.0.0:5436
+0.0.0.0:5440
+0.0.0.0:5446
+0.0.0.0:5456
+0.0.0.0:5466
+0.0.0.0:5467
+0.0.0.0:5477
+0.0.0.0:5478
+0.0.0.0:6333
+0.0.0.0:6334
+0.0.0.0:6379
+0.0.0.0:7474
+0.0.0.0:7687
+0.0.0.0:8000
+0.0.0.0:8001
+0.0.0.0:8003
+0.0.0.0:8004
+0.0.0.0:8013
+0.0.0.0:8014
+0.0.0.0:8023
+0.0.0.0:8024
+0.0.0.0:8033
+0.0.0.0:8034
+0.0.0.0:8043
+0.0.0.0:8044
+0.0.0.0:8045
+0.0.0.0:8046
+0.0.0.0:8047
+0.0.0.0:8048
+0.0.0.0:8053
+0.0.0.0:8054
+0.0.0.0:8063
+0.0.0.0:8064
+0.0.0.0:8080
+0.0.0.0:8083
+0.0.0.0:8090
+0.0.0.0:8990
+0.0.0.0:9000
+0.0.0.0:9001
+0.0.0.0:9002
+0.0.0.0:9003
+0.0.0.0:9004
+0.0.0.0:9400
+0.0.0.0:9443
+0.0.0.0:9500
+0.0.0.0:14101
+0.0.0.0:18101
+0.0.0.0:18200
+0.0.0.0:18210
+0.0.0.0:22001
+=== docker published ports ===
+rag2-staging-core-registry-1	
+rag2-staging-core-gateway-1	
+rag2-staging-core-litellm-1	
+radio2_api	8501/tcp, 0.0.0.0:8045->8003/tcp, [::]:8045->8003/tcp
+rag2_api	0.0.0.0:8047->8000/tcp, [::]:8047->8000/tcp
+rag2-staging-core-synth-provider-1	
+ragportal_api	0.0.0.0:8033->8000/tcp, [::]:8033->8000/tcp
+radio_api	8501/tcp, 0.0.0.0:8043->8003/tcp, [::]:8043->8003/tcp
+rag2_frontend	0.0.0.0:8048->80/tcp, [::]:8048->80/tcp
+rag2_auth_db	0.0.0.0:5478->5432/tcp, [::]:5478->5432/tcp
+rag2_db	0.0.0.0:5467->5432/tcp, [::]:5467->5432/tcp
+radio2_frontend	0.0.0.0:8046->80/tcp, [::]:8046->80/tcp
+tasnim_frontend	0.0.0.0:8064->80/tcp, [::]:8064->80/tcp
+tasnim_api	8501/tcp, 0.0.0.0:8063->8003/tcp, [::]:8063->8003/tcp
+rag_monitor	127.0.0.1:8590->8590/tcp
+radio_frontend	0.0.0.0:8044->80/tcp, [::]:8044->80/tcp
+sources_api	8501/tcp, 0.0.0.0:8053->8003/tcp, [::]:8053->8003/tcp
+mesbah_api	0.0.0.0:8003->8003/tcp, [::]:8003->8003/tcp, 8501/tcp
+eiis_api	8501/tcp, 0.0.0.0:8013->8003/tcp, [::]:8013->8003/tcp
+taghrir_api	8501/tcp, 0.0.0.0:8023->8003/tcp, [::]:8023->8003/tcp
+neo4j_db	0.0.0.0:7474->7474/tcp, [::]:7474->7474/tcp, 7473/tcp, 0.0.0.0:7687->7687/tcp, [::]:7687->7687/tcp
+tasnim_feedback_db	0.0.0.0:5440->5432/tcp, [::]:5440->5432/tcp
+taghrir_frontend	0.0.0.0:8024->80/tcp, [::]:8024->80/tcp
+eiis_frontend	0.0.0.0:8014->80/tcp, [::]:8014->80/tcp
+mesbah_frontend	0.0.0.0:8004->80/tcp, [::]:8004->80/tcp
+sources_frontend	0.0.0.0:8054->80/tcp, [::]:8054->80/tcp
+iranseda-whisper-worker	
+deploy-sidekiq-1	3000/tcp
+deploy-rails-1	127.0.0.1:4002->3000/tcp
+deploy-redis-1	127.0.0.1:16379->6379/tcp
+deploy-postgres-1	127.0.0.1:15432->5432/tcp
+taghrirqa	
+kong-gw-oss-kong	8443-8444/tcp, 127.0.0.1:18080->8000/tcp, 127.0.0.1:18001->8001/tcp
+kong-gw-oss-db	5432/tcp
+kong-gw-oss-echo	9000/tcp
+kong-gw-manage	127.0.0.1:18091->8091/tcp
+kong-admin-auth	
+vllm-embedding-06b	0.0.0.0:4001->4000/tcp, [::]:4001->4000/tcp
+ragportal_frontend	0.0.0.0:8034->80/tcp, [::]:8034->80/tcp
+ragportal_db	0.0.0.0:5466->5432/tcp, [::]:5466->5432/tcp
+ragportal_auth_db	0.0.0.0:5477->5432/tcp, [::]:5477->5432/tcp
+vllm-qwen38-gpu1	0.0.0.0:8001->8001/tcp, [::]:8001->8001/tcp
+taghrir_feedback_db	0.0.0.0:5456->5432/tcp, [::]:5456->5432/tcp
+eiis_feedback_db	0.0.0.0:5446->5432/tcp, [::]:5446->5432/tcp
+mesbah_feedback_db	0.0.0.0:5436->5432/tcp, [::]:5436->5432/tcp
+open-webui	0.0.0.0:80->8080/tcp, [::]:80->8080/tcp
+iranseda-whisper-api	
+csghub-omnibus	443/tcp, 5000/tcp, 9001/tcp, 0.0.0.0:8083->80/tcp, [::]:8083->80/tcp, 0.0.0.0:22001->2222/tcp, [::]:22001->2222/tcp, 0.0.0.0:9003->8000/tcp, [::]:9003->8000/tcp, 0.0.0.0:9004->9000/tcp, [::]:9004->9000/tcp
+mock-open-webui	0.0.0.0:9002->8080/tcp, [::]:9002->8080/tcp
+mock-litellm	0.0.0.0:9001->4000/tcp, [::]:9001->4000/tcp
+mock-service	0.0.0.0:9000->8000/tcp, [::]:9000->8000/tcp
+tyk-gateway	0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+tyk-dashboard	0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+tyk-pump	
+tyk-portal	0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp
+tyk-redis	0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+tyk-postgres	0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+iranseda-mysql	33060/tcp, 0.0.0.0:3308->3306/tcp, [::]:3308->3306/tcp
+vllm-qwen38	0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+vllm-embedding	0.0.0.0:4000->4000/tcp, [::]:4000->4000/tcp
+dcgm-exporter	0.0.0.0:9400->9400/tcp, [::]:9400->9400/tcp
+promtail	
+node-exporter	
+qdrant	0.0.0.0:6333-6334->6333-6334/tcp, [::]:6333-6334->6333-6334/tcp
+ollama	
+surfsense-proxy-1	443/udp, 2019/tcp, 0.0.0.0:3929->80/tcp, [::]:3929->80/tcp, 0.0.0.0:9443->443/tcp, [::]:9443->443/tcp
+surfsense-celery_beat-1	8000-8001/tcp
+surfsense-frontend-1	3000/tcp
+surfsense-celery_worker-1	8000-8001/tcp
+surfsense-backend-1	8000-8001/tcp
+surfsense-zero-cache-1	4848-4849/tcp
+surfsense-db-1	5432/tcp
+surfsense-redis-1	6379/tcp
+h200-public-tunnel	
+=== ufw/iptables state (root required) ===
+ERROR: You need to be root to run this script
+iptables v1.8.10 (nf_tables): Could not fetch rule set generation id: Permission denied (you must be root)
+END H5-S53
+exit=0

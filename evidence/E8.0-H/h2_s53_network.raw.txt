@@ -1,0 +1,14 @@
+=== time/host ===
+2026-11-17T18:45:16Z
+llm
+=== route to s52 (source IP) ===
+172.30.0.133 via 172.20.1.2 dev ens33 src 172.20.1.53 uid 1001 
+    cache expires 224sec mtu 1476 
+=== TCP probes s53 -> s52 (3s timeout; BLOCKED expected for 4101/8200/8210) ===
+port 4101: BLOCKED/TIMEOUT
+port 8200: BLOCKED/TIMEOUT
+port 8210: BLOCKED/TIMEOUT
+port 4000: OPEN (connect ok)
+port 8000: OPEN (connect ok)
+END H2-S53
+exit=0

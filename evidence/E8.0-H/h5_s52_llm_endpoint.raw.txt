@@ -1,0 +1,24 @@
+=== time/host ===
+2026-11-17T18:46:08Z
+AI-TOOLS
+=== litellm /v1/models (in-container python; key stays inside) ===
+master key env present: True
+models: 11
+   bootstrap-do-not-use
+   qwen38-hub
+   q1-embedding-06b
+   q1-embedding-4b
+   gpt-oss-120b
+   rag-mizan
+   rag-general
+   rag-fiqh
+   portal-rag-mizan
+   portal-rag-general
+   portal-rag-fiqh
+=== qwen38-hub api_base (decrypt INSIDE container; only plaintext URL printed) ===
+encrypted api_base length: 38
+IMPORT_FAIL: No module named 'litellm._utils'
+=== functional probe: 1-token completion via qwen38-hub ===
+OK status=200 ms=123 model=qwen38-hub usage={'completion_tokens': 1, 'prompt_tokens': 53, 'total_tokens': 54, 'completion_tokens_details': {'reasoning_tokens': 1}} content40=''
+END H5-S52
+exit=0

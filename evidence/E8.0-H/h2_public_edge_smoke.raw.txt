@@ -1,0 +1,15 @@
+E8.0-H2 — Public edge smoke from operator box 172.22.6.30/26
+Vantage: Windows 10 operator box, curl -sk (TLS verify disabled), 2026-11-17 ~18:33 UTC
+Note: all three hostnames resolve to 172.30.0.133 (s52 edge); 443 handled by nginx on s52.
+
+radio.ai.ismc.ir   HTTP 200  dns=0.008858s connect=0.011407s total=0.036775s ip=172.30.0.133
+rag.ai.ismc.ir     HTTP 200  dns=0.009124s connect=0.011609s total=0.049017s ip=172.30.0.133
+radio2.ai.ismc.ir  HTTP 307  dns=0.011759s connect=0.014104s total=0.044855s ip=172.30.0.133
+
+Interpretation:
+- Public web edge (nginx 443) is live and fast for radio (prod) and rag (portal) frontends.
+- radio2 (staging) returns 307 (redirect, expected behavior of that vhost).
+- RAG CHAT acceptance is NOT included above: the s53->s52 path to 4101/8200/8210 is
+  BLOCKED by the s52 host firewall (P6-1b, see h2_s53_network.raw.txt), so public RAG
+  chat from the UIs cannot complete an upstream call. Public RAG acceptance = BLOCKED
+  pending A-1 (H1 firewall remediation).

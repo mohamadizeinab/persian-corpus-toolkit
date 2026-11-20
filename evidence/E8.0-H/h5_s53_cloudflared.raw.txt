@@ -1,0 +1,97 @@
+=== time/host ===
+2026-11-17T19:01:40Z
+llm
+=== docker cp audit copies ===
+=== config.yml (token/secret/password/key values REDACTED) ===
+tunnel: 12cdde1e-4ba7-4cf4-b644-03de87b403c3
+credentials-file: /etc/cloudflared/credentials.json
+protocol: http2
+edge-ip-version: '4'
+ingress:
+  - hostname: strategies-dna-unexpected-riverside.trycloudflare.com
+    service: http://127.0.0.1:8081
+  - service: http_status:404
+=== credentials.json: keys only + UUID suffix (no secret values) ===
+keys: ['AccountTag', 'TunnelID', 'TunnelSecret']
+tunnel uuid suffix (last 4): 
+audit copy removed: /tmp/e80h5-cf-1588493
+=== full container inventory (s53) ===
+csghub-omnibus	opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsghq/omnibus-csghub:v1.10.0-ce	Up 5 days
+dcgm-exporter	nvcr.io/nvidia/k8s/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04	Up 5 days
+deploy-postgres-1	pgvector/pgvector:pg16	Up 5 days (healthy)
+deploy-rails-1	chatwoot/chatwoot:v4.19.0	Up 5 days
+deploy-redis-1	redis:alpine	Up 5 days
+deploy-sidekiq-1	chatwoot/chatwoot:v4.19.0	Up 5 days
+eiis_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 5 days (healthy)
+eiis_feedback_db	postgres:15-alpine	Up 5 days (healthy)
+eiis_frontend	nginx:alpine	Up 5 days (healthy)
+h200-public-tunnel	cloudflare/cloudflared:latest	Up 5 days
+iranseda-mysql	mysql:8.0	Up 5 days (healthy)
+iranseda-whisper-api	iranseda-whisper:latest	Up 5 days
+iranseda-whisper-worker	iranseda-whisper:latest	Up 5 days
+kong-admin-auth	nginx:alpine	Up 5 days
+kong-gw-manage	python:3.12-alpine	Up 5 days
+kong-gw-oss-db	postgres:16.6-alpine	Up 5 days (healthy)
+kong-gw-oss-echo	kong-gw-oss-echo:1.0	Up 5 days (healthy)
+kong-gw-oss-kong	kong:3.9.4	Up 5 days (healthy)
+mesbah_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 3 days (healthy)
+mesbah_feedback_db	postgres:15-alpine	Up 5 days (healthy)
+mesbah_frontend	nginx:alpine	Up 5 days (healthy)
+mock-litellm	ghcr.io/berriai/litellm:main-latest	Up 5 days
+mock-open-webui	ghcr.io/open-webui/open-webui:main	Up 5 days (healthy)
+mock-service	mock-stream:v1	Up 5 days (healthy)
+neo4j_db	neo4j:2025.10.1-enterprise	Up 5 days (healthy)
+node-exporter	prom/node-exporter:v1.8.2	Up 5 days
+ollama	ollama/ollama:latest	Up 5 days
+open-webui	ghcr.io/open-webui/open-webui:main	Up 5 days (healthy)
+promtail	grafana/promtail:3.4.2	Up 5 days
+qdrant	qdrant/qdrant:v1.19.1	Up 5 days
+radio2_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 24 hours (healthy)
+radio2_frontend	nginx:alpine	Up 3 days (healthy)
+radio_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 3 days (healthy)
+radio_frontend	nginx:alpine	Up 5 days (healthy)
+rag2_api	rag2-staging-api	Up 25 hours
+rag2_auth_db	postgres:15-alpine	Up 3 days (healthy)
+rag2_db	postgres:15-alpine	Up 3 days (healthy)
+rag2_frontend	nginx:alpine	Up 3 days
+rag2-staging-core-gateway-1	rag-gateway:0.1.0	Up 21 hours (healthy)
+rag2-staging-core-litellm-1	ghcr.io/berriai/litellm:main-latest	Up 21 hours (healthy)
+rag2-staging-core-registry-1	rag-registry:0.1.0	Up 20 hours (healthy)
+rag2-staging-core-synth-provider-1	rag-registry:0.1.0	Up 25 hours (healthy)
+rag_monitor	rag-monitor-rag_monitor	Up 5 days (healthy)
+ragportal_api	rag-portal-ragportal_api	Up 3 days
+ragportal_auth_db	postgres:15-alpine	Up 5 days (healthy)
+ragportal_db	postgres:15-alpine	Up 5 days (healthy)
+ragportal_frontend	nginx:alpine	Up 5 days
+sources_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 5 days (healthy)
+sources_frontend	nginx:alpine	Up 5 days (healthy)
+surfsense-backend-1	ghcr.io/modsetter/surfsense-backend:latest-cuda	Up 5 days (healthy)
+surfsense-celery_beat-1	ghcr.io/modsetter/surfsense-backend:latest-cuda	Up 5 days
+surfsense-celery_worker-1	ghcr.io/modsetter/surfsense-backend:latest-cuda	Up 5 days
+surfsense-db-1	pgvector/pgvector:pg17	Up 5 days (healthy)
+surfsense-frontend-1	ghcr.io/modsetter/surfsense-web:latest	Up 5 days
+surfsense-proxy-1	caddy:2-alpine	Up 5 days
+surfsense-redis-1	redis:8-alpine	Up 5 days (healthy)
+surfsense-zero-cache-1	rocicorp/zero:1.6.0	Up 5 days (healthy)
+taghrir_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 5 days (healthy)
+taghrir_feedback_db	postgres:15-alpine	Up 5 days (healthy)
+taghrir_frontend	nginx:alpine	Up 5 days (healthy)
+taghrirqa	0fa04f61f3b6	Up 5 days
+tasnim_api	mrbaqeri/qa_lang_neo4j_mesbah:1.0.0	Up 5 days (healthy)
+tasnim_feedback_db	postgres:15-alpine	Up 5 days (healthy)
+tasnim_frontend	nginx:alpine	Up 5 days (healthy)
+tyk-dashboard	tykio/tyk-dashboard:v5.15.0	Up 5 days
+tyk-gateway	tykio/tyk-gateway-ee:v5.15.0	Up 5 days
+tyk-portal	tykio/portal:v1.19.0	Up 5 days (unhealthy)
+tyk-postgres	postgres:16-alpine	Up 5 days (healthy)
+tyk-pump	tykio/tyk-pump-docker-pub:v1.17.0	Up 5 days
+tyk-redis	redis:7.2.0	Up 5 days (healthy)
+vllm-embedding-06b	vllm/vllm-openai:v0.11.0	Up 5 days
+vllm-embedding	vllm/vllm-openai:v0.11.0	Up 5 days
+vllm-qwen38-gpu1	vllm/vllm-openai:nightly	Up 5 days
+vllm-qwen38	vllm/vllm-openai:nightly	Up 5 days
+=== who serves :3001 on s53 ===
+LISTEN 0      4096                                 0.0.0.0:3001       0.0.0.0:*                                        
+LISTEN 0      4096                                    [::]:3001          [::]:*                                        
+END H5-CF
+exit=0

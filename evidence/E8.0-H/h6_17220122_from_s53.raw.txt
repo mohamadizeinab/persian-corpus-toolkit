@@ -1,0 +1,17 @@
+=== time/host ===
+2026-11-17T19:16:07Z
+llm
+=== ip route get 172.20.1.22 (from this host) ===
+172.20.1.22 dev ens33 src 172.20.1.53 uid 1001 
+    cache 
+=== local ss: any socket on 172.20.1.22 (would prove alias on this host) ===
+ESTAB      0      0               172.20.1.53:40362           172.20.1.22:3100        
+ESTAB      0      0      [::ffff:172.20.1.53]:9100   [::ffff:172.20.1.22]:57810       
+=== loki readiness from here ===
+172.20.1.22:3100 /ready -> 200
+=== ping 172.20.1.22 (1 packet) ===
+PING 172.20.1.22 (172.20.1.22) 56(84) bytes of data.
+64 bytes from 172.20.1.22: icmp_seq=1 ttl=64 time=0.523 ms
+
+END 172.20.1.22-PROBE
+exit=0

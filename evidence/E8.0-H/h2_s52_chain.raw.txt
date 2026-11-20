@@ -1,0 +1,19 @@
+=== time/host ===
+2026-11-17T18:45:26Z
+AI-TOOLS
+=== RAG containers ===
+rag-keyfwd	Up 18 hours	
+rag-gateway	Up 22 hours (healthy)	
+litellm-personal	Up 22 hours	0.0.0.0:4101->4000/tcp, [::]:4101->4000/tcp
+rag-registry	Up 3 days (healthy)	
+fiqh-rag	Up 4 days (healthy)	127.0.0.1:8102->8100/tcp
+mizan-rag	Up 4 days (healthy)	127.0.0.1:8101->8100/tcp
+learn-lite-llm-litellm-1	Up 3 days	0.0.0.0:4000->4000/tcp, [::]:4000->4000/tcp, 0.0.0.0:4010->4010/tcp, [::]:4010->4010/tcp
+llmhub-litellm-public	Up 2 weeks	172.30.0.133:4102->4000/tcp
+litellm-personal-db	Up 2 weeks	5432/tcp
+litellm-postgres	Up 3 days (healthy)	0.0.0.0:5435->5432/tcp, [::]:5435->5432/tcp
+=== local health ===
+gateway :8210 /health -> 200
+registry :8200 /health -> 200
+END H2-S52
+exit=0

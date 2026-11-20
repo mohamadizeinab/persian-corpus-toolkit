@@ -41,6 +41,9 @@ corpus/books/
 .tmp_*
 _tmp_*
 
+# Scratch از سشن‌های PCM-21+ (پrobe/diag/patch files — هرگز track نشود؛ ممکن است توکن داشته باشد)
+.recon/
+
 # E6.3+E7.0 execution scratch (scripts/logs/images از سشن — هرگز track نشود)
 _e63_*.sh
 _e63_*.ps1

@@ -1,0 +1,12 @@
+=== time/host ===
+2026-11-17T19:10:01Z
+llm
+=== all listeners on 8081 (any bind) ===
+=== HTTP probe of 127.0.0.1:8081 (head only) ===
+=== /health variant ===
+8081 /health -> 000
+=== docker containers with 8081 in ports ===
+no docker port mapping for 8081
+=== process via /proc for 8081 (may need root; try) ===
+END H5-8081
+exit=0

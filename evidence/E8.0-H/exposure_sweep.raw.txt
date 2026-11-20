@@ -1,0 +1,95 @@
+﻿sweep start 2026-11-17T22:27:54Z from 
+Windows IP Configuration
+
+
+Unknown adapter Local Area Connection:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+
+Ethernet adapter Ethernet0:
+
+   Connection-specific DNS Suffix  . : 
+   Link-local IPv6 Address . . . . . : fe80::4525:9a78:cd0f:de9e%2
+   IPv4 Address. . . . . . . . . . . : 172.22.6.30
+   Subnet Mask . . . . . . . . . . . : 255.255.255.192
+   Default Gateway . . . . . . . . . : 172.22.6.62
+
+Unknown adapter OpenVPN Data Channel Offload:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+
+Unknown adapter OpenVPN Connect DCO Adapter:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+
+Ethernet adapter Ethernet:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+
+Ethernet adapter vEthernet (Default Switch):
+
+   Connection-specific DNS Suffix  . : 
+   Link-local IPv6 Address . . . . . : fe80::ed8b:2a55:d1fd:f3e8%32
+   IPv4 Address. . . . . . . . . . . : 172.27.128.1
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Default Gateway . . . . . . . . . : 
+
+s52:22	OPEN
+s52:80	OPEN
+s52:443	OPEN
+s52:3001	BLOCKED
+s52:4000	OPEN
+s52:4101	BLOCKED
+s52:4102	BLOCKED
+s52:5055	BLOCKED
+s52:5435	BLOCKED
+s52:8000	OPEN
+s52:8087	BLOCKED
+s52:8088	BLOCKED
+s52:8200	BLOCKED
+s52:8210	BLOCKED
+s52:8211	BLOCKED
+s52:8212	BLOCKED
+s52:9090	BLOCKED
+s52:3100	BLOCKED
+s52:9100	BLOCKED
+s53:22	OPEN
+s53:80	OPEN
+s53:443	BLOCKED
+s53:3000	OPEN
+s53:3001	OPEN
+s53:4000	OPEN
+s53:5432	OPEN
+s53:6333	OPEN
+s53:6379	OPEN
+s53:7474	OPEN
+s53:7687	OPEN
+s53:8000	OPEN
+s53:8033	OPEN
+s53:8043	OPEN
+s53:8044	OPEN
+s53:8045	OPEN
+s53:8046	OPEN
+s53:8047	OPEN
+s53:8048	OPEN
+s53:8053	OPEN
+s53:8054	OPEN
+s53:8063	OPEN
+s53:8064	OPEN
+s53:8080	OPEN
+s53:8990	OPEN
+s53:9000	OPEN
+s53:9090	BLOCKED
+s53:9400	OPEN
+s53:9443	BLOCKED
+s53:9500	OPEN
+s53:14101	OPEN
+s53:18101	OPEN
+s53:18200	OPEN
+s53:18210	OPEN
+s53:22001	OPEN
+sweep end 2026-11-17T22:37:53Z

@@ -1,0 +1,13 @@
+=== time/host ===
+2026-11-17T19:00:57Z
+AI-TOOLS
+=== /model/info admin (in-container; key stays inside) ===
+QWEN38_HUB_API_BASE=None
+QWEN38_HUB_MODEL=None
+QWEN38_HUB_PROVIDER=None
+=== in-container decrypt fallback (ciphertext via stdin; salt stays inside) ===
+ALL_DECRYPT_IMPORTS_FAILED: ["litellm.utils.decrypt_value: module 'litellm.utils' has no attribute 'decrypt_value'", "litellm._utils.decrypt_value: No module named 'litellm._utils'", "litellm.cryptographic.decrypt_value: No module named 'litellm.cryptographic'", "litellm.proxy.proxy_server.decrypt_value: module 'litellm.proxy.proxy_server' has no attribute 'decryp"]
+=== RAG chain functional probe (local, model=rag-mizan, 1 short chat) ===
+RAG-CHAT OK status=200 ms=29336 model=rag-mizan usage={'completion_tokens': 0, 'prompt_tokens': 0, 'total_tokens': 0} content80='در متن، «السلام» از نام\u200cهای خداوند است؛ زیرا ذات او خیر محض است و در آن شر نیست،'
+END H5-FINAL
+exit=0

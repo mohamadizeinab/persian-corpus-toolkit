@@ -1,0 +1,59 @@
+=== time/host ===
+2026-11-17T18:46:14Z
+AI-TOOLS
+=== monitoring containers ===
+node-exporter	prom/node-exporter:1.12.1	Up 3 days	0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp
+grafana	grafana/grafana:11.3.0	Up 7 days	0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+prometheus	prom/prometheus:v2.55.0	Up 7 days	0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+asr-exporter-a	ocr-asr-exporter	Up 2 weeks (healthy)	0.0.0.0:8099->8099/tcp, [::]:8099->8099/tcp
+pg-exporter-taghrir	prometheuscommunity/postgres-exporter:v0.16.0	Up 2 weeks	0.0.0.0:9189->9187/tcp, [::]:9189->9187/tcp
+pg-exporter-eiis	prometheuscommunity/postgres-exporter:v0.16.0	Up 2 weeks	0.0.0.0:9188->9187/tcp, [::]:9188->9187/tcp
+pg-exporter-mesbah	prometheuscommunity/postgres-exporter:v0.16.0	Up 2 weeks	0.0.0.0:9187->9187/tcp, [::]:9187->9187/tcp
+loki	grafana/loki:3.2.0	Up 2 weeks	0.0.0.0:3100->3100/tcp, [::]:3100->3100/tcp
+=== prometheus targets ===
+active targets: 22 (up=21)
+  DOWN: ft-serving-05b-53 http://172.20.1.53:8101/metrics
+RAG-core scrape targets: ['http://172.20.1.53:8101/metrics']
+=== RAG metrics endpoints (s52 only; skip if absent) ===
+gateway :8210 /metrics -> 404
+registry :8200 /metrics -> 200
+=== grafana auth wall ===
+grafana :3001 / -> 302
+=== alertmanager ===
+alertmanager: ABSENT
+=== backup dir ===
+4.6G	/home/saber/backups
+total 2834340
+drwxr-xr-x 60 saber saber     12288 Nov 17 09:05 ..
+drwx------  2 saber saber      4096 Nov 17 00:08 e63-b2-20261117-000829
+drwxrwxr-x 10 saber saber      4096 Nov 17 00:08 .
+drwx------  2 saber saber      4096 Nov 16 23:55 e63-b2-pre
+drwx------  2 saber saber      4096 Nov 16 20:47 e63-b1-20261116-203835
+drwxrwxr-x  2 saber saber      4096 Nov 16 17:27 e63-images-20261116-172714
+drwxrwxr-x  3 saber saber      4096 Nov 16 15:33 e63-20261116-153338
+drwxrwxr-x  2 saber saber      4096 Nov 14 16:53 e61-20261114-165143
+-rw-rw-r--  1 saber saber   1697500 Nov 13 18:55 litellm-personal-e2-20261113-185523.sql.gz
+-rw-rw-r--  1 saber saber        20 Nov 13 18:54 litellm-personal-e2-20261113-185450.sql.gz
+-rw-r--r--  1 saber saber     53248 Nov 13 18:40 rag-registry-e2-20261113-184007.db
+=== offsite tooling ===
+rclone: absent
+restic: absent
+borg: absent
+rsync: present
+no rclone.conf
+=== cron (non-comment) ===
+no crontab for saber
+=== network mounts ===
+no network filesystem mounts
+=== outbound 443 endpoints (peer ip counts) ===
+      8 172.22.6.30
+      4 80.191.95.129
+      4 5.116.35.42
+      3 5.116.52.15
+      1 5.106.204.171
+      1 212.86.89.11
+      1 151.238.110.42
+=== RAG-related backup timers (s52) ===
+Wed 2026-11-18 00:00:00 UTC 5h 13min Tue 2026-11-17 00:00:00 UTC       18h ago dpkg-db-backup.timer           dpkg-db-backup.service
+END H6
+exit=0

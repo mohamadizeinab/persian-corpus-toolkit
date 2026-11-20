@@ -1,0 +1,83 @@
+=== time/host ===
+2026-11-17T18:45:26Z
+llm
+=== git repos: local vs GitLab remote ===
+--- /home/saber/saberprojects/radio-rag-service
+local HEAD:            193225e8c5aed23817ccc336b338d883d8053d4c
+local branch:          e6.1-rag-production
+local HEAD date:       2026-11-14 17:14:09 +0000
+remote URL (masked):   https://git.ai.ismc.ir/rag/radio-rag-service.git
+remote HEAD:           b7e150e9502813d7a000d2984f21813d8ed6a47d	HEAD
+remote e6.1-rag-production: 193225e8c5aed23817ccc336b338d883d8053d4c	refs/heads/e6.1-rag-production
+untracked count:       1
+modified-tracked:      
+--- /home/saber/saberprojects/rag-portal
+local HEAD:            334e8541cfcd6b6a85681574b2494540678f2298
+local branch:          e6.1-rag-production
+local HEAD date:       2026-11-14 17:14:09 +0000
+remote URL (masked):   https://git.ai.ismc.ir/rag/rag-portal.git
+remote HEAD:           3d0a83aeea439fb46e8f205c75324b8377ed98b5	HEAD
+remote e6.1-rag-production: 334e8541cfcd6b6a85681574b2494540678f2298	refs/heads/e6.1-rag-production
+untracked count:       2
+modified-tracked:      
+=== prod radio_api mounts (deployed files come from working tree) ===
+/home/saber/saberprojects/radio-rag-service/api.py -> /app/app/api.py
+/home/saber/saberprojects/radio-rag-service/rag_proxy.py -> /app/app/rag_proxy.py
+
+=== ragportal_api mounts (empty = code baked in image) ===
+
+=== UI env: RAG_/LITELLM_/PCT_ vars; non-URL/non-numeric values REDACTED ===
+--- radio_api
+RAG_SERVICE_TOKEN=[REDACTED]
+LITELLM_API_KEY=[REDACTED]
+RAG_REGISTRY_TOKEN=[REDACTED-2026-11-17E8.0H]
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+RAG_ADMIN_TOKEN=[REDACTED]
+RAG_TIMEOUT_S=120
+RAG_MODEL_PREFIX=[REDACTED]
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+RAG_CONSUMER_ID=[REDACTED]
+RAG_LITELLM_KEY=[REDACTED]
+LITELLM_BASE=http://172.30.0.133:4000/v1
+--- ragportal_api
+RAG_CONSUMER_ID=[REDACTED]
+LITELLM_BASE=http://172.30.0.133:4000/v1
+RAG_TIMEOUT_S=120
+RAG_LITELLM_URL=http://172.30.0.133:4101/v1
+RAG_LITELLM_KEY=[REDACTED]
+RAG_MODEL_PREFIX=[REDACTED]
+RAG_BASE_URLS=
+LITELLM_KEY=[REDACTED]
+RAG_REGISTRY_TOKEN=[REDACTED-2026-11-17E8.0H]
+RAG_REGISTRY_URL=http://172.30.0.133:8200
+--- radio2_api
+RAG_LITELLM_URL=http://15.15.12.1:14101/v1
+RAG_TIMEOUT_S=120
+RAG_SERVICE_TOKEN=[REDACTED]
+RAG_ADMIN_TOKEN=[REDACTED]
+RAG_REGISTRY_TOKEN=[REDACTED]
+RAG_REGISTRY_URL=http://15.15.12.1:18200
+LITELLM_API_KEY=[REDACTED]
+RAG_MODEL_PREFIX=[REDACTED]
+RAG_CONSUMER_ID=[REDACTED]
+LITELLM_BASE=http://172.30.0.133:4000/v1
+RAG_LITELLM_KEY=[REDACTED]
+--- rag2_api
+RAG_TIMEOUT_S=120
+RAG_BASE_URLS=
+RAG_REGISTRY_URL=http://15.15.19.1:18200
+RAG_MODEL_PREFIX=[REDACTED]
+RAG_REGISTRY_TOKEN=[REDACTED]
+RAG_CONSUMER_ID=[REDACTED]
+LITELLM_BASE=http://172.30.0.133:4000/v1
+LITELLM_KEY=[REDACTED]
+RAG_LITELLM_URL=http://15.15.19.1:14101/v1
+RAG_LITELLM_KEY=[REDACTED]
+=== staging dirs: git? ===
+/home/saber/saberprojects/radio2-staging: exists, NOT a git repo
+/home/saber/saberprojects/rag2-staging: exists, NOT a git repo
+/home/saber/saberprojects/rag2-staging-core: exists, NOT a git repo
+=== ragportal_api image ===
+created=2026-11-14T15:09:51.625740181Z size=215155660
+END H3
+exit=0

@@ -1,0 +1,15 @@
+=== time/host ===
+2026-11-17T19:16:08Z
+AI-TOOLS
+=== ip route get 172.20.1.22 (from this host) ===
+172.20.1.22 via 172.30.15.254 dev ens33 src 172.30.0.133 uid 1001 
+    cache 
+=== local ss: any socket on 172.20.1.22 (would prove alias on this host) ===
+=== loki readiness from here ===
+172.20.1.22:3100 /ready -> 000
+=== ping 172.20.1.22 (1 packet) ===
+PING 172.20.1.22 (172.20.1.22) 56(84) bytes of data.
+
+--- 172.20.1.22 ping statistics ---
+END 172.20.1.22-PROBE
+exit=0

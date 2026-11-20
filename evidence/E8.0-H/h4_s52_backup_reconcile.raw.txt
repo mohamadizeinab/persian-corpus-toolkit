@@ -1,0 +1,46 @@
+=== time/host ===
+2026-11-17T18:46:06Z
+AI-TOOLS
+=== K1 (gzipped full dump) ===
+-rw-rw-r-- 1 saber saber 1723821 Nov 16 15:33 /home/saber/backups/e63-20261116-153338/litellm-personal-20261116-153338.sql.gz
+618143c58d10729b5ce0063bec544a1eaf84d93e9a7ac15b323e6e743e10ed79  /home/saber/backups/e63-20261116-153338/litellm-personal-20261116-153338.sql.gz
+         compressed        uncompressed  ratio uncompressed_name
+            1723821            73859514  97.7% /home/saber/backups/e63-20261116-153338/litellm-personal-20261116-153338.sql
+=== K2 (plain full dump) ===
+-rw------- 1 saber saber 73924342 Nov 17 00:08 /home/saber/backups/e63-b2-20261117-000829/litellm-personal.sql
+b5378ab82426e37af456c3d1e5edaef12bd6b0cc42a23b2f6e4784d31056fa63  /home/saber/backups/e63-b2-20261117-000829/litellm-personal.sql
+=== dump headers (K2 plain) ===
+--
+-- PostgreSQL database dump
+--
+
+\restrict nlXyCrBLUf66ycGpC7PqkjO5Oer1psNwiLKhaRPqlaZqzNus2E7QDChFfVWIfkR
+
+-- Dumped from database version 13.23 (Debian 13.23-1.pgdg13+1)
+-- Dumped by pg_dump version 13.23 (Debian 13.23-1.pgdg13+1)
+=== dump headers (K1 gunzipped) ===
+--
+-- PostgreSQL database dump
+--
+
+\restrict cVo8zJUtCFXS0Jyl7WRpD3C3WsWkBvaF1bTCoXAgzmeSZ8EOpFf2waIrTdTicH7
+
+-- Dumped from database version 13.23 (Debian 13.23-1.pgdg13+1)
+-- Dumped by pg_dump version 13.23 (Debian 13.23-1.pgdg13+1)
+=== statement_timestamp lines (provenance) ===
+K1:
+-- Dumped from database version 13.23 (Debian 13.23-1.pgdg13+1)
+K2:
+-- Dumped from database version 13.23 (Debian 13.23-1.pgdg13+1)
+=== table set diff ===
+TABLES_IDENTICAL
+K1 table count: 91
+K2 table count: 91
+=== COPY data sections ===
+K1: 91
+K2: 91
+=== index counts ===
+K1: 123
+K2: 123
+END H4
+exit=0
