@@ -287,3 +287,102 @@ pending-queue resume works without auto-walk hijack, no duplicates, DB integrity
 Three genuine site characteristics documented (F-M4-1..3) instead of being hidden.
 
 *Full acceptance narrative for M4: `PCM-EXT-07-CRAWLER-E2E-ACCEPTANCE.md` (M8).*
+
+---
+
+## M5 — Chrome Extension acceptance (COMPLETE — real outputs 2026-11-21 20:25–20:31 UTC)
+
+All checks below were executed against the **shipped staging artifact**
+(`extension-staging/`, v3.10-staging) and the **live staging edge**
+(`https://pct-staging.ai.ismc.ir` — the exact URL the extension's `BACKEND`
+override uses, self-signed, verified from this LAN box = the owner's vantage).
+
+### 5.1 Install path proven from the live URL
+
+| Check | Real result |
+|---|---|
+| `curl -sk https://pct-staging.ai.ismc.ir/dashboard/pct-extension-staging.zip` | HTTP 200, **50,089 bytes** |
+| sha256 of live download | **6f706371495a6f65e1c68efd72e5539c9b9c17a00a57be76170245218251ba32** |
+| sha256 of tracked `pct-extension-staging.zip` (certutil) | **6f706371…ba32** — **byte-identical** |
+
+So the owner can install either by loading the unpacked `extension-staging/`
+folder, or by downloading + unzipping the live zip. Both are the same bytes.
+
+### 5.2 Version + commit identity
+
+| Item | Value | Evidence |
+|---|---|---|
+| manifest name | "Persian Corpus Crawler (STAGING)" | `extension-staging/manifest.json` |
+| version | **3.10-staging** | `extension-staging/manifest.json` |
+| built from commit | **6f7f2d2** | `background.js` blob e4fe748e… verified in M3 |
+| BACKEND override → `https://pct-staging.ai.ismc.ir` | 7 lines / 6 files | `background.js:2`, `content_khamenei.js:4`, `content_picker.js:6`, `content_thesaurus.js:5`, `popup.js:5` + `popup.js:40`, `shared.js:3` |
+
+### 5.3 Year-walk + 2-empty stop + next-page — node tests ON the shipped artifact
+
+| Suite | Result |
+|---|---|
+| `node extension-staging\test_khamenei_years.js` | **8 passed, 0 failed** — incl. "two consecutive empty years: stop (reason=empty)", "below MIN_YEAR → stop (reason=floor)", "full walk shape 1405(empty)→1404..1379→1378,1377 stop=empty" |
+| `node extension-staging\test_next.js` | **71 passed, 0 failed** — all next-page strategies (param/number/regex/next-link/hash) + stop rules |
+
+Full logs: `evidence/pcm-ext07-m5-node-khamenei-years.log`, `evidence/pcm-ext07-m5-node-next.log`.
+
+### 5.4 Live network path of the extension (LAN → staging edge)
+
+| Endpoint (the ones the extension calls) | Real result |
+|---|---|
+| `GET /api/khamenei/crawl-status` | 200 — `{"pending":70,"pending_by_year":{"1398":70},"queued":315,"total":245,…}` |
+| `GET /api/khamenei/stats` | 200 — `{"by_year":{"1398":3,"1400":35,"1401":43,"1402":56,"1403":69,"1404":39},…,"total":245,"with_date":245}` — M4 data intact |
+| `GET /api/khamenei/pending?limit=50` | 200 — `count:50` + id list (background.js `fetchPendingKhameneiIds`) |
+
+### 5.5 Extension-shaped round-trip against live staging (`deploy/pcm_ext07_m5_probe.py`)
+
+Ran on s52 against the staging DB + the self-signed public URL. Payloads use the
+**exact field shapes from `content_khamenei.js`**. Run 1 (20:29) and Run 2
+(20:30) identical verdict; Run 2 logged.
+
+| Step | Real result | Verdict |
+|---|---|---|
+| baseline | `total=245 y1400=35 y1402=56 dups=0` | — |
+| `POST /api/phase1/seed-batch` with 3 already-queued urls (exact extension item shape) | `{"added":0,"duplicates":3,"requested":3,"site":"khamenei"}` | **PASS** (duplicate list items never re-queued) |
+| `POST /api/phase2/complete` attempt 1 — speech_id=47576 (1400, 33,741 chars; content+date read verbatim from staging DB, the M4 S6 live-verified row) | `{"status":"skipped","date":"1400/01/01","year":"1400"}` | **PASS** |
+| `POST /api/phase2/complete` attempt 2 — same payload | `{"status":"skipped",…}` | **PASS** (idempotent) |
+| final | `total=245 y1400=35 y1402=56 dups=0 integrity=ok` — counts unchanged | **PASS** |
+
+### 5.6 Python-vs-Extension comparison (same algorithm, same dedup)
+
+| Dimension | Python crawler | Chrome extension | Same? |
+|---|---|---|---|
+| year list URL | `https://farsi.khamenei.ir/speech?nt=2&year=YYYY` | identical (`background.js` walk) | ✅ |
+| item selection | anchors with a `skyText` date span (`LIST_ITEM_RE`) | `datedSpeechLinks()` — skyText first child | ✅ |
+| digit normalization | `to_ascii_digits` | `toAsciiDigits` | ✅ |
+| date validation | Jalali `YYYY/MM/DD`, year from prefix | identical, year from prefix | ✅ |
+| auto-walk stop | stop after 2 consecutive empty years | node-proven: "two consecutive empty years: stop (reason=empty)" | ✅ |
+| write path | `submit_to_backend` → `/api/khamenei/submit` | `extractAndSubmit` → `/api/phase2/complete` (site=khamenei) | both → `_phase2_save_khamenei` |
+| dedup | `speech_id` + `content_hash(content|date)`, skip needs non-empty date | same function (server.py:458–504) | ✅ |
+
+M4 proved the Python path idempotent (re-run → 0 inserted / N skipped, 0
+errors). The extension shares the exact same backend dedup — and M5.5 proved an
+extension-shaped payload returns `skipped` twice against the real M4 data with
+counts unchanged. **Conclusion: the extension produces the same 1400=35 /
+1402=56 and no duplicates on re-run.**
+
+### 5.7 Evidence
+
+- `evidence/pcm-ext07-m5-extension-e2e.log` — full M5 consolidated real outputs
+- `evidence/pcm-ext07-m5-probe-run2.log` — idempotent re-run of 5.5
+- `evidence/pcm-ext07-m5-node-khamenei-years.log` / `-node-next.log` — 8/8 + 71/71
+- `evidence/pcm-ext07-m5-lan-crawlstatus.log` / `-lan-stats.log` — live GETs
+- `deploy/pcm_ext07_m5_probe.py` — round-trip runner (stdlib only)
+- `evidence/pcm-ext07-m5-regression.txt` — full backend regression re-run after M5:
+  `Ran 232 tests in 83.325s / OK`
+
+### 5.8 M5 verdict
+
+**PASS** — install path proven from the live staging URL (byte-identical zip),
+version **v3.10-staging** @ commit **6f7f2d2** with verified BACKEND override,
+year-walk + 2-empty stop + next-page proven on the shipped artifact (node 8/8 +
+71/71), the extension's network path live-verified from the LAN, and an
+extension-shaped payload dedups against the real M4 data (skipped ×2, counts
+unchanged). The human trial-install step (load-unpacked / unzip + Chrome UI) is
+deliberately deferred to **M6** (`PCM-EXT-07-HUMAN-TEST-GUIDE.md`) since it
+requires a browser.

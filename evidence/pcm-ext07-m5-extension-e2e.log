@@ -1,0 +1,123 @@
+========================================================================
+PCM-EXT-07 M5 — Chrome Extension acceptance (real outputs, 2026-11-21 20:25-20:31 UTC)
+Staging: https://pct-staging.ai.ismc.ir (s52 172.30.0.133, port 127.0.0.1:5056)
+Rule: هیچ نتیجه‌ای را بدون اجرای واقعی PASS اعلام نکن
+========================================================================
+
+[M5.1] Installable package — LIVE URL, byte-identity vs tracked artifact
+------------------------------------------------------------------------
+$ curl -sk https://pct-staging.ai.ismc.ir/dashboard/pct-extension-staging.zip
+  -> HTTP 200, 50,089 bytes
+  sha256(live download) = 6f706371495a6f65e1c68efd72e5539c9b9c17a00a57be76170245218251ba32
+$ certutil -hashfile pct-extension-staging.zip SHA256   (tracked, repo root)
+  6f706371495a6f65e1c68efd72e5539c9b9c17a00a57be76170245218251ba32
+  => BYTE-IDENTICAL. Install path proven from the live staging URL.
+
+[M5.2] Version + identity (extension-staging/ = the shipped artifact)
+------------------------------------------------------------------------
+manifest.json: name "Persian Corpus Crawler (STAGING)", version "3.10-staging"
+Built from git commit 6f7f2d2 (background.js blob e4fe748e… verified in M3).
+BACKEND override 'https://pct-staging.ai.ismc.ir' verified in 7 lines / 6 files:
+  background.js:2  content_khamenei.js:4  content_picker.js:6
+  content_thesaurus.js:5  popup.js:5 + popup.js:40 (dashboard link)  shared.js:3
+
+[M5.3] Node tests run ON the staging artifact (node extension-staging\…)
+------------------------------------------------------------------------
+$ node extension-staging\test_khamenei_years.js   (8 tests — year-walk state machine)
+PASS first scan: unfiltered /speech seeds latest year, next = maxYear-1
+PASS first scan without maxYear falls back to 1404
+PASS non-empty year: reset streak, keep walking
+PASS one empty year: streak=1, keep walking
+PASS two consecutive empty years: stop (reason=empty)
+PASS floor: MIN_YEAR itself is still walked
+PASS floor: stop when below MIN_YEAR (reason=floor)
+PASS full walk shape: 1405(empty)→1404..1379→1378,1377 stop=empty
+8 passed, 0 failed
+
+$ node extension-staging\test_next.js   (71 tests — next-page strategies)
+71 passed, 0 failed   (full list in evidence/pcm-ext07-m5-node-next.log)
+  (year-walk list in evidence/pcm-ext07-m5-node-khamenei-years.log)
+
+[M5.4] Live LAN checks of the endpoints the extension actually calls
+------------------------------------------------------------------------
+$ curl -sk https://pct-staging.ai.ismc.ir/api/khamenei/crawl-status
+HTTP 200 (127 B):
+{"complete":false,"last_crawled_at":"2026-11-21 20:05:09","pending":70,"pending_by_year":{"1398":70},"queued":315,"total":245}
+
+$ curl -sk https://pct-staging.ai.ismc.ir/api/khamenei/stats
+HTTP 200:
+{"by_year":{"1398":3,"1400":35,"1401":43,"1402":56,"1403":69,"1404":39},"last_crawled_at":"2026-11-21 20:05:09","pages":315,"pending":70,"total":245,"total_chars":905185,"with_date":245,"without_date":0}
+  => M4 data intact on staging: 1400=35, 1402=56, total=245, with_date=245.
+
+[M5.5] Extension-shaped round-trip against live staging (deploy/pcm_ext07_m5_probe.py)
+------------------------------------------------------------------------
+Runs on s52 (staging DB + 127.0.0.1:5056 via the same self-signed public URL the
+extension uses). Payloads use the EXACT field shapes from content_khamenei.js.
+Run 1 (20:29) and Run 2 (20:30) are byte-identical in verdict — run 2 logged to
+evidence/pcm-ext07-m5-probe-run2.log.
+
+BASELINE total=245 y1400=35 y1402=56 dups=0
+
+GET crawl-status HTTP 200: {"complete":false,"last_crawled_at":"2026-11-21 20:05:09","pending":70,"pending_by_year":{"1398":70},"queued":315,"total":245}
+GET stats HTTP 200: {"by_year":{"1398":3,"1400":35,"1401":43,"1402":56,"1403":69,"1404":39},"last_crawled_at":"2026-11-21 20:05:09","pages":315,"pending":70,"total":245,"total_chars":905185,"with_date":245,"without_date":0}
+GET pending?limit=50 HTTP 200: {"count":50,"ids":["45076","45038",...]}
+
+POST phase1/seed-batch (3 already-queued urls, EXACT extension item shape
+  {url, item_id, page_type:'khamenei_speech', title, source_page})
+HTTP 200: {"added":0,"duplicates":3,"requested":3,"site":"khamenei"}
+  -> added=0 duplicates=3 (expect added=0 duplicates=3) PASS
+
+POST phase2/complete attempt1 (speech_id=47576, date=1400/01/01, 33741 chars,
+  content+date read VERBATIM from staging DB — the M4 S6 live-verified row)
+HTTP 200: {"date":"1400/01/01","status":"skipped","year":"1400"}
+  -> status=skipped (expect skipped) PASS
+POST phase2/complete attempt2 (same payload)
+HTTP 200: {"date":"1400/01/01","status":"skipped","year":"1400"}
+  -> status=skipped (expect skipped) PASS
+
+FINAL total=245 y1400=35 y1402=56 dups=0 integrity=ok
+COUNTS-UNCHANGED: PASS
+
+[M5.6] Python-vs-Extension comparison (same algorithm, same dedup)
+------------------------------------------------------------------------
+Both crawlers reach the SAME backend write path, so M4's idempotency evidence
+covers the extension's submit path:
+  - Python:  scrape_khamenei.py submit_to_backend -> /api/khamenei/submit
+  - Extension: content_khamenei.js extractAndSubmit -> /api/phase2/complete (site=khamenei)
+  Both land in _phase2_save_khamenei (server.py:458), which dedups on
+  speech_id + content_hash(content|date) and requires a non-empty date to
+  'skip' (server.py:485) — the exact predicate M4 proved idempotent (re-run ->
+  0 inserted / N skipped, 0 errors).
+Identical algorithm constants on both sides:
+  - year list URL:  https://farsi.khamenei.ir/speech?nt=2&year=YYYY  (one year = one page)
+  - item selection: only anchors whose first element is a skyText date span
+    (datedSpeechLinks / LIST_ITEM_RE) — sidebar widgets without a date excluded
+  - digit normalization: Persian/Arabic-Indic -> ASCII (toAsciiDigits / to_ascii_digits)
+  - date validation: Jalali YYYY/MM/DD; year derived from the date prefix
+  - auto walk: descending years, STOP after 2 consecutive empty years (proven by
+    node tests M5.3: "two consecutive empty years: stop (reason=empty)")
+  - MIN_YEAR floor handled (node tests: "below MIN_YEAR -> floor")
+Live proof that an extension-shaped payload dedups against the M4 Python data:
+  phase2/complete x2 -> skipped/skipped, counts unchanged (M5.5).
+Conclusion: the extension would produce the SAME 1400=35 / 1402=56 and create
+NO duplicates on re-run, because it shares the proven backend dedup.
+
+[M5.7] M5 evidence files
+------------------------------------------------------------------------
+  evidence/pcm-ext07-m5-extension-e2e.log     (this file)
+  evidence/pcm-ext07-m5-probe-run2.log        (idempotent re-run of M5.5)
+  evidence/pcm-ext07-m5-node-khamenei-years.log (8/8 year-walk on staging artifact)
+  evidence/pcm-ext07-m5-node-next.log         (71/71 next-page on staging artifact)
+  evidence/pcm-ext07-m5-lan-crawlstatus.log   (live GET crawl-status)
+  evidence/pcm-ext07-m5-lan-stats.log         (live GET stats)
+  deploy/pcm_ext07_m5_probe.py                (round-trip runner, stdlib only)
+
+========================================================================
+M5 VERDICT: PASS
+- Install path proven (live URL zip byte-identical to tracked, sha 6f706371…)
+- Version v3.10-staging @ commit 6f7f2d2, BACKEND override verified in 6 files
+- Year-walk + 2-empty stop + next-page proven on the shipped artifact (node 8/8 + 71/71)
+- Extension network path live-verified from LAN (crawl-status/stats/pending 200)
+- Extension-shaped payloads dedup against real M4 data (skipped x2, counts unchanged)
+- Python and extension share the same backend dedup -> comparable, duplicate-free results
+========================================================================

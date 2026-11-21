@@ -1,0 +1,37 @@
+........................................................................C:\Users\s.tabatabaei\AppData\Local\Programs\Python\Python313\Lib\unittest\case.py:606: ResourceWarning: unclosed file <_io.BufferedReader name='c:\\Users\\s.tabatabaei\\Documents\\saberprojects\\persian-corpus-toolkit\\dashboard/studio.html'>
+  if method() is not None:
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..............................................c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:86: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_qp46hes4\\out\\manifest.json' mode='r' encoding='utf-8'>
+  m = json.load(open(os.path.join(self.out, manifests[0]), encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+............c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:227: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_wj1wrrid\\out\\f-8b7e551c\\manifest.json' mode='r' encoding='utf-8'>
+  m = json.load(open(os.path.join(d, "manifest.json"), encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:233: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_wj1wrrid\\out\\f-8b7e551c\\blocks.jsonl'>
+  real = hashlib.sha256(open(info["path"], "rb").read()).hexdigest()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:233: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_wj1wrrid\\out\\f-8b7e551c\\document.json'>
+  real = hashlib.sha256(open(info["path"], "rb").read()).hexdigest()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:233: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_wj1wrrid\\out\\f-8b7e551c\\quality-report.json'>
+  real = hashlib.sha256(open(info["path"], "rb").read()).hexdigest()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:233: ResourceWarning: unclosed file <_io.BufferedReader name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_wj1wrrid\\out\\f-8b7e551c\\report.md'>
+  real = hashlib.sha256(open(info["path"], "rb").read()).hexdigest()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:248: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_ks3n7yku\\out\\f-8b7e551c\\blocks.jsonl' mode='r' encoding='utf-8'>
+  lines = open(os.path.join(d, "blocks.jsonl"), encoding="utf-8").read().splitlines()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:270: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_4_h1scxq\\out\\f-8b7e551c\\manifest.json' mode='r' encoding='utf-8'>
+  m = json.load(open(os.path.join(self.out, d1.file.file_id, "manifest.json"),
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\backend\test_word_factory.py:284: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\SD4AD~1.TAB\\AppData\\Local\\Temp\\wf_test_ldg45hsr\\out\\f-3ba794d1\\quality-report.json' mode='r' encoding='utf-8'>
+  q = json.load(open(os.path.join(d, "quality-report.json"), encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..............c:\Users\s.tabatabaei\Documents\saberprojects\persian-corpus-toolkit\.venv\Lib\site-packages\docx\styles\styles.py:125: UserWarning: style lookup by style_id is deprecated. Use style name as key instead.
+  return self._get_style_id_from_style(self[style_name], style_type)
+.....................................................................................
+----------------------------------------------------------------------
+Ran 232 tests in 83.325s
+
+OK

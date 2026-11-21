@@ -1,0 +1,10 @@
+PASS first scan: unfiltered /speech seeds latest year, next = maxYear-1
+PASS first scan without maxYear falls back to 1404
+PASS non-empty year: reset streak, keep walking
+PASS one empty year: streak=1, keep walking
+PASS two consecutive empty years: stop (reason=empty)
+PASS floor: MIN_YEAR itself is still walked
+PASS floor: stop when below MIN_YEAR (reason=floor)
+PASS full walk shape: 1405(empty)→1404..1379→1378,1377 stop=empty
+
+8 passed, 0 failed

@@ -1,0 +1,73 @@
+PASS spec: empty -> none
+PASS spec: legacy param name
+PASS spec: next-link plain
+PASS spec: next-link:selector
+PASS spec: hash
+PASS spec: url-number
+PASS spec: regex:pattern
+PASS param: ?item_index=5 -> 6
+PASS param: step 2 -> 7
+PASS param: missing param -> throw
+PASS param: non-numeric -> throw
+PASS number: p_ghazal-495.html -> 496
+PASS number: p_ghazal-001.html -> 002 (zero-pad kept)
+PASS number: p_ghazal-1.html -> 2 (no zero added)
+PASS number: ganjoor sh1 -> sh2
+PASS number: ganjoor sh495 -> sh496
+PASS number: sh099 -> sh100 (width kept)
+PASS number: sh999 -> sh1000 (width grows)
+PASS number: last number wins (/book/2/page-15.html -> 16)
+PASS number: step 2 (sh3 -> sh5)
+PASS number: query string preserved
+PASS number: no digits in path -> throw
+PASS regex: p_ghazal-(\d+)\.html (495 -> 496)
+PASS regex: sh(\d+) on sh1 -> sh2
+PASS regex: zero-padded capture 001 -> 002
+PASS regex: no match -> throw
+PASS regex: two groups -> throw
+PASS regex: non-numeric group -> throw
+PASS regex: invalid pattern -> throw
+PASS regex: step 2
+PASS bump: 001 -> 002
+PASS bump: 1 -> 2
+PASS bump: 099 -> 100
+PASS bump: underflow -> throw
+PASS next-link: advanceUrl refuses (needs DOM)
+PASS hash: advanceUrl refuses (needs DOM)
+PASS none: advanceUrl refuses
+PASS stop: empty stop_number -> null
+PASS stop: numeric stop_number parsed
+PASS stop: param mode page number from query
+PASS stop: number mode page number from path
+PASS stop: regex mode page number from capture
+PASS stop: no limit -> never done
+PASS stop: below limit -> not done
+PASS stop: at limit -> done (last page read)
+PASS stop: over limit -> done (overshoot blocked)
+PASS stop: param mode at limit (tasnim item_index)
+PASS stop: step 2 can overshoot -> still stops
+PASS stop: limit not applicable (no number) -> not done
+PASS hashNumber: S*10000+A (2:8 -> 20008)
+PASS hashNumber: missing part -> null
+PASS hashNumber: extra params ignored
+PASS hashNumber: keys case-insensitive, non-numeric rejected
+PASS stop: hash mode page number from URL hash
+PASS stop: hash at limit -> done
+PASS stop: hash below limit -> not done
+PASS stop: hash over limit -> done (overshoot blocked)
+PASS content: auto mode joins ALL values, sorted by key
+PASS content: auto mode ignores stop_field when empty
+PASS content: selected field used when present in values
+PASS content: selected field missing from values -> fallback to auto
+PASS content: null/undefined values become empty string
+PASS content: different field selection -> different signature
+PASS hash: deterministic
+PASS hash: distinct for different strings
+PASS hash: returns string form
+PASS streak: equal sig increments
+PASS streak: different sig resets to 1
+PASS streak: stop=true exactly at 10 (not at 9)
+PASS streak: full 10-identical-page simulation
+PASS streak: change after 9 identical -> restart, no stop
+
+71 passed, 0 failed
