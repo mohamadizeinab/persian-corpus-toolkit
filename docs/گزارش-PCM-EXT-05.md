@@ -1,7 +1,7 @@
 # گزارش PCM-EXT-05 — اکستنشن جمع‌آوری کتب غایمیه (تریس، دانلود، کالکشن)
 
 تاریخ: ۱۴۰۵/09/30 (2026-11-21) · شاخه: `pcm-20.9-knowledge-studio-factory`
-Commit کد: (در commit نهایی این مأموریت) · نسخه اکستنشن جدید: **Ghaemiyeh Book Collector 1.0**
+Commit کد: `2ca1e3f204354b9cdca828c0e23f265635ed5f8c` · نسخه اکستنشن جدید: **Ghaemiyeh Book Collector 1.0**
 
 ## ۱. وضعیت قبل و درخواست
 
@@ -171,7 +171,7 @@ cd extension-ghaemiyeh && node test_ghaemiyeh.js
 - تأیید زنده: فقط با مرورگر کاربر (edge سایت سرورها را می‌بندد — بند ۱).
 
 ## ۸. SHA + لینک
-- commit: (در commit نهایی این مأموریت؛ hash در اینجا ثبت می‌شود)
+- commit: `2ca1e3f204354b9cdca828c0e23f265635ed5f8c` (branch `pcm-20.9-knowledge-studio-factory`)
 - ریپازیتوری: GitLab `saberprojects/persian-corpus-toolkit`
 - شاخه: `pcm-20.9-knowledge-studio-factory`
 
