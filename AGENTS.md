@@ -126,6 +126,7 @@ cd backend && python -m unittest test_api test_projects test_dashboard \
 | **PCM-20.10** حد عددی توقف کراول + ممیزی کامل‌بودن: `stop_number` در projects (مهاجرت افزایشی + UI «حد عددی توقف» + چک قبل از هر صفحه در crawl loop — توقف تمیز با `paused` + release قفل) + اسکریپت read-only ممیزی gap/کیفیت/تکرار روی API زنده `deploy/pcm2010_crawl_gap_audit.py` (گپ‌ها به‌صورت بازه، صفحات ناقص/کوچک، payloadهای تکراری، وضعیت قفل run، اثبات کامل با `--expect-max N`) | ✅ (18 تست جدید SN-01..06 + 12 stop-rule؛ رگرسیون 206 سبز؛ **deploy شد 2026-11-20** روی s52 جدید 172.30.0.133) |
 | **PCM-EXT-03** قفل cross-browser اجرای تکی: lease روی backend (claim/heartbeat/release + TTL 180s) + panel «در حال خواندن (دستگاه دیگر)» + 404-fallback v3.7 | ✅ (14 تست RL + اکستنشن v3.8؛ **deploy شد 2026-11-20**؛ سند: گزارش-PCM-EXT-03.md) |
 | **PCM-EXT-04** توقف بر مبنای تکرار محتوا: ۱۰ صفحهٔ یکسان → stop + فیلد مبنای محتوا `stop_field` (خودکار=کل محتوا یا یک فیلد) + select در پنل + اکستنشن v3.9 | ✅ (14 تست extension + 8 تست SF + رگرسیون 228 سبز؛ **deploy شد 2026-11-20**؛ سند: docs/گزارش-PCM-EXT-04.md) |
+| **PCM-EXT-05** Ghaemiyeh Book Collector: اکستنشن MV3 جدا `extension-ghaemiyeh/` (trace دسته‌بندی + دانلود گروهی DOCX + آپلود به کالکشن؛ auth از طریق کوکی `pct_session`) + 8 تست G (pipeline خالص با deps تزریقی) | ✅ (8 تست G + رگرسیون 226 سبز؛ بدون deploy — نصب load-unpacked؛ سند: docs/گزارش-PCM-EXT-05.md) |
 
 گزارش‌ها: `گزارش-PCM-0X.md` (۱۱ بخش: وضعیت قبل، طراحی، مهاجرت، فایل/API، تست،
 نتیجه production، SHA+لینک، git status، بکاپ/rollback، موارد باقی‌مانده، روش تست دستی).
