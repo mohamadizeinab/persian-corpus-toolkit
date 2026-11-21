@@ -28,7 +28,15 @@ services:
       # PCM-25 DC#5: per-request embedding timeout (seconds). The previous
       # hardcoded 120s killed the ~2.6k-batch al-Ghadir export mid-flight
       # (job j-7a192943, TimeoutError at retry 3). Code default is 600.
+      # 1024-doc batches need ~840s at the shared Ollama endpoint, so the
+      # live .env raises this to 3600.
       PCT_EMBEDDING_TIMEOUT: ${PCT_EMBEDDING_TIMEOUT:-}
+      # PCM-25 DC#5: per-request batch size (docs per /v1/embeddings call).
+      # Benchmarked on s52 with real Persian text (.recon/dc5bench3.py):
+      # 32 -> 9.1 s/text (ETA 215h), 1024 -> 0.82 s/text (ETA ~19h); the
+      # Ollama/llama.cpp stack chunks internally, so large batches win.
+      # Code default is 32.
+      PCT_EMBEDDING_BATCH: ${PCT_EMBEDDING_BATCH:-}
     volumes:
       - ./backend/thesaurus.db:/data/thesaurus.db
       - ./dashboard:/dashboard:ro
