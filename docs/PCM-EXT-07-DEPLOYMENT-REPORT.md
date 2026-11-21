@@ -464,3 +464,134 @@ pending-year status line) + real screenshot. Evidence:
 `evidence/pcm-ext07-m6-khamenei-tab.png`. The click-through acceptance (start
 crawls, re-run dedup, owner's own screenshots) is scripted in the
 HUMAN-TEST-GUIDE with per-step PASS/FAIL.
+
+---
+
+## M7 — Production gate (GATE DEFINED — **awaiting human staging approval**; no prod deploy yet)
+
+### 7.1 Gate rule (mission M7)
+
+**No production deploy without explicit human approval of staging.** The
+approval basis is this report's M3–M6 evidence (staging deployed + reachable,
+crawler 36/0, extension round-trip green, UI machine-verified). Once the owner
+approves, the deploy below runs — and **the production khamenei corpus stays
+unchanged (151 rows) by design**: the deploy moves code, not data.
+
+### 7.2 What the prod deploy actually changes (diff vs. what is on s52 today)
+
+M2 verified the prod code dir (`/home/saber/saberprojects/persian-corpus-toolkit`,
+a copy — not a git repo): `server.py` **already equals** git blob `008330dc…`
+(commit `6f7f2d2`), but `corpus/scrape_khamenei.py` and `extension/background.js`
+on s52 are **older** (pre EXT-06/08). So the prod deploy = sync the
+EXT-06/EXT-08 files to the prod dir + rebuild the container from the **same
+commit** (`6f7f2d2`) the staging build used:
+
+| Item | Change |
+|---|---|
+| `corpus/scrape_khamenei.py` | old → `d12b76d6…` (year-based crawl, PCM-EXT-06) |
+| `corpus/test_scrape_khamenei.py`, `extension/test_*.js` | new test files (host-side, no container impact) |
+| `extension/background.js` | old → `e4fe748e…` (year walk + hash next-page) |
+| `extension/content_khamenei.js`, `content_picker.js`, `popup.*`, `manifest.json` (v3.10) | sync |
+| `backend/` (server.py, projects.py, auth.py, …) | **no diff** (already at 6f7f2d2) — rebuild is for image/commit hygiene |
+| `dashboard/index.html` | no diff in EXT-06/08 (dashboard unchanged) |
+| DC#5 workers, ES, Ollama, ports 5055/9200 | **untouched** |
+
+### 7.3 Deploy plan (runs only after approval; same shape as M3/proven PCM pattern)
+
+1. **Backup (AGENTS hard rule 1):**
+   `sqlite3 /home/saber/saberprojects/persian-corpus-toolkit/backend/thesaurus.db ".backup /home/saber/backups/thesaurus-<TS>.db"`
+   + `PRAGMA integrity_check` → record both.
+2. **Prod code snapshot:** `tar czf /home/saber/backups/pct-deploy-<TS>.tar.gz`
+   of the prod dir (without `thesaurus.db`).
+3. **Pin the current image** before rebuild:
+   `docker tag persian-corpus-toolkit-backend:latest pct-prod-pre-ext07-<TS>`
+   (current container image ID `2f3ef57fdd11` — the one-click rollback).
+4. **Code sync:** copy the EXT-06/08 files (blob-verified, same `git hash-object`
+   values as M3 §3.2) into the prod dir; `.env` untouched (chmod 600, password
+   stays server-side only).
+5. **Rebuild + up (AGENTS hard rule 3):** `docker compose build backend &&
+   docker compose up -d backend` — **`down -v` forbidden**.
+6. **Image identity:** record the new prod image ID. The staging build of the
+   same commit `6f7f2d2` produced `sha256:c5bbc8783ece3c228e6739fb6c6ee1b3e153036454e6a7c06cee659351f1ea37`;
+   if the prod rebuild is layer-identical the digest matches — if not, record
+   the prod digest and re-verify the 4 blob hashes (server.py /
+   scrape_khamenei.py / background.js / docker-compose.yml) in the new image.
+7. **Health-wait + smoke** (same set as M3 §3.3, on prod): `/api/stats` 200 →
+   `/api/db/info` 200 with **khamenei_speeches = 151** → `/api/projects` 200
+   (extension write API stays open, AGENTS §2.6) → `/api/knowledge/collections`
+   401 (dashboard namespace behind auth) → `/dashboard/` 200 →
+   `/api/khamenei/crawl-status` 200.
+8. **Regression on s52** (no live-DB writes): the proven
+   `deploy/pcm12_3_s52_test.sh` pattern (backend copied to /tmp + .venv python +
+   guard "not connected to the live DB") — expect **232 OK** (the same
+   baseline re-verified in M5).
+9. **Corpus-unchanged proof:** `khamenei_speeches` count + by_year
+   (1401:43, 1403:69, 1404:39) + `PRAGMA integrity_check` = identical to step 1.
+   The crawler is **not** run against prod as part of the deploy.
+10. **Report** the TS, backup names, image digest, smoke + regression outputs
+    here (or in a follow-up commit) — then the owner may start crawling 1400/
+    1402 on prod (separate decision: `python3 corpus/scrape_khamenei.py --year
+    1400 --backend http://127.0.0.1:5055` or the extension, per the
+    HUMAN-TEST-GUIDE operations).
+
+### 7.4 Rollback (documented, one command each direction)
+
+| Failure mode | Rollback |
+|---|---|
+| Container misbehaves after step 5 | `docker compose build backend` is additive; to revert: `docker tag pct-prod-pre-ext07-<TS> persian-corpus-toolkit-backend:latest && docker compose up -d backend` (recreate with the pre-deploy image) |
+| Code files wrong | extract `pct-deploy-<TS>.tar.gz` back over the prod dir, repeat rollback row 1 |
+| DB touched (should never happen — deploy is read-only on the DB) | stop container → `sqlite3 thesaurus.db ".recover"`/restore `thesaurus-<TS>.db` → start |
+| Smoke/regression red | **do not proceed**; stay on the pre-tagged image; fix, re-run plan from step 5 |
+
+### 7.5 M7 state
+
+**GATE OPEN, awaiting human staging approval.** Everything that can be
+machine-verified before touching prod is done (M3–M6). No prod container has
+been restarted, no prod file changed, prod `khamenei_speeches` = 151
+(verified M3 §3.5 + unchanged since).
+
+---
+
+## M8 — Final reports + mission DoD (COMPLETE)
+
+### 8.1 The four reports (all with real evidence)
+
+| Report | Stage | Status |
+|---|---|---|
+| `docs/PCM-EXT-07-DEPLOYMENT-REPORT.md` | M1–M7 | this file — M1 git audit, M2 environment, M3 staging deploy (identity + smoke + LAN + prod regression), M4 36/0 crawler E2E, M5 extension acceptance, M6 human UI (machine-verified) + findings, M7 prod gate + rollback |
+| `docs/PCM-EXT-07-CRAWLER-E2E-ACCEPTANCE.md` | M4 | 36 PASS / 0 FAIL, baseline 1400=35/1402=56, idempotent, live re-verify, empty-year, resume — all quoted from `evidence/pcm-ext07-m4-crawler-e2e.log` |
+| `docs/PCM-EXT-07-EXTENSION-ACCEPTANCE.md` | M5 | live zip byte-identity, v3.10-staging @ 6f7f2d2, node 8/8 + 71/71 on the shipped artifact, live network path, extension-shaped round-trip (skipped ×2, counts unchanged), Python-vs-extension comparability |
+| `docs/PCM-EXT-07-HUMAN-TEST-GUIDE.md` | M6 | install, menu path, operations, expected results with real numbers, per-step PASS/FAIL, real screenshot, **"WHAT SHOULD THE PROJECT OWNER TEST NOW?"** |
+
+### 8.2 Mission DoD (definition of done)
+
+| DoD item | Status | Evidence |
+|---|---|---|
+| Both crawlers work with the new algorithm | ✅ | M4 (Python 36/0) + M5 (extension year walk, node 8/8 + live round-trip) |
+| Comparable results | ✅ | M5 §6 comparison table — same 1400=35/1402=56, same backend dedup |
+| Re-run → no duplicates | ✅ | M4 S3/S4 (0 inserted, all skipped) + M5 §5 (skipped ×2, counts unchanged) |
+| Staging deployed + reachable | ✅ | M3 §3.3/3.4 (smoke + LAN curls, 200s) + M6 §6.2 (real browser through the public URL) |
+| Owner sees results in the product | ✅ (machine side) | M6 §6.2 — logged-in dashboard «🎤 بیانات» tab with real data + screenshot; click-through scripted in HUMAN-TEST-GUIDE |
+| Regression green | ✅ | `Ran 232 tests in 83.325s / OK` (`evidence/pcm-ext07-m5-regression.txt`) + s52 pattern for prod |
+| Version + commit known | ✅ | extension v3.10-staging @ 6f7f2d2; staging image `sha256:c5bbc8783e…ea37`; code `git archive` of 6f7f2d2 |
+| Rollback documented | ✅ | M3 §3.6 (staging rollback) + M7 §7.4 (prod rollback: pre-tagged image + code tar + DB backup) |
+
+### 8.3 Findings register (all reported, none hidden)
+
+| ID | Stage | Finding | Disposition |
+|---|---|---|---|
+| F-M6-1 | M6 | `/api/khamenei/*` read endpoints open without `pct_session` (200, not 401) — by design (AGENTS §2.6) | accept; optional product decision |
+| F-M6-2 | M6 | khamenei popup tools hidden in a collapsed "ابزارهای قبلی" section | product backlog: top-level «🎤 بیانات» entry |
+| M4-INFO | M4 | 48 rows <100 chars = source-true PDF-only pages (no `div.Content`) | documented, not a crawl bug |
+| M7-GATE | M7 | prod deploy awaits explicit human staging approval | gate open — no prod change until approval |
+
+### 8.4 Commits (this mission)
+
+| Commit | Stage |
+|---|---|
+| `10106e9` / `8708163` / `6f7f2d2` | M1 — EXT-06, EXT-08, hygiene |
+| `b922221` | M3 — staging deploy artifacts + report |
+| `d714dad` | M4 — crawler E2E (36/0) + runner + evidence |
+| `c14e348` | M5 — extension acceptance + round-trip probe + evidence |
+| `569094b` | M6 — human UI (machine-verified) + HUMAN-TEST-GUIDE + screenshot |
+| (this commit) | M7 gate + M8 final reports |
