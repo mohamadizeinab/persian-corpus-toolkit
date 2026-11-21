@@ -2570,5 +2570,54 @@ class TestPCM22_EM06_ESSuccessPath(_EmbedPrep):
         self.assertIn("embeddings", actions)
 
 
+class TestPCM22_EM07_EmbedTimeoutConfig(Base):
+    """PCM-22 EM-07 — the per-request embedding timeout is configurable
+    (PCT_EMBEDDING_TIMEOUT, default 600s).
+
+    DC#5 root cause: the hardcoded 120s killed the ~2.6k-batch export on
+    the shared Ollama endpoint (TimeoutError at retry 3, no checkpoint).
+    The seam must honour the operator-set budget."""
+
+    def _timeout_seen(self):
+        import unittest.mock
+
+        class _Resp:
+            def read(self):
+                return b'{"data": []}'
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        seen = {}
+
+        def wrap(req, timeout=None):
+            seen["timeout"] = timeout
+            return _Resp()
+
+        with unittest.mock.patch("urllib.request.urlopen", side_effect=wrap):
+            knowledge_api._embedding_request(
+                "http://emb.fake", "/v1/embeddings",
+                {"model": "m", "input": ["x"]})
+        return seen["timeout"]
+
+    def test_default_is_600(self):
+        os.environ.pop("PCT_EMBEDDING_TIMEOUT", None)
+        self.addCleanup(lambda: os.environ.pop("PCT_EMBEDDING_TIMEOUT", None))
+        self.assertEqual(self._timeout_seen(), 600.0)
+
+    def test_env_override_respected(self):
+        os.environ["PCT_EMBEDDING_TIMEOUT"] = "777"
+        self.addCleanup(lambda: os.environ.pop("PCT_EMBEDDING_TIMEOUT", None))
+        self.assertEqual(self._timeout_seen(), 777.0)
+
+    def test_invalid_value_falls_back_to_default(self):
+        os.environ["PCT_EMBEDDING_TIMEOUT"] = "not-a-number"
+        self.addCleanup(lambda: os.environ.pop("PCT_EMBEDDING_TIMEOUT", None))
+        self.assertEqual(self._timeout_seen(), 600.0)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

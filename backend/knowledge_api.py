@@ -1435,6 +1435,23 @@ def _embedding_dim():
         return None
 
 
+def _embedding_timeout():
+    """PCM-22 — per-request timeout (seconds) for embedding calls.
+
+    Configurable via PCT_EMBEDDING_TIMEOUT (default 600). Large corpora
+    take minutes per batch on a shared Ollama endpoint; the previous
+    hardcoded 120s killed the whole ~2.6k-batch export mid-flight
+    (DC#5: TimeoutError at retry 3, no checkpoint to resume from).
+    """
+    v = os.environ.get("PCT_EMBEDDING_TIMEOUT", "").strip()
+    if not v:
+        return 600.0
+    try:
+        return max(1.0, float(v))
+    except ValueError:
+        return 600.0
+
+
 def _embedding_request(url, path, body=None):
     """PCM-22 — the single embedding HTTP seam (stdlib urllib).
 
@@ -1451,7 +1468,7 @@ def _embedding_request(url, path, body=None):
         req_url, data=data, method="POST",
         headers={"Content-Type": "application/json",
                  "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
+    with urllib.request.urlopen(req, timeout=_embedding_timeout()) as resp:
         raw = resp.read()
     if not raw:
         return {}

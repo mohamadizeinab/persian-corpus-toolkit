@@ -25,6 +25,10 @@ services:
       PCT_EMBEDDING_URL: ${PCT_EMBEDDING_URL:-}
       PCT_EMBEDDING_MODEL: ${PCT_EMBEDDING_MODEL:-}
       PCT_EMBEDDING_DIM: ${PCT_EMBEDDING_DIM:-}
+      # PCM-25 DC#5: per-request embedding timeout (seconds). The previous
+      # hardcoded 120s killed the ~2.6k-batch al-Ghadir export mid-flight
+      # (job j-7a192943, TimeoutError at retry 3). Code default is 600.
+      PCT_EMBEDDING_TIMEOUT: ${PCT_EMBEDDING_TIMEOUT:-}
     volumes:
       - ./backend/thesaurus.db:/data/thesaurus.db
       - ./dashboard:/dashboard:ro
