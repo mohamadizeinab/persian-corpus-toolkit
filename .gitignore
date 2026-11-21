@@ -49,6 +49,8 @@ corpus/_probe_*
 
 # Scratch از سشن‌های PCM-21+ (پrobe/diag/patch files — هرگز track نشود؛ ممکن است توکن داشته باشد)
 .recon/
+# PCM-EXT-07 M3: staging build variant of the extension (derived from extension/, BACKEND rewritten)
+extension-staging/
 
 # E6.3+E7.0 execution scratch (scripts/logs/images از سشن — هرگز track نشود)
 _e63_*.sh

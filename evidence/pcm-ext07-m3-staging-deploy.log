@@ -1,0 +1,120 @@
+=== 0. preconditions ===
+removing partial staging dir from a previous run: /home/saber/saberprojects/pct-staging
+=== 1. staging dir + code from git archive 6f7f2d2 ===
+ok  backend/server.py  (008330dc07e1d3a20933326d24da11c24427e675)
+ok  docker-compose.yml  (bccd873c51b1df3928b43afed701d241cd8289a7)
+ok  extension/background.js  (e4fe748e71cd7784822d48ce4da4a7c2447e2229)
+ok  corpus/scrape_khamenei.py  (d12b76d6cdf2fc39a9e2174cac7c3561cd622d8f)
+=== 2. DB: prod online .backup -> staging (prod read-only) ===
+staging_khamenei|151
+staging_projects|11
+staging DB backup: /home/saber/backups/thesaurus-staging-seed-20261121-185842.db
+=== 3. .env (password from prod; ES/embedding EMPTY = guarded blocked) ===
+.env written (secret not printed)
+=== 4. compose: publish 127.0.0.1:5056 ===
+=== 5. build + up (project pct-staging ONLY) ===
+#1 [internal] load local bake definitions
+#1 reading from stdin 547B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 390B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context:
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/python:3.12-slim
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 500.82kB done
+#6 DONE 0.0s
+
+#7 [3/6] COPY backend/requirements.txt .
+#7 CACHED
+
+#8 [2/6] WORKDIR /app
+#8 CACHED
+
+#9 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+#9 CACHED
+
+#10 [5/6] COPY backend/server.py backend/sciences.py backend/sites.py backend/projects.py backend/auth.py backend/dashboard_api.py backend/knowledge_api.py ./
+#10 DONE 2.0s
+
+#11 [6/6] COPY backend/factory/ ./factory/
+#11 DONE 0.6s
+
+#12 exporting to image
+#12 exporting layers 0.0s done
+#12 writing image sha256:c5bbc8783ece3c228e6739fb6c6ee1b3e153036454e6a7c06cee659351f1ea37 done
+#12 naming to docker.io/library/pct-staging-backend done
+#12 DONE 0.0s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ pct-staging-backend  Built
+ Network pct-staging_default  Creating
+ Network pct-staging_default  Created
+ Container pct-staging-backend-1  Creating
+ Container pct-staging-backend-1  Created
+ Container pct-staging-backend-1  Starting
+ Container pct-staging-backend-1  Started
+image: sha256:c5bbc8783ece3c228e6739fb6c6ee1b3e153036454e6a7c06cee659351f1ea37 (sha256:c5bbc8783ece3c228e6739fb6c6ee1b3e153036454e6a7c06cee659351f1ea37)
+code commit: 6f7f2d2 (blobs verified above)
+=== 6. health wait ===
+healthy after ~2s
+=== 7. smoke (staging 5056) ===
+-- /api/db/info (expect 200 + khamenei_speeches 151) --
+db/info ok: khamenei_speeches=151, tables=3
+-- /api/projects (extension write API must be OPEN, 200) --
+HTTP:200
+-- /api/knowledge/collections NO cookie (expect 401) --
+HTTP:401
+-- /dashboard/ (expect 200) --
+HTTP:200
+-- /api/khamenei/crawl-status (expect 200 + pending_by_year) --
+pending_by_year present
+-- extension zip served by staging dashboard --
+HTTP:200
+=== 8. vhost pct-staging.ai.ismc.ir (self-signed; PCM-23 pattern) ===
+.......+..+...+...+..................+....+...+...+..+....+.....+......+...+....+...+.....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...+...+..........+.....+.......+.....+.+............+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.+...+..........+.................+.......+...........+.+.........+.....+.......+...............+..+..........+.....+...+...+....+......+.....+....+..+....+..+.......+..+..........+.........+..............+.+............+.....+...+.+.....+...+.......+...+..+.............+..+...+................+..+..........+..+.+..+....+...+............+.....+.........+....+...+........+.+...+......+..+...+...........................+...+.+...+........+...+........................+......+....+...+............+..+......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.......+...+......+.........+..+...+.......+...+.....+.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*..+.....+...+.......+..+.+...+.....+.+......+..+......+.......+........+....+......+..+..........+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...........+.+........+.+......+.....+...+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----
+d25e243fbc0cdb0659be7112e1a81a8eafd4ccfeb60dd7a8a85419cf84c9902d  /www/server/panel/vhost/nginx/pct-staging.ai.ismc.ir.conf
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/sources.ai.ismc.ir.conf:22
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/sources.ai.ismc.ir.conf:23
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:18
+nginx: [warn] protocol options redefined for 0.0.0.0:443 in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:18
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:19
+nginx: [warn] protocol options redefined for [::]:443 in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:19
+nginx: the configuration file /www/server/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /www/server/nginx/conf/nginx.conf test is successful
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/sources.ai.ismc.ir.conf:22
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/sources.ai.ismc.ir.conf:23
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:18
+nginx: [warn] protocol options redefined for 0.0.0.0:443 in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:18
+nginx: [warn] the "listen ... http2" directive is deprecated, use the "http2" directive instead in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:19
+nginx: [warn] protocol options redefined for [::]:443 in /www/server/panel/vhost/nginx/tasnim.ai.ismc.ir.conf:19
+NGINX_RELOADED
+=== 9. external verification (via the vhost, self-signed -k) ===
+https://pct-staging.ai.ismc.ir/api/db/info = 200
+vhost verified from s52 loopback
+=== 10. PROD regression (must be untouched) ===
+prod 5055 /api/stats = 200
+persian-corpus-toolkit-backend-1	Up 15 hours
+prod intact: container up, khamenei=151, integrity ok
+
+=== STAGING DEPLOY OK (TS=20261121-185842) ===
+staging URL (LAN): https://pct-staging.ai.ismc.ir   (self-signed cert; owner should accept in browser)
+staging backend: 127.0.0.1:5056 (s52) | image sha256:c5bbc8783ece3c228e6739fb6c6ee1b3e153036454e6a7c06cee659351f1ea37 | commit 6f7f2d2
+staging DB: /home/saber/saberprojects/pct-staging/backend/thesaurus.db (seed backup /home/saber/backups/thesaurus-staging-seed-20261121-185842.db)
+extension: load-unpacked from /home/saber/saberprojects/pct-staging/dashboard/pct-extension-staging.zip (v3.10-staging)
+LE upgrade (optional, later): certbot --nginx -d pct-staging.ai.ismc.ir (needs public port 80 path open)
+prod: corpus.ai.ismc.ir (5055) untouched; vhost backup sha at /home/saber/backups/staging-vhost-20261121-185842.sha256
