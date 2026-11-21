@@ -1,0 +1,38 @@
+Stability probe: 5 years x 3 tries each
+
+  Year 1370: fetch failed (HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)); retry in 2s
+  Year 1370: fetch failed (HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)); retry in 4s
+  Year 1370: fetch failed after 3 tries: HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)
+  1370 try1: 0 IDs  (96.5s)
+  Year 1370: fetch failed (HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)); retry in 2s
+  Year 1370: fetch failed (HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)); retry in 4s
+  Year 1370: fetch failed after 3 tries: HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)
+  1370 try2: 0 IDs  (96.7s)
+  Year 1370: fetch failed (HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)); retry in 2s
+  Year 1370: fetch failed (HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)); retry in 4s
+  Year 1370: fetch failed after 3 tries: HTTPSConnectionPool(host='farsi.khamenei.ir', port=443): Read timed out. (read timeout=30)
+  1370 try3: 0 IDs  (96.5s)
+  -> 1370: counts=[0, 0, 0]  => STABLE-EMPTY
+
+  1354 try1: 0 IDs  (0.2s)
+  1354 try2: 0 IDs  (0.0s)
+  1354 try3: 0 IDs  (0.0s)
+  -> 1354: counts=[0, 0, 0]  => STABLE-EMPTY
+
+  1353 try1: 0 IDs  (0.0s)
+  1353 try2: 0 IDs  (0.0s)
+  1353 try3: 0 IDs  (0.0s)
+  -> 1353: counts=[0, 0, 0]  => STABLE-EMPTY
+
+  1351 try1: 0 IDs  (0.0s)
+  1351 try2: 0 IDs  (0.0s)
+  1351 try3: 0 IDs  (0.0s)
+  -> 1351: counts=[0, 0, 0]  => STABLE-EMPTY
+
+  1350 try1: 0 IDs  (0.0s)
+  1350 try2: 0 IDs  (0.1s)
+  1350 try3: 0 IDs  (0.0s)
+  -> 1350: counts=[0, 0, 0]  => STABLE-EMPTY
+
+STABLE EMPTY YEARS (safe for S7): [1370, 1354, 1353, 1351, 1350]
+FLOOR/STABILITY PROBE DONE

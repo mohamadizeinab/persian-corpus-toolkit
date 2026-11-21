@@ -1,0 +1,86 @@
+=== S0 baseline (staging http://127.0.0.1:5056) ===
+baseline: total=151 y1400=0 y1402=0 pending=164
+PASS  S0.baseline_total_151 (= 151)
+PASS  S0.baseline_1400_empty (= 0)
+PASS  S0.baseline_1402_empty (= 0)
+=== S1 crawl year 1400 (expect 35) ===
+--- --year 1400 (log /tmp/pcm-ext07-m4/s1_1400.log) tail:
+  [35/35] Speech #47576... inserted - سخنرانی نوروزی خطاب به ملت ایران (33741 chars)
+
+✅ Done! Results: {"inserted": 35, "updated": 0, "skipped": 0, "errors": 0}
+discover=35 results=Results: {"inserted": 35, "updated": 0, "skipped": 0, "errors": 0}
+PASS  S1.discover_1400_35 (= 35)
+PASS  S1.inserted_1400_35 (= 35)
+PASS  S1.errors_1400_0 (= 0)
+PASS  S1.db_1400_35 (= 35)
+PASS  S1.db_total_186 (= 186)
+=== S2 crawl year 1402 (expect 56) ===
+--- --year 1402 (log /tmp/pcm-ext07-m4/s2_1402.log) tail:
+  [56/56] Speech #52275... inserted - بیانات در اجتماع زائران و مجاوران حرم مطهر رضوی (60 chars)
+
+✅ Done! Results: {"inserted": 56, "updated": 0, "skipped": 0, "errors": 0}
+discover=56 results=Results: {"inserted": 56, "updated": 0, "skipped": 0, "errors": 0}
+PASS  S2.discover_1402_56 (= 56)
+PASS  S2.inserted_1402_56 (= 56)
+PASS  S2.errors_1402_0 (= 0)
+PASS  S2.db_1402_56 (= 56)
+PASS  S2.db_total_242 (= 242)
+=== S3 idempotency: re-run 1400 ===
+--- --year 1400 (log /tmp/pcm-ext07-m4/s3_re1400.log) tail:
+  [35/35] Speech #47576... skipped - سخنرانی نوروزی خطاب به ملت ایران (33741 chars)
+
+✅ Done! Results: {"inserted": 0, "updated": 0, "skipped": 35, "errors": 0}
+results=Results: {"inserted": 0, "updated": 0, "skipped": 35, "errors": 0}
+PASS  S3.reinserted_0 (= 0)
+PASS  S3.reskipped_35 (= 35)
+PASS  S3.reerrors_0 (= 0)
+PASS  S3.total_still_242 (= 242)
+=== S4 idempotency: re-run 1402 ===
+--- --year 1402 (log /tmp/pcm-ext07-m4/s4_re1402.log) tail:
+  [56/56] Speech #52275... skipped - بیانات در اجتماع زائران و مجاوران حرم مطهر رضوی (60 chars)
+
+✅ Done! Results: {"inserted": 0, "updated": 0, "skipped": 56, "errors": 0}
+results=Results: {"inserted": 0, "updated": 0, "skipped": 56, "errors": 0}
+PASS  S4.reinserted_0 (= 0)
+PASS  S4.reskipped_56 (= 56)
+PASS  S4.reerrors_0 (= 0)
+PASS  S4.total_still_242 (= 242)
+=== S5 date validity + content sanity (SQL on staging DB) ===
+bad_dates=0 wrong_year_date=0 empty_text=0 short_text_lt100=48
+PASS  S5.all_91_have_valid_jalali_date (= 0)
+PASS  S5.date_year_matches_speech_year (= 0)
+PASS  S5.no_empty_content (= 0)
+INFO  S5: 48 rows have char_count<100 = source-true PDF-only pages (site has no div.Content for them); documented, not a crawl bug
+=== S6 live re-verification (re-extract from site NOW vs DB) ===
+  1400 sid=47576: title_equal=True text_equal=True stored_chars=33741 live_chars=33741
+  1402 sid=52275: title_equal=True text_equal=True stored_chars=60 live_chars=60
+S6_FAILS 0
+PASS  S6.live_reverify_samples_match (= 0)
+=== S7 empty-year behavior (fast-empty years: 1354, 1350) ===
+  year 1354 -> 0 IDs
+PASS  S7.year_1354_empty_0_ids (= 0)
+  year 1350 -> 0 IDs
+PASS  S7.year_1350_empty_0_ids (= 0)
+=== S8 resume via pending queue (unfiltered run, --max 3) ===
+pending before S8: 73 (was 164 at S0; 1400/1402 rows now done)
+--- --max 3 (log /tmp/pcm-ext07-m4/s8_resume.log) tail:
+  [3/3] Speech #47190... inserted - گزیده&zwnj;ای از بیانات در دیدار جمعی از دست&zwnj;اندرکاران  (735 chars)
+
+✅ Done! Results: {"inserted": 3, "updated": 0, "skipped": 0, "errors": 0}
+PASS  S8.unfiltered_run_consumes_pending_queue (no auto-walk)
+results=Results: {"inserted": 3, "updated": 0, "skipped": 0, "errors": 0}
+PASS  S8.crawled_exactly_3 (= 3)
+PASS  S8.no_errors (= 0)
+PASS  S8.total_increased_by_inserted (= 245)
+=== S9 final state ===
+final: total=245 y1400=35 y1402=56 integrity=ok dups=0
+PASS  S9.final_1400_35 (= 35)
+PASS  S9.final_1402_56 (= 56)
+PASS  S9.no_duplicate_ids (= 0)
+PASS  S9.db_integrity_ok (= ok)
+PASS  S9.queue_rows_1400_1402_all_done (= 0 0)
+
+════════════════════════════════════════════════
+M4 SUMMARY: 36 PASS / 0 FAIL
+logs: /tmp/pcm-ext07-m4/  (s1..s8 per-step full crawler output)
+════════════════════════════════════════════════

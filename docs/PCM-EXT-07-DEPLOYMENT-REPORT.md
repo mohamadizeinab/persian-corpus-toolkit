@@ -184,3 +184,106 @@ staging (LE upgrade possible later via certbot HTTP-01, `/www/acme` writable).
 
 Rollback (staging only): `docker compose -p pct-staging stop backend && rm -f backend` →
 remove the vhost file + `nginx -s reload` → `rm -rf $STAGE` (seed DB kept in backups).
+
+---
+
+## M4 — Real Python-crawler E2E acceptance (COMPLETE — final clean run 2026-11-21 20:00 UTC)
+
+Runner: `deploy/pcm_ext07_m4_crawler_test.sh` (S0–S9, 36 checks), executed **on s52**
+against the staging backend `127.0.0.1:5056` + staging DB only. Before the definitive
+run the staging DB was restored to the M3 seed (151 rows) via
+`sqlite3 thesaurus-staging-seed-20261121-185842.db ".backup …"` — so every count below
+starts from the clean 151-row baseline.
+
+### 4.1 Test plan (what each step proves)
+
+| Step | Action | Proves |
+|---|---|---|
+| S0 | baseline counts | staging starts at 151 / 1400=0 / 1402=0, pending queue = 164 |
+| S1 | `--year 1400` | **35 discovered, 35 inserted, 0 errors** — baseline met |
+| S2 | `--year 1402` | **56 discovered, 56 inserted, 0 errors** — baseline met |
+| S3 | re-run 1400 | idempotency: 0 inserted / **35 skipped** / total unchanged (242) |
+| S4 | re-run 1402 | idempotency: 0 inserted / **56 skipped** / total unchanged (242) |
+| S5 | SQL on DB | all 91 new rows: valid Jalali `YYYY/MM/DD`, date-year == speech-year, no empty content |
+| S6 | live re-extract | re-fetch 1 sample per year from the site NOW, byte-equal title+content vs DB |
+| S7 | `--discover` on empty years | clean 0-ID behavior + clean exit below the archive floor |
+| S8 | unfiltered `--max 3` | pending-queue resume: "Resuming … pending IDs" banner, exactly 3 processed, no auto-walk hijack |
+| S9 | final state | 1400=35, 1402=56, 0 duplicate speech_ids, integrity ok, 1400/1402 queue rows all done |
+
+### 4.2 Run history (no FAIL ever hidden)
+
+| Run | Result | Explanation of FAILs |
+|---|---|---|
+| 1 (20:35 local, seed baseline) | 32 PASS / 4 FAIL | 2 = harness grep bug (`grep -o` captured the year digits too); 2 = real findings (see 4.3) |
+| 2 (after grep fix, seed baseline) | 35 PASS / 1 FAIL | 1360 assumed empty but returned 8 IDs (real data) |
+| 3 (S7 → 1370+1350, seed baseline) | 35 PASS / 1 FAIL | **1370 returned 131 IDs** (it had returned 0 in runs 1–2) — site flakiness, real finding |
+| **4 (S7 → fast-empty 1354+1350, seed baseline) — DEFINITIVE** | **36 PASS / 0 FAIL** | — |
+
+Each run started from the restored 151-row seed; the final run left staging at
+245 rows (151 seed + 91 crawl + 3 S8 resume inserts), pending queue 70.
+
+### 4.3 Findings (probed, not hidden — mission rule)
+
+**F-M4-1 · 48 of 91 rows are short because the SOURCE is short (PDF-only pages).**
+`char_count<100` count = 48 (distribution: min 36 / p25 62 / median 98 / p75 9,820 /
+max 40,419; buckets `<50: 8, <100: 48, =0: 0, 100–999: 8, >=1000: 35`). The 4 shortest
+rows (sids 54897 / 54526 / 52837 / 55611) store exactly `«title» [دریافت PDF]` — and the
+live pages were re-fetched: **no `div.Content` exists at all**; the site offers a PDF
+download instead of inline text. The crawler is source-true; the S5 check was corrected
+to `length(content)=0` (0 rows) and the <100 count is reported as INFO.
+
+**F-M4-2 · The archive floor is far lower than the old assumption (≤1379).**
+Probe-verified counts: `1379: 67, 1378: 67, 1377: 57, 1376: 70, 1375: 43, 1370: 131,
+1360: 8, 1359: 4, 1358: 3, 1357: 4, 1356: 1, 1355: 1, 1352: 1`; confirmed fast-empty
+years: 1354, 1353, 1351, 1350 (0.0–0.4 s each). The crawler's
+`ARCHIVE_START_YEAR=1379` default underestimates available history; the
+2-consecutive-empty-years stop rule still terminates the walk, but a full historical
+crawl needs the floor pushed to ~1351. (Documented; not changed in this mission.)
+
+**F-M4-3 · Old-year list pages are FLAKY — a timeout masquerades as an empty year.**
+Same year, same code, three separate live runs: **1370 → `0` (run 1), `131` (run 3),
+`0/0/0` via 3×30 s read-timeouts (stability probe)**. The failure mode is a 30 s read
+timeout (3 retries, 2 s/4 s backoff ≈ 96 s per failed year), and the crawler returns
+`[]` for both "site says empty" and "gave up" — indistinguishable. Consequence: the
+auto-walk's 2-consecutive-empty stop rule can halt early on a slow day (walk stops at a
+timeout-pair) — but it can also **miss a whole year's worth of IDs** (1370 had 131).
+Backfill safety: `discover_year` is cheap to re-run and the submit endpoint dedups, so
+re-walking old years is lossless. (Product note for the roadmap: treat
+"timeout after retries" as a distinct, non-counted-toward-stop outcome.)
+
+### 4.4 Definitive run — per-step results (2026-11-21 20:00 UTC, seed baseline)
+
+| Step | Result (real output) |
+|---|---|
+| S0 | `baseline: total=151 y1400=0 y1402=0 pending=164` — 3/3 PASS |
+| S1 | `discover=35` · `{"inserted": 35, "updated": 0, "skipped": 0, "errors": 0}` · db 1400=35, total=186 — 5/5 PASS |
+| S2 | `discover=56` · `{"inserted": 56, …, "errors": 0}` · db 1402=56, total=242 — 5/5 PASS |
+| S3 | `{"inserted": 0, "updated": 0, "skipped": 35, "errors": 0}` · total still 242 — 4/4 PASS |
+| S4 | `{"inserted": 0, "updated": 0, "skipped": 56, "errors": 0}` · total still 242 — 4/4 PASS |
+| S5 | `bad_dates=0 wrong_year_date=0 empty_text=0` (INFO: 48 rows <100 chars = F-M4-1) — 3/3 PASS |
+| S6 | sid 47576 (1400): `title_equal=True text_equal=True` (33,741 chars both sides) · sid 52275 (1402): `title_equal=True text_equal=True` (60 chars both sides) — 1/1 PASS |
+| S7 | year 1354 → 0 IDs · year 1350 → 0 IDs (both <0.5 s) — 2/2 PASS |
+| S8 | "Resuming … pending IDs from backend queue" banner · exactly 3 processed (incl. sid 47190, 735 chars) · 0 errors · total 242→245 · pending 164→73 → 4/4 PASS |
+| S9 | `final: total=245 y1400=35 y1402=56 integrity=ok dups=0` · crawl-status `pending_by_year` 1400=0, 1402=0 — 5/5 PASS |
+
+**M4 SUMMARY: 36 PASS / 0 FAIL** (exit 0).
+
+### 4.5 Evidence
+
+- `evidence/pcm-ext07-m4-crawler-e2e.log` — full structured output of the definitive run
+- `evidence/pcm-ext07-m4-step-logs/` — per-step crawler logs: `s1_1400.log`, `s2_1402.log`,
+  `s3_re1400.log`, `s4_re1402.log`, `s6_live.txt` (live re-verification), `s7_1354.log`,
+  `s7_1350.log`, `s8_resume.log`, `stability_probe.log` (F-M4-3 data)
+- `deploy/pcm_ext07_m4_crawler_test.sh` — the runner (36 checks, idempotent, seed-restorable)
+- `deploy/pcm_ext07_m4_probe.py` — char-distribution / PDF-only / floor probe
+- `deploy/pcm_ext07_m4_floor.py` — archive-floor + year-stability probe
+
+### 4.6 M4 verdict
+
+**PASS** — the Python crawler (commit 6f7f2d2) against the live site, on real staging:
+baseline years 1400=35 and 1402=56 exactly, every stored date valid Jalali and
+year-consistent, re-runs fully idempotent, live text byte-identical on re-verification,
+pending-queue resume works without auto-walk hijack, no duplicates, DB integrity ok.
+Three genuine site characteristics documented (F-M4-1..3) instead of being hidden.
+
+*Full acceptance narrative for M4: `PCM-EXT-07-CRAWLER-E2E-ACCEPTANCE.md` (M8).*
