@@ -7,7 +7,7 @@ let crawlState = {
   mode: 'idle', // idle | phase1 | phase2 | both
   site: null,
   currentTabId: null,
-  khamenei: { listPage: 1, ids: [], idx: 0, delayMs: 2000, errors: 0 },
+  khamenei: { nextYear: null, emptyStreak: 0, MIN_YEAR: 1370, ids: [], idx: 0, delayMs: 2000, errors: 0 },
 };
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -59,9 +59,7 @@ async function handle(msg, sender) {
       return { ok: true };
     case 'khameneiListScanned':
       if (crawlState.mode === 'phase1' && crawlState.site === 'khamenei') {
-        if ((msg.seeded || 0) === 0) crawlState.khamenei.emptyPages = (crawlState.khamenei.emptyPages || 0) + 1;
-        else crawlState.khamenei.emptyPages = 0;
-        await continueKhameneiPhase1();
+        await continueKhameneiPhase1(msg);
       }
       return { ok: true };
     case 'khameneiExtractResult':
@@ -107,13 +105,37 @@ async function runPhase1(site) {
     return { ok: true, message: 'فاز۱ اصطلاح‌نامه شروع شد (Elastic ۱۰۰تایی × ۱۳ علم)' };
   }
 
-  // Khamenei: walk list pages and seed IDs
-  crawlState.khamenei = { listPage: 1, ids: [], idx: 0, delayMs: 2000, errors: 0 };
-  await navigateToUrl(`https://${KHAMENEI_HOST}/speech?page=1`, 'khamenei');
-  return { ok: true, message: 'فاز۱ بیانات: در حال کشف لیست...' };
+  // Khamenei phase 1 — walk YEARS, not pages. The site ignores ?page=N
+  // entirely; each Jalali year is ONE complete list page
+  // (/speech?nt=2&year=YYYY, 28-79 items). Unfiltered /speech shows only the
+  // latest year, so: open it, then walk backwards year by year until
+  // 2 consecutive empty years (or MIN_YEAR floor).
+  crawlState.khamenei = { nextYear: null, emptyStreak: 0, MIN_YEAR: 1370, ids: [], idx: 0, delayMs: 2000, errors: 0 };
+  await navigateToUrl(`https://${KHAMENEI_HOST}/speech`, 'khamenei');
+  return { ok: true, message: 'فاز۱ بیانات: در حال کشف سال‌به‌سال (هر سال = یک صفحه کامل)...' };
 }
 
-async function continueKhameneiPhase1() {
+// Pure year-walk decision (unit-tested in test_khamenei_years.js).
+// s: { nextYear, emptyStreak, MIN_YEAR } — mutated in place.
+// msg: khameneiListScanned { total, maxYear } from the page just scanned.
+// Returns { url } to navigate next, or { done: true, reason: 'empty'|'floor' }.
+function nextKhameneiYear(s, msg) {
+  s.emptyStreak = s.emptyStreak || 0;
+  if (s.nextYear == null) {
+    // First page (unfiltered /speech) already seeded the latest year.
+    s.nextYear = (msg && msg.maxYear) || 1404;
+  } else if (msg && msg.total === 0) {
+    s.emptyStreak += 1;
+  } else {
+    s.emptyStreak = 0;
+  }
+  s.nextYear -= 1;
+  if (s.emptyStreak >= 2) return { done: true, reason: 'empty' };
+  if (s.nextYear < s.MIN_YEAR) return { done: true, reason: 'floor' };
+  return { url: `https://${KHAMENEI_HOST}/speech?nt=2&year=${s.nextYear}` };
+}
+
+async function continueKhameneiPhase1(msg) {
   if (crawlState.mode !== 'phase1') return;
   const stop = await chrome.storage.local.get(['crawlStop']);
   if (stop.crawlStop) {
@@ -121,16 +143,14 @@ async function continueKhameneiPhase1() {
     return;
   }
   const s = crawlState.khamenei;
-  s.emptyPages = (s.emptyPages || 0);
-  // caller should set lastSeeded via message — check storage
-  s.listPage += 1;
-  if (s.listPage > 800 || s.emptyPages >= 3) {
+  const next = nextKhameneiYear(s, msg);
+  if (next.done) {
     crawlState.mode = 'idle';
     chrome.runtime.sendMessage({ action: 'phaseDone', phase: 1, site: 'khamenei' });
     return;
   }
   await sleep(s.delayMs);
-  await navigateToUrl(`https://${KHAMENEI_HOST}/speech?page=${s.listPage}`, 'khamenei');
+  await navigateToUrl(next.url, 'khamenei');
 }
 
 async function runPhase2(site) {

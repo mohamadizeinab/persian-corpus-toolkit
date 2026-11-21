@@ -65,40 +65,83 @@ function extractJalaliDate(metaText) {
   return m2 ? m2[1] : '';
 }
 
-async function discoverIds() {
-  console.log('[Khamenei] Discovering speech IDs...');
-  const ids = new Set();
-  const links = [];
-
+// Main-list item: anchor to speech-content whose FIRST inner element is a
+// date span (class skyText, "YYYY/MM/DD" — Persian digits possible).
+// Sidebar widgets ("پیشنهاد ما", li.hpList) link to speeches WITHOUT a date
+// span — they must NOT be seeded (they belong to other years).
+function datedSpeechLinks() {
+  const out = [];
   document.querySelectorAll('a[href*="speech-content"]').forEach((link) => {
     const href = link.getAttribute('href') || '';
     const match = href.match(/speech-content\?id=(\d+)/);
     if (!match) return;
-    ids.add(match[1]);
-    const abs = href.startsWith('http') ? href : `https://farsi.khamenei.ir${href.startsWith('/') ? '' : '/'}${href}`;
-    links.push({ id: match[1], url: abs, title: textOf(link).slice(0, 200) });
+    const span = link.firstElementChild;
+    if (!span || !/skyText/i.test(span.className || '')) return;
+    const date = toAsciiDigits(textOf(span)).match(/(\d{4})\/(\d{2})\/(\d{2})/);
+    if (!date) return;
+    out.push({ id: match[1], date: `${date[1]}/${date[2]}/${date[3]}`, link });
   });
+  return out;
+}
 
-  // Also catch pagination / related links on speech pages
-  document.querySelectorAll('a[href*="/speech"]').forEach((link) => {
+function allSpeechLinks() {
+  const ids = new Set();
+  document.querySelectorAll('a[href*="speech-content"]').forEach((link) => {
     const href = link.getAttribute('href') || '';
     const match = href.match(/speech-content\?id=(\d+)/);
     if (match) ids.add(match[1]);
   });
+  return [...ids];
+}
 
-  const idList = [...ids];
+function maxYearOf(dates) {
+  let max = 0;
+  for (const d of dates) {
+    const m = d.match(/(\d{4})/);
+    if (m && parseInt(m[1], 10) > max) max = parseInt(m[1], 10);
+  }
+  return max || null;
+}
+
+async function discoverIds() {
+  console.log('[Khamenei] Discovering speech IDs...');
+
+  // Primary: dated main-list items only (one year = one complete list page).
+  const dated = datedSpeechLinks();
+  let idList;
+  let titles = {};
+  if (dated.length > 0) {
+    idList = [...new Set(dated.map((d) => d.id))];
+    for (const d of dated) titles[d.id] = textOf(d.link).slice(0, 200);
+  } else {
+    // Fallback (layout change / unrelated page): every speech-content anchor.
+    idList = allSpeechLinks();
+  }
+
+  // maxYear: from item dates, else the year= param of the current URL.
+  const dates = dated.map((d) => d.date);
+  const urlYear = (location.href.match(/[?&]year=(\d{4})/) || [])[1] || null;
+  const maxYear = maxYearOf(dates) || urlYear || null;
+
   if (idList.length === 0) {
     console.warn('[Khamenei] No speech IDs found on page');
+    chrome.runtime.sendMessage({
+      action: 'khameneiListScanned',
+      seeded: 0,
+      duplicates: 0,
+      total: 0,
+      maxYear: maxYear,
+    });
     return { ok: false, message: 'هیچ لینک بیانی در این صفحه پیدا نشد', seeded: 0 };
   }
 
-  console.log(`[Khamenei] Found ${idList.length} IDs`);
+  console.log(`[Khamenei] Found ${idList.length} IDs (maxYear=${maxYear || '-'})`);
   try {
     const items = idList.map((id) => ({
       url: `https://farsi.khamenei.ir/speech-content?id=${id}`,
       item_id: id,
       page_type: 'khamenei_speech',
-      title: (links.find((l) => l.id === id) || {}).title || `Speech #${id}`,
+      title: titles[id] || `Speech #${id}`,
       source_page: location.href,
     }));
     const r = await fetch(`${BACKEND}/api/phase1/seed-batch`, {
@@ -113,8 +156,9 @@ async function discoverIds() {
       seeded: result.added,
       duplicates: result.duplicates,
       total: idList.length,
+      maxYear: maxYear,
     });
-    return { ok: true, seeded: result.added, duplicates: result.duplicates, total: idList.length };
+    return { ok: true, seeded: result.added, duplicates: result.duplicates, total: idList.length, maxYear };
   } catch (e) {
     console.error('[Khamenei] Seed error:', e);
     return { ok: false, message: String(e) };

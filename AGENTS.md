@@ -130,3 +130,4 @@ cd backend && python -m unittest test_api test_projects test_dashboard \
 
 گزارش‌ها: `گزارش-PCM-0X.md` (۱۱ بخش: وضعیت قبل، طراحی، مهاجرت، فایل/API، تست،
 نتیجه production، SHA+لینک، git status، بکاپ/rollback، موارد باقی‌مانده، روش تست دستی).
+| **PCM-EXT-06** کراول سال‌به‌سال بیانات (farsi.khamenei.ir): ریشه‌ی مشکل = سایت `?page=N` را نادیده می‌گیرد و هر سال جلالی = یک صفحهٔ کامل لیست (`/speech?nt=2&year=Y`، ۱۳۷۹–۱۴۰۴)؛ اسکریپت `corpus/scrape_khamenei.py` با discovery تک‌درخواستی سال‌به‌سال + auto year-walk (بدون hijack صف pending برای run سال‌محور) + اکستنشن فاز۱ با state machine `nextKhameneiYear` (مستقل از `?page=`) + content-script کشف فقط anchorهای دارای تاریخ + `maxYear` | ✅ (13 تست Python + 8 تست node سال‌walk + 61+8 رگرسیون اکستنشن + 226 رگرسیون backend سبز؛ e2e واقعی: ۱۴۰۰(35) + ۱۴۰۲(56) = 91 بیان با متن کامل + تاریخ در DB؛ بدون deploy) |

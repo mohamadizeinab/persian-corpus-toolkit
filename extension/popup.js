@@ -296,7 +296,7 @@ function updateHint() {
   const hint = document.getElementById('hintBox');
   if (currentSite === 'khamenei') {
     hint.textContent =
-      'بیانات: فاز۱ کشف ID از لیست /speech — فاز۲ باز کردن هر speech-content و ذخیره div.Content. دامنه: farsi.khamenei.ir';
+      'بیانات: فاز۱ کشف سال‌به‌سال — هر سال جلالی = یک صفحه کامل لیست (/speech?nt=2&year=Y)، سایت ?page= را نادیده می‌گیرد؛ فاز۲ متن کامل + تاریخ هر بیان. دامنه: farsi.khamenei.ir';
   } else {
     hint.textContent =
       'اصطلاح‌نامه: فاز۱ Elastic صدتا‌صدتا در ۱۳ علم — فاز۲ ذخیره کامل تعاریف در DB. تب سایت باز باشد تا سشن استفاده شود.';
