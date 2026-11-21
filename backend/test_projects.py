@@ -351,5 +351,95 @@ class StopFieldTests(unittest.TestCase):
                     pass
 
 
+class HashUrlTests(unittest.TestCase):
+    """PCM-EXT-08: hash-based SPA pages (gharaati tafsir, #numsooreh=S&numayeh=A).
+
+    The fragment (hash) is part of the page identity, so it must be preserved
+    in start_url / page urls / cursor_url and used for dedup — each ayah is a
+    separate page.
+    """
+
+    def setUp(self):
+        pct_test_support.reset_db()
+        self.client = server.app.test_client()
+
+    def _create(self, **extra):
+        payload = {
+            "name": "Tafsir Gharaati",
+            "host": "gharaati.ir",
+            "start_url": "https://gharaati.ir/تفسیر-نور/#numsooreh=1&numayeh=1",
+            "next_mode": "url_param",
+            "next_param": "hash",
+        }
+        payload.update(extra)
+        r = self.client.post("/api/projects", json=payload)
+        self.assertEqual(r.status_code, 200)
+        return r.get_json()["project"]
+
+    def test_hu01_start_url_hash_preserved_on_create(self):
+        p = self._create()
+        self.assertEqual(
+            p["start_url"], "https://gharaati.ir/تفسیر-نور/#numsooreh=1&numayeh=1")
+        self.assertEqual(
+            p["cursor_url"], "https://gharaati.ir/تفسیر-نور/#numsooreh=1&numayeh=1")
+
+    def test_hu02_start_url_hash_preserved_on_update(self):
+        p = self._create()
+        r = self.client.post(
+            f"/api/projects/{p['id']}",
+            json={"start_url": "https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=8"})
+        self.assertEqual(r.get_json()["project"]["start_url"],
+                         "https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=8")
+
+    def test_hu03_hash_param_source_accepted(self):
+        p = self._create()
+        r = self.client.post(f"/api/projects/{p['id']}/points", json={
+            "tag": "surah", "source": "hash_param", "selector": "numsooreh",
+            "transform": "text", "sample": "1"})
+        self.assertEqual(r.status_code, 200)
+        r2 = self.client.post(f"/api/projects/{p['id']}/points", json={
+            "tag": "mp3", "source": "css", "selector": "source",
+            "transform": "src_attr",
+            "sample": "https://gharaati.ir/archive/tafsir/1/1.mp3"})
+        self.assertEqual(r2.status_code, 200)
+        points = {pt["tag"]: pt for pt in r2.get_json()["project"]["points"]}
+        self.assertEqual(points["surah"]["source"], "hash_param")
+        self.assertEqual(points["mp3"]["transform"], "src_attr")
+
+    def test_hu04_distinct_hashes_are_distinct_pages(self):
+        p = self._create()
+        base = "https://gharaati.ir/تفسیر-نور/"
+        r1 = self.client.post(f"/api/projects/{p['id']}/pages", json={
+            "url": base + "#numsooreh=1&numayeh=1", "values": {"t": "اول"}})
+        self.assertEqual(r1.get_json()["status"], "inserted")
+        r2 = self.client.post(f"/api/projects/{p['id']}/pages", json={
+            "url": base + "#numsooreh=1&numayeh=2", "values": {"t": "دوم"}})
+        self.assertEqual(r2.get_json()["status"], "inserted")
+        proj = r2.get_json()["project"]
+        self.assertEqual(proj["saved_count"], 2)
+        self.assertEqual(proj["cursor_url"], base + "#numsooreh=1&numayeh=2")
+
+    def test_hu05_same_hash_same_content_skipped(self):
+        p = self._create()
+        url = "https://gharaati.ir/تفسیر-نور/#numsooreh=1&numayeh=1"
+        r1 = self.client.post(f"/api/projects/{p['id']}/pages",
+                              json={"url": url, "values": {"t": "اول"}})
+        self.assertEqual(r1.get_json()["status"], "inserted")
+        r2 = self.client.post(f"/api/projects/{p['id']}/pages",
+                              json={"url": url, "values": {"t": "اول"}})
+        self.assertEqual(r2.get_json()["status"], "skipped")
+        proj = r2.get_json()["project"]
+        self.assertEqual(proj["saved_count"], 1)
+        self.assertEqual(proj["skipped_count"], 1)
+
+    def test_hu06_cursor_url_hash_preserved_in_report(self):
+        p = self._create()
+        r = self.client.post(f"/api/projects/{p['id']}/report", json={
+            "cursor_url": "https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=9",
+            "message": "خوانده شد"})
+        self.assertEqual(r.get_json()["project"]["cursor_url"],
+                         "https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=9")
+
+
 if __name__ == "__main__":
     unittest.main()

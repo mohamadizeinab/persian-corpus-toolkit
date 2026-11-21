@@ -183,7 +183,10 @@ def register_project_routes(app, get_db):
         pace = int(data.get("pages_per_minute") or 4)
         pace = max(1, min(12, pace))
         step = int(data.get("next_step") or 1) or 1
-        start_url = (data.get("start_url") or "").split("#")[0].strip()
+        # PCM-EXT-08: hash در آدرس صفحه بخشی از «هویت» صفحه است (SPAهای
+        # hash-based مثل تفسیر گرااتی: #numsooreh=1&numayeh=1). دیگر hash حذف
+        # نمی‌شود تا UNIQUE(project_id, url) هر آیه را صفحه‌ی جدا بشمارد.
+        start_url = (data.get("start_url") or "").strip()
         stop_number = _clean_stop_number(data.get("stop_number"))
         if stop_number is None:
             return jsonify({"ok": False, "message": "stop_number نامعتبر است (عدد صحیح مثبت یا خالی)"}), 400
@@ -229,7 +232,8 @@ def register_project_routes(app, get_db):
         if "name" in data and str(data["name"]).strip():
             fields["name"] = str(data["name"]).strip()
         if "start_url" in data:
-            fields["start_url"] = str(data["start_url"] or "").split("#")[0].strip()
+            # PCM-EXT-08: hash حفظ می‌شود (صفحه‌های hash-based)
+            fields["start_url"] = str(data["start_url"] or "").strip()
         if "next_mode" in data:
             if data["next_mode"] not in ("url_param", "none"):
                 return jsonify({"ok": False, "message": "next_mode نامعتبر است"}), 400
@@ -248,7 +252,8 @@ def register_project_routes(app, get_db):
         if "stop_field" in data:
             fields["stop_field"] = _clean_stop_field(data["stop_field"])
         if "cursor_url" in data:
-            fields["cursor_url"] = str(data["cursor_url"] or "").split("#")[0].strip()
+            # PCM-EXT-08: hash حفظ می‌شود تا resume روی همان آیّه/صفحه باشد
+            fields["cursor_url"] = str(data["cursor_url"] or "").strip()
         if "status" in data:
             if data["status"] not in ("draft", "tested", "running", "paused"):
                 return jsonify({"ok": False, "message": "status نامعتبر است"}), 400
@@ -270,7 +275,8 @@ def register_project_routes(app, get_db):
         source = (data.get("source") or "css").strip()
         if not tag:
             return jsonify({"ok": False, "message": "اسم نقطه لازم است"}), 400
-        if source not in ("css", "xpath", "url", "url_param"):
+        # PCM-EXT-08: hash_param — خواندن پارامتر از hash آدرس (numsooreh/numayeh در SPAهای hash-based).
+        if source not in ("css", "xpath", "url", "url_param", "hash_param"):
             return jsonify({"ok": False, "message": "source نامعتبر است"}), 400
         previous = (data.get("previous_tag") or "").strip()
         if previous and previous != tag:
@@ -324,7 +330,9 @@ def register_project_routes(app, get_db):
         if not item:
             return jsonify({"ok": False, "message": "پروژه پیدا نشد"}), 404
         data = request.get_json(silent=True) or {}
-        url = (data.get("url") or "").split("#")[0].strip()
+        # PCM-EXT-08: hash بخشی از آدرس صفحه است و حذف نمی‌شود (SPAهای
+        # hash-based مثل تفسیر گرااتی که هر آیّه = یک hash جداست).
+        url = (data.get("url") or "").strip()
         values = data.get("values") or {}
         if not url or not isinstance(values, dict):
             return jsonify({"ok": False, "message": "url و values لازم است"}), 400
@@ -386,7 +394,8 @@ def register_project_routes(app, get_db):
             "failed_count": failed,
         }
         if data.get("cursor_url"):
-            fields["cursor_url"] = str(data["cursor_url"]).split("#")[0]
+            # PCM-EXT-08: hash حفظ می‌شود
+            fields["cursor_url"] = str(data["cursor_url"])
         if "message" in data:
             fields["last_message"] = str(data.get("message") or "")[:500]
         if data.get("status") in ("draft", "tested", "running", "paused"):

@@ -80,6 +80,7 @@
         <select id="source">
           <option value="css">همین عنصر</option>
           <option value="url_param">پارامتر آدرس</option>
+          <option value="hash_param">پارامتر hash (سوره/آیه)</option>
           <option value="url">لینک صفحه</option>
         </select>
         <label for="selector">نشانی عنصر یا نام پارامتر</label>
@@ -90,6 +91,7 @@
           <option value="before_paren">قبل از پرانتز</option>
           <option value="paren_number">عدد داخل پرانتز</option>
           <option value="add_one">عدد به‌اضافه یک</option>
+          <option value="src_attr">مدرک src (مثل آدرس mp3)</option>
         </select>
         <div class="row">
           <button class="primary" id="savePoint" type="button">ذخیره نقطه</button>
@@ -101,6 +103,7 @@
         <select id="nextMode" style="flex:3">
           <option value="param">پارامتر آدرس (item_index=5)</option>
           <option value="nextlink">لینک صفحه بعد در صفحه</option>
+          <option value="hash">دکمهٔ «آیه بعد» (hash سوره/آیه)</option>
           <option value="number">عدد در آدرس (ساده)</option>
           <option value="regex">رجکس (دقیق)</option>
           <option value="none">بدون قانون</option>
@@ -156,6 +159,17 @@
       }
       return value;
     }
+    // PCM-EXT-08: hash_param — پارامترها از hash آدرس خوانده می‌شود
+    // (SPAهای hash-based مثل تفسیر نور: #numsooreh=1&numayeh=1).
+    if (field.source === 'hash_param') {
+      const hashQuery = String(location.hash || '').replace(/^#/, '');
+      const value = new URLSearchParams(hashQuery).get(field.selector) || '';
+      if (field.transform === 'add_one') {
+        const n = parseInt(value, 10);
+        return Number.isFinite(n) ? String(n + 1) : '';
+      }
+      return value;
+    }
     let el = null;
     try {
       if (field.source === 'xpath') {
@@ -167,6 +181,12 @@
       el = null;
     }
     const text = textOf(el);
+    // PCM-EXT-08: src_attr — مدرک src را (آدرس mp3 از <audio><source>) لینک مطلق برمی‌گرداند.
+    if (field.transform === 'src_attr') {
+      const raw = el ? String(el.getAttribute('src') || el.getAttribute('href') || '') : '';
+      if (!raw) return '';
+      try { return new URL(raw, location.href).href; } catch (_) { return raw; }
+    }
     if (field.transform === 'before_paren') return text.split('(')[0].trim();
     if (field.transform === 'paren_number') {
       const found = text.match(/\((\d+)\)/);
@@ -326,6 +346,7 @@
     if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
       return { mode: 'nextlink', detail: spec === 'next-link' ? '' : spec.slice('next-link:'.length).trim() };
     }
+    if (spec === 'hash') return { mode: 'hash', detail: '' };
     if (spec === 'url-number') return { mode: 'number', detail: '' };
     if (spec.indexOf('regex:') === 0) return { mode: 'regex', detail: spec.slice('regex:'.length).trim() };
     if (spec) return { mode: 'param', detail: spec };
@@ -337,6 +358,7 @@
     const detail = $('nextDetailInput').value.trim();
     if (mode === 'param') return detail;
     if (mode === 'nextlink') return detail ? 'next-link:' + detail : 'next-link';
+    if (mode === 'hash') return 'hash';
     if (mode === 'number') return 'url-number';
     if (mode === 'regex') return detail ? 'regex:' + detail : '';
     return '';
@@ -345,6 +367,7 @@
   const NEXT_DETAIL = {
     param: { show: true, ph: 'item_index', hint: 'نام پارامتر در آدرس، مثلا ?item_index=5 — در هر خواندن به عددش گام اضافه می‌شود.' },
     nextlink: { show: true, ph: 'مثلا: a[rel=next] — خالی = خودکار', hint: 'اگر CSS لینک «بعدی» را می‌دانی بنویس؛ وگرنه خالی بگذار تا خودکار از rel=next، متن «بعدی/ادامه/Next» و عدد آدرس کشف شود.' },
+    hash: { show: false, ph: '', hint: 'برای صفحات hash-based مثل تفسیر گرااتی: دکمهٔ «آیه بعد» (viewer(S,A)) پیدا شده و آدرس بعدی ساخته می‌شود ...#numsooreh=S&numayeh=A. حد عددی توقف = سوره×10000+شمارهٔ hash (مثلا 2:8 → 20008). آدرس mp3 را با نقطهٔ css روی عنصر source + «مدرک src» بردار.' },
     number: { show: false, ph: '', hint: 'آخرین عدد مسیر + گام؛ صفرهای پیشین حفظ می‌شوند: 001→002 و 1→2 (هم p_ghazal-495.html و هم sh495 را پوشش می‌دهد).' },
     regex: { show: true, ph: 'مثلا: p_ghazal-(\\d+)\\.html یا sh(\\d+)', hint: 'الگو روی مسیر آدرس خوانده می‌شود و باید دقیقا یک گروه ( ) با محتوای عددی داشته باشد؛ بعد از +گام، عرض صفرها حفظ می‌شود.' },
     none: { show: false, ph: '', hint: 'فقط همین صفحه خوانده می‌شود؛ خواندن خودکار ادامه پیدا نمی‌کند.' },
@@ -414,7 +437,11 @@
     busy = true;
     try {
       await waitFor(points);
-      const url = location.href.split('#')[0];
+      const specNow = String(nextSpec != null ? nextSpec : (project ? project.next_param : '') || '');
+      // PCM-EXT-08: در SPAهای hash-based، hash بخشی از «هویت» صفحه است (هر آیه = یک hash جدا)،
+      // پس در حالت hash آن حفظ می‌شود؛ در حالت‌های دیگر، برای تغییر نرفت رفتار dedup
+      // سایت‌های موجود، hash مثل قبل حذف می‌شود.
+      const url = specNow === 'hash' ? location.href : location.href.split('#')[0];
       const values = {};
       points.forEach((point) => { values[point.tag] = applyField(point); });
       const r = await fetch(`${BACKEND}/api/projects/${projectId}/pages`, {
@@ -423,10 +450,12 @@
         body: JSON.stringify({ url, values }),
       });
       const data = await r.json();
-      const spec = String(nextSpec != null ? nextSpec : (project ? project.next_param : '') || '');
+      const spec = specNow;
       let nextUrl = '';
       if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
         nextUrl = findNextUrl(spec, url);
+      } else if (spec === 'hash') {
+        nextUrl = hashNextUrl();
       }
       if (!r.ok || data.ok === false) {
         return { ok: false, status: data.status || 'empty', message: data.message || 'خوانده نشد', values, url, nextUrl };
@@ -492,6 +521,26 @@
         });
         if (byHref) return abs(byHref);
       }
+    }
+    return '';
+  }
+
+  // PCM-EXT-08: دکمهٔ «آیه بعد» (onclick=viewer(S,A)) را در DOM پیدا کن و آدرس hash بعدی را بساز.
+  // مخصوص SPAهای hash-based مثل تفسیر نور (gharaati.ir): «بعد» لینک نیست بلکه <input> با
+  // viewer(S,A) است؛ آدرس بعدی = پایهٔ فعلی + #numsooreh=S&numayeh=A. اگر دکمهٔ «آیه بعد»
+  // نباشد (آخر سوره)، '' برمی‌گرداند و خواندن تمیز تمام می‌شود.
+  function hashNextUrl() {
+    let btns = [];
+    try { btns = Array.from(document.querySelectorAll('input,button,a')); } catch (_) { return ''; }
+    for (let i = 0; i < btns.length; i += 1) {
+      const el = btns[i];
+      const oc = String(el.getAttribute('onclick') || '');
+      const m = oc.match(/viewer\(\s*(\d+)\s*,\s*(\d+)\s*\)/);
+      if (!m) continue;
+      const label = String(el.value != null ? el.value : (el.innerText || el.textContent) || '').replace(/\s+/g, ' ').trim();
+      if (label && label.indexOf('آیه بعد') === -1) continue;
+      const base = String(location.href).split('#')[0];
+      return base + '#numsooreh=' + m[1] + '&numayeh=' + m[2];
     }
     return '';
   }
@@ -571,6 +620,10 @@
       nextNote = result.nextUrl
         ? ` — لینک بعدی: ${result.nextUrl}`
         : ' — هشدار: لینک صفحه بعد روی این صفحه پیدا نشد؛ برای کشفش صفحه اول دوباره خوانده می‌شود.';
+    } else if (spec === 'hash') {
+      nextNote = result.nextUrl
+        ? ` — آیهٔ بعد: ${result.nextUrl}`
+        : ' — هشدار: دکمهٔ «آیه بعد» روی این صفحه پیدا نشد (شاید آخر سوره باشد).';
     }
     const started = await chrome.runtime.sendMessage({
       action: 'startReading',
@@ -578,7 +631,7 @@
       pagesPerMinute: project.pages_per_minute,
       nextUrl: result.nextUrl || '',
     });
-    report(started?.ok ? `${started.message} — ${preview}` : (started?.message || preview));
+    report(started?.ok ? `${started.message}${nextNote} — ${preview}` : (started?.message || preview));
     if (started?.ok) $('step4').classList.add('on');
     refreshRunState();
     return { ok: !!started?.ok, started: !!started?.ok, message: $('report').textContent, values: result.values };
@@ -618,6 +671,9 @@
   });
   $('source').addEventListener('change', () => { picking = $('source').value === 'css' && $('form').style.display === 'block'; });
   $('nextMode').addEventListener('change', updateNextDetail);
+
+  // PCM-EXT-08: export فقط برای تست (extension/test_hash_next.js).
+  window.__pctHashNext = hashNextUrl;
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === 'openProject') {

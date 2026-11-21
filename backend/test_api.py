@@ -159,7 +159,9 @@ class ApiTests(unittest.TestCase):
         ).get_json()
         self.assertTrue(ok["ok"])
         self.assertEqual(ok["project"]["host"], "example.org")
-        self.assertEqual(ok["project"]["start_url"], "https://example.org/p?item_index=5")
+        # PCM-EXT-08: backend no longer strips the hash — in SPAهای hash-based (تفسیر نور)
+        # hash بخشی از «هویت» صفحه است. حذف hash تصمیم کلاینت است (فقط در حالت‌های غیر-hash).
+        self.assertEqual(ok["project"]["start_url"], "https://example.org/p?item_index=5#frag")
         self.assertEqual(ok["project"]["status"], "draft")
 
     def test_project_read_and_report_flow(self):

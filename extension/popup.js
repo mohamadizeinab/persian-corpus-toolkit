@@ -176,7 +176,9 @@ async function createProject() {
       body: JSON.stringify({
         name,
         host: url.host,
-        start_url: url.href.split('#')[0],
+        // PCM-EXT-08: hash در آدرس بخشی از صفحه است (SPAهای hash-based مثل تفسیر گرااتی)
+        // و نباید حذف شود تا start_url هر آیّه/صفحه را جدا شناسایی کند.
+        start_url: url.href,
         next_mode: param ? 'url_param' : 'none',
         next_param: param,
         next_step: 1,

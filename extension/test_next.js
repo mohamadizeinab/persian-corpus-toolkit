@@ -57,6 +57,8 @@ const checkStopUrl = sandbox.checkStopUrl;
 const contentSignature = sandbox.contentSignature;
 const sigHash = sandbox.sigHash;
 const updateSameStreak = sandbox.updateSameStreak;
+// PCM-EXT-08
+const hashNumber = sandbox.hashNumber;
 
 let passed = 0;
 let failed = 0;
@@ -95,6 +97,8 @@ const specEq = (actual, expected) =>
     specEq(parseNextSpec({ next_param: "next-link" }), { kind: "nextLink", selector: "" }));
   await t("spec: next-link:selector", () =>
     specEq(parseNextSpec({ next_param: "next-link:a[rel=next]" }), { kind: "nextLink", selector: "a[rel=next]" }));
+  await t("spec: hash", () =>
+    specEq(parseNextSpec({ next_param: "hash" }), { kind: "hash" }));
   await t("spec: url-number", () =>
     specEq(parseNextSpec({ next_param: "url-number" }), { kind: "number" }));
   await t("spec: regex:pattern", () =>
@@ -174,6 +178,8 @@ const specEq = (actual, expected) =>
   // ---- guards -----------------------------------------------------------------
   await t("next-link: advanceUrl refuses (needs DOM)", () =>
     throws(() => advanceUrl("https://x.test/a", { next_param: "next-link" }), /لینک/));
+  await t("hash: advanceUrl refuses (needs DOM)", () =>
+    throws(() => advanceUrl("https://gharaati.ir/تفسیر-نور/#numsooreh=1&numayeh=1", { next_param: "hash" }), /باز شدن صفحه/));
   await t("none: advanceUrl refuses", () =>
     throws(() => advanceUrl("https://x.test/a", { next_param: "" }), /ذخیره نشده/));
 
@@ -240,6 +246,48 @@ const specEq = (actual, expected) =>
   await t("stop: limit not applicable (no number) -> not done", () => {
     const p = { next_param: "url-number", stop_number: "495" };
     specEq(checkStopUrl("https://x.test/about", p), { done: false });
+  });
+
+  // ── PCM-EXT-08: hash-based pages (tafsir gharaati, #numsooreh=S&numayeh=A) ──
+  await t("hashNumber: S*10000+A (2:8 -> 20008)", () => {
+    assert.strictEqual(hashNumber("numsooreh=2&numayeh=8"), 20008);
+    assert.strictEqual(hashNumber("numsooreh=1&numayeh=7"), 10007);
+    assert.strictEqual(hashNumber("numsooreh=114&numayeh=2716"), 1142716);
+  });
+  await t("hashNumber: missing part -> null", () => {
+    assert.strictEqual(hashNumber("numsooreh=2"), null);
+    assert.strictEqual(hashNumber("numayeh=8"), null);
+    assert.strictEqual(hashNumber(""), null);
+    assert.strictEqual(hashNumber(null), null);
+  });
+  await t("hashNumber: extra params ignored", () => {
+    assert.strictEqual(hashNumber("numsooreh=1&numayeh=7&keyword=خدا"), 10007);
+  });
+  await t("hashNumber: keys case-insensitive, non-numeric rejected", () => {
+    assert.strictEqual(hashNumber("NUMSOOREH=2&NUMAYEH=8"), 20008);
+    assert.strictEqual(hashNumber("numsooreh=a&numayeh=7"), null);
+  });
+  await t("stop: hash mode page number from URL hash", () => {
+    const p = { next_param: "hash", next_step: 1 };
+    assert.strictEqual(pageNumberOf("https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=8", p), 20008);
+    assert.strictEqual(pageNumberOf("https://gharaati.ir/تفسیر-نور/#numsooreh=1&numayeh=1", p), 10001);
+    assert.strictEqual(pageNumberOf("https://gharaati.ir/تفسیر-نور/", p), null);
+  });
+  await t("stop: hash at limit -> done", () => {
+    const p = { next_param: "hash", stop_number: "20008" };
+    const r = checkStopUrl("https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=8", p);
+    assert.strictEqual(r.done, true);
+    assert.match(r.why, /رسید/);
+  });
+  await t("stop: hash below limit -> not done", () => {
+    const p = { next_param: "hash", stop_number: "20008" };
+    assert.strictEqual(checkStopUrl("https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=7", p).done, false);
+  });
+  await t("stop: hash over limit -> done (overshoot blocked)", () => {
+    const p = { next_param: "hash", stop_number: "20008" };
+    const r = checkStopUrl("https://gharaati.ir/تفسیر-نور/#numsooreh=2&numayeh=9", p);
+    assert.strictEqual(r.done, true);
+    assert.match(r.why, /عبور/);
   });
 
   // ── PCM-EXT-04: توقف بر مبنای تکرار محتوا ─────────────────────────────

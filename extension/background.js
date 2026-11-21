@@ -366,6 +366,9 @@ let reading = false;
 //   'next-link' | 'next-link:<css>' → follow the next-page link found on the page
 //   'url-number'                    → last number in the path, +step, zero-pad kept
 //   'regex:<pattern>'               → exactly one digit capture group, +step
+//   'hash'                          → PCM-EXT-08: hash-based SPA; the page's own
+//                                     «آیه بعد» button (viewer(S,A)) is the
+//                                     next page; next URL comes from the DOM.
 
 function parseNextSpec(project) {
   const spec = String((project && project.next_param) || '').trim();
@@ -373,6 +376,7 @@ function parseNextSpec(project) {
   if (spec === 'next-link' || spec.indexOf('next-link:') === 0) {
     return { kind: 'nextLink', selector: spec === 'next-link' ? '' : spec.slice('next-link:'.length).trim() };
   }
+  if (spec === 'hash') return { kind: 'hash' };
   if (spec === 'url-number') return { kind: 'number' };
   if (spec.indexOf('regex:') === 0) return { kind: 'regex', pattern: spec.slice('regex:'.length).trim() };
   return { kind: 'param', param: spec };
@@ -397,10 +401,32 @@ function parseStopSpec(project) {
 
 // شماره‌ی عددی صفحه‌ای که آدرسش `url` است — با همان روشی که advanceUrl
 // جلو می‌رود. null اگر قابل استخراج نبود (در آن صورت حد اعمال نمی‌شود).
+// PCM-EXT-08: شمارهٔ صفحه در آدرس‌های hash-based (تفسیر گرااتی):
+//   #numsooreh=S&numayeh=A → S*10000+A — همان مقیاسی که دکمهٔ «آیه بعد»
+//   جلو می‌رود، پس حد عددی (stop_number) روی آن معنا دارد (مثلا حد 20008 =
+//   سورهٔ ۲ آیّهٔ ۸؛ 1142716 = آخر قرآن). آدرس بدون numayeh → null.
+function hashNumber(hash) {
+  if (!hash) return null;
+  const parts = String(hash).split('&');
+  let s = null; let a = null;
+  for (let i = 0; i < parts.length; i += 1) {
+    const kv = parts[i].split('=');
+    const k = String(kv[0] || '').toLowerCase();
+    const v = String(kv[1] || '').trim();
+    if (k === 'numsooreh' && /^\d+$/.test(v)) s = parseInt(v, 10);
+    if (k === 'numayeh' && /^\d+$/.test(v)) a = parseInt(v, 10);
+  }
+  if (s === null || a === null) return null;
+  return s * 10000 + a;
+}
+
 function pageNumberOf(url, project) {
   let u;
   try { u = new URL(url); } catch (_) { return null; }
   const spec = parseNextSpec(project);
+  if (spec.kind === 'hash') {
+    return hashNumber(u.hash.replace(/^#/, ''));
+  }
   if (spec.kind === 'param') {
     const v = u.searchParams.get(spec.param);
     return v !== null && /^\d+$/.test(v) ? parseInt(v, 10) : null;
@@ -465,6 +491,8 @@ function advanceUrl(url, project) {
   const spec = parseNextSpec(project);
   if (spec.kind === 'none') throw new Error('قانون صفحه بعد ذخیره نشده');
   if (spec.kind === 'nextLink') throw new Error('روش «لینک صفحه بعد» نیاز به باز شدن صفحه دارد');
+  // PCM-EXT-08: آدرس بعدی از DOM (دکمهٔ «آیه بعد») می‌آید، نه از همین آدرس.
+  if (spec.kind === 'hash') throw new Error('روش «آیه بعد» نیاز به باز شدن صفحه دارد');
   const step = Number((project && project.next_step) || 1) || 1;
   const next = new URL(url);
   if (spec.kind === 'param') {
@@ -630,18 +658,28 @@ async function stopReading() {
   return { ok: true, message: 'خواندن متوقف شد' };
 }
 
-function waitComplete(tabId, timeout) {
+function waitComplete(tabId, timeout, hashOnly) {
+  // PCM-EXT-08: برای hash-based SPA (تفسیر گرااتی) تغییر hash = بارگذاری AJAX
+  // محتواست و load event جدید نمی‌دهد. در حالت hashOnly (آدرس‌های قبلی و جدید
+  // یکی‌شان hash دارند) صبر به 'complete' وصل نمی‌شود؛ بعد از یک load کوتاه،
+  // تا زمان‌بندیِ AJAX (محدود به timeout) امتداد می‌یابد.
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       chrome.tabs.onUpdated.removeListener(onUp);
       reject(new Error('صفحه دیر باز شد'));
     }, timeout);
-    function onUp(id, info) {
-      if (id === tabId && info.status === 'complete') {
-        clearTimeout(timer);
-        chrome.tabs.onUpdated.removeListener(onUp);
+    function settle() {
+      clearTimeout(timer);
+      chrome.tabs.onUpdated.removeListener(onUp);
+      if (hashOnly) {
+        const extra = new Promise((r) => setTimeout(r, Math.min(4000, Math.max(0, timeout - 4000))));
+        extra.then(resolve, resolve);
+      } else {
         resolve();
       }
+    }
+    function onUp(id, info) {
+      if (id === tabId && info.status === 'complete') settle();
     }
     chrome.tabs.onUpdated.addListener(onUp);
   });
@@ -726,8 +764,9 @@ async function runMinute() {
     const pages = Math.max(1, Math.min(12, Number(run.pagesPerMinute || project.pages_per_minute || 4)));
     const gap = Math.max(2000, Math.floor(60000 / pages) - 4000);
     let target = '';
-    if (spec.kind === 'nextLink') {
-      // صفحه بعد از لینکِ خود صفحه پیدا می‌شود؛ در آزمایش اولین‌اش ذخیره شد.
+    if (spec.kind === 'nextLink' || spec.kind === 'hash') {
+      // PCM-EXT-08: در روش hash هم مثل next-link، صفحه بعد از خود صفحه
+      // (دکمهٔ «آیه بعد» → viewer(S,A)) کشف می‌شود؛ در آزمایش اولین‌اش ذخیره شد.
       target = String(nextUrl || '');
       if (!target) target = cursor; // لینک ذخیره‌شده نیست: اول صفحه فعلی را بخوان تا کشف شود
     } else {
@@ -765,7 +804,11 @@ async function runMinute() {
       }
       try {
         await chrome.tabs.update(run.tabId, { url: target });
-        await waitComplete(run.tabId, 20000);
+        // PCM-EXT-08: اگر قبلاً روی همین document بودیم (فقط hash عوض شد) صبر
+        // به 'complete' اضافه می‌شود؛ وگرنه load عادی.
+        const prevHash = String(cursor || '').indexOf('#') >= 0;
+        const nextHash = String(target || '').indexOf('#') >= 0;
+        await waitComplete(run.tabId, 20000, prevHash && nextHash);
         if (!(await isLive())) return;
         await sleep(600);
         const result = await extractWhenReady(run.tabId, {
@@ -784,9 +827,9 @@ async function runMinute() {
             return;
           }
         }
-        // مقصد بعدی: در روش لینک، از خود صفحه؛ در بقیه، از آدرس.
+        // مقصد بعدی: در روش لینک/hash، از خود صفحه؛ در بقیه، از آدرس.
         let nextTarget = '';
-        if (spec.kind === 'nextLink') {
+        if (spec.kind === 'nextLink' || spec.kind === 'hash') {
           nextTarget = String((result && result.nextUrl) || '');
         } else {
           try {
@@ -795,7 +838,8 @@ async function runMinute() {
             nextTarget = 'ERR:' + e.message;
           }
         }
-        const advanceFailed = spec.kind !== 'nextLink' && nextTarget.indexOf('ERR:') === 0;
+        const domNext = spec.kind === 'nextLink' || spec.kind === 'hash';
+        const advanceFailed = !domNext && nextTarget.indexOf('ERR:') === 0;
         if (!result?.ok) {
           emptyStreak += 1;
           failed += 1;
@@ -804,7 +848,7 @@ async function runMinute() {
             await endRun(run.projectId, 'نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4), token);
             return;
           }
-          if (spec.kind === 'nextLink' && !nextTarget) {
+          if (domNext && !nextTarget) {
             await endRun(run.projectId, 'صفحه بعد پیدا نشد. خواندن ایستاد.', token);
             return;
           }
@@ -827,7 +871,7 @@ async function runMinute() {
             return;
           }
           const label = Object.entries(result.values || {}).map(([k, v]) => `${k}=${String(v || '').slice(0, 24)}`).join(' ');
-          const tail = spec.kind === 'nextLink' && nextTarget ? ' → ' + nextTarget : '';
+          const tail = domNext && nextTarget ? ' → ' + nextTarget : '';
           await postReport(run.projectId, {
             cursor_url: target,
             message: `${result.status}: ${label || target}${tail}`,
@@ -836,14 +880,14 @@ async function runMinute() {
             await endRun(run.projectId, 'نمی‌توان به صفحه بعد رفت: ' + nextTarget.slice(4), token);
             return;
           }
-          if (spec.kind === 'nextLink' && !nextTarget) {
-            await endRun(run.projectId, 'صفحه ذخیره شد ولی لینک صفحه بعد نداشت — خواندن تمام شد.', token);
+          if (domNext && !nextTarget) {
+            await endRun(run.projectId, 'صفحه ذخیره شد ولی صفحه بعد نداشت — خواندن تمام شد.', token);
             return;
           }
         }
         cursor = target;
         if (nextTarget) {
-          if (spec.kind === 'nextLink') nextUrl = nextTarget;
+          if (domNext) nextUrl = nextTarget;
           target = nextTarget;
         }
         if (!(await isLive())) return;
