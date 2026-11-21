@@ -386,3 +386,81 @@ extension-shaped payload dedups against the real M4 data (skipped ×2, counts
 unchanged). The human trial-install step (load-unpacked / unzip + Chrome UI) is
 deliberately deferred to **M6** (`PCM-EXT-07-HUMAN-TEST-GUIDE.md`) since it
 requires a browser.
+
+---
+
+## M6 — Human UI acceptance (machine-verified part COMPLETE — real outputs 2026-11-21 20:35–20:52 UTC)
+
+### 6.1 Live auth flow + UI data path (`deploy/pcm_ext07_m6_ui_probe.py`, run on s52)
+
+| Step | Real result | Verdict |
+|---|---|---|
+| `.env` password loaded | `pw-loaded=yes (len=8, value hidden)` | — |
+| `GET /api/auth/status` (no cookie) | 200 `{"auth_enabled":true,"authenticated":false}` | PASS — auth enabled |
+| `GET /api/khamenei/stats` (no cookie) | **200** (245/245/0/70) | **F-M6-1** — open by design (AGENTS §2.6), see 6.5 |
+| `POST /api/auth/login` (.env password) | 200 `{"ok":true}`, `pct_session` cookie SET | PASS |
+| `GET /api/khamenei/stats` (cookie) | 200 — same real numbers | PASS |
+| `GET /api/khamenei/recent?limit=5` (cookie) | 200 — first row `#62948 · …خطبه عقد ازدواج · 1401/12/19 · 2510` | PASS — record has date+title+size |
+| `GET /api/khamenei/crawl-status` (cookie) | 200 `{total:245, pending:70, queued:315, complete:false, pending_by_year:{"1398":70}}` | PASS |
+| `GET /dashboard/` (cookie) | 200, 54,208 B, contains `tab-khamenei` | PASS |
+
+### 6.2 Real browser run — headless Microsoft Edge over CDP (`deploy/pcm_ext07_m6_screenshot.js`, Node v24.14.0)
+
+Full DOM-state capture (no vision-model assumptions — every claim is a
+text dump), then a real screenshot:
+
+| Stage | Real capture | Verdict |
+|---|---|---|
+| before login | `{"url":"…/dashboard/","overlay":"flex"}` | PASS — overlay visible |
+| login (same-origin `fetch('/api/auth/login')`) | `{"status":200,"ok":true}` | PASS |
+| after reload | `{"overlay":"none","authState":"{\"auth_enabled\":true,\"authenticated\":true}"}` | PASS — logged in |
+| `switchTab('khamenei')` → DOM | h1 **"🎤 بیانات khamenei.ir"**, tab visible | PASS |
+| stat cards (innerText) | کل بیانات **۲۴۵** · با تاریخ **۲۴۵** · بدون تاریخ **۰** · در صف **۷۰** · آخرین کراول **2026-11-21 20:05:09** · کل کاراکتر **۹۰۵٬۱۸۵** | PASS — real M4 data |
+| latest table | **rows=20**; firstRow `#62948 · بیانات در مراسم قرائت خطبه عقد ازدواج · 1401/12/19 · ۲٬۵۱۰` | PASS — date + size on screen |
+| pending-years status | "📅 سال‌های در انتظار کراول (از crawl_queue): 1398 (۷۰) — دکمه «ادامه سال‌های گذشته»…" | PASS |
+| screenshot | `evidence/pcm-ext07-m6-khamenei-tab.png` (67,056 B) | real PNG |
+
+### 6.3 Menu paths (mapped from source, for the owner)
+
+- **Dashboard:** `https://pct-staging.ai.ismc.ir/dashboard/` → login overlay →
+  nav **«🎤 بیانات»** ([`dashboard/index.html:129`](dashboard/index.html:129),
+  tab 204–233, loader `loadKhamenei()` 554–610). Button
+  **«⏭️ ادامه سال‌های گذشته»** ([`dashboard/index.html:615`](dashboard/index.html:615))
+  opens `https://farsi.khamenei.ir/speech?nt=2&year=Y` per pending year — the
+  extension content script auto-seeds each opened list page.
+- **Extension popup:** expand `<details>` **«ابزارهای قبلی — اصطلاح‌نامه و
+  بیانات»** → site **«🎤 بیانات»** → «🌱 فاز ۱: کشف لیست» / «💾 فاز ۲: ذخیره
+  کامل» / «🚀 هر دو فاز» / «⏹ توقف» / «📊 داشبورد» (popup.html 97–139).
+- **Start flow** ([`extension/background.js:92`](extension/background.js:92)–225):
+  phase 1 = `/speech` then year walk `maxYear→1370` (stop: 2 consecutive empty
+  years or floor); phase 2 = `/api/phase2/next-batch?site=khamenei` → visit
+  `speech-content?id=…` → content script `extractAndSubmit()` →
+  `/api/phase2/complete` (shared dedup, server.py:458–504).
+
+### 6.4 What the owner does now (human-in-the-loop part)
+
+`docs/PCM-EXT-07-HUMAN-TEST-GUIDE.md` — install (load-unpacked
+`extension-staging/` or the live zip), menu path, operations (dashboard
+continue-button, open 1400/1402 list pages, phase 2), expected results with
+real numbers (245/35/56/70-pending-1398), open a record (date + text),
+re-run → `skipped` → no duplicates, per-step PASS/FAIL checkboxes, real
+screenshot, and the mandatory **"WHAT SHOULD THE PROJECT OWNER TEST NOW?"**.
+
+### 6.5 Findings
+
+| ID | Finding | Disposition |
+|---|---|---|
+| **F-M6-1** | `/api/khamenei/*` read endpoints answer 200 **without** `pct_session` (no cookie → 200, not 401). By design per AGENTS §2.6 (only `/api/dashboard/*` auth-gated; the extension reads without login). The UI login overlay (PCM-09) still gates the whole dashboard. | Accept (by design); optional product decision: gate khamenei reads too. |
+| **F-M6-2** | Khamenei popup tools hidden inside a **collapsed** "ابزارهای قبلی" section under the new tafsir UI — discoverability gap for acceptance. | **Product backlog:** top-level «🎤 بیانات» popup entry in a future version. |
+
+### 6.6 M6 verdict (machine-verified part)
+
+**PASS** — the full human UI data path is proven over the real network in a
+real browser engine: login overlay → auth (200, cookie) → logged-in dashboard →
+«🎤 بیانات» tab rendering real staging data (245 total / 245 with date /
+0 without / 70 pending = all 1398 / 20-row latest table with date+size /
+pending-year status line) + real screenshot. Evidence:
+`evidence/pcm-ext07-m6-ui-evidence.log` (all raw captures),
+`evidence/pcm-ext07-m6-khamenei-tab.png`. The click-through acceptance (start
+crawls, re-run dedup, owner's own screenshots) is scripted in the
+HUMAN-TEST-GUIDE with per-step PASS/FAIL.

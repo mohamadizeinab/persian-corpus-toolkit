@@ -1,0 +1,132 @@
+================================================================================
+PCM-EXT-07 M6 — Human UI acceptance: machine-verified real outputs
+Run: 2026-11-21 20:35–20:52 UTC · Operator: Zoo
+Environment: staging = https://pct-staging.ai.ismc.ir (s52=172.30.0.133, port 5056)
+================================================================================
+
+[M6-A] Live UI data-path probe — deploy/pcm_ext07_m6_ui_probe.py (runs ON s52,
+        reads PCT_DASHBOARD_PASSWORD from /home/saber/saberprojects/pct-staging/.env,
+        password never printed)
+--------------------------------------------------------------------------------
+pw-loaded=yes (len=8, value hidden)
+
+1 GET /api/auth/status (no cookie) HTTP 200:
+  {"auth_enabled":true,"authenticated":false}
+  => auth is enabled on staging; not yet logged in. PASS
+
+2 GET /api/khamenei/stats (no cookie) HTTP 200:
+  {"by_year":{"1398":3,"1400":35,"1401":43,"1402":56,"1403":69,"1404":39},"total":245,
+   "with_date":245,"without_date":0,"total_chars":905185,
+   "last_crawled_at":"2026-11-21 20:05:09","pending":70}
+  => 200 WITHOUT cookie. Finding F-M6-1: /api/khamenei/* read endpoints are open by
+     design (AGENTS §2.6 — only /api/dashboard/* is behind auth; the extension needs
+     open reads). The dashboard login overlay (PCM-09) is UI-level and gates all tabs.
+     Not a bug for this mission; documented.
+
+3 POST /api/auth/login (no cookie, .env password) HTTP 200:
+  {"ok":true}  Set-Cookie: pct_session=... (HttpOnly, 7 days) PASS
+
+4 GET /api/khamenei/stats (cookie) HTTP 200 PASS (same 245/245/0/70 as step 2)
+
+5 GET /api/khamenei/recent?limit=5 (cookie) HTTP 200 PASS
+  first row: {"speech_id":"62948","title":"بیانات در مراسم قرائت خطبه عقد ازدواج",
+              "speech_date":"1401/12/19","char_count":2510, ...}
+  => a real record WITH date + title + size, as the dashboard table renders it.
+
+6 GET /api/khamenei/crawl-status (cookie) HTTP 200 PASS:
+  {"total":245,"pending":70,"queued":315,"last_crawled_at":"2026-11-21 20:05:09",
+   "complete":false,"pending_by_year":{"1398":70}}
+
+7 GET /dashboard/ (cookie) HTTP 200: 54208 bytes, contains 'tab-khamenei'=True PASS
+
+[M6-B] Real browser (headless Microsoft Edge, CDP port 9334, --headless=new
+        --ignore-certificate-errors) — deploy/pcm_ext07_m6_screenshot.js
+        Node v24.14.0; Edge at C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+        Flow: open /dashboard/ -> capture pre-login DOM -> login via same-origin
+        fetch('/api/auth/login') -> Page.reload -> capture logged-in DOM ->
+        switchTab('khamenei') -> capture Khamenei-tab DOM -> Page.captureScreenshot
+--------------------------------------------------------------------------------
+after nav:    {"url":"https://pct-staging.ai.ismc.ir/dashboard/","overlay":"flex"}
+  => login overlay VISIBLE before auth (display:flex) PASS
+login:        {"status":200,"ok":true}
+after reload: {"overlay":"none","authState":"{\"auth_enabled\":true,\"authenticated\":true}"}
+  => overlay gone, authenticated=true PASS
+KHAMENEI-TAB-DOM:
+  h1: "🎤 بیانات khamenei.ir"
+  tabVisible: true
+  stats (stat cards, real M4 data):
+    کل بیانات        ۲۴۵
+    با تاریخ         ۲۴۵
+    بدون تاریخ       ۰
+    در صف (صفحات بیانات) ۷۰
+    آخرین کراول      2026-11-21 20:05:09
+    کل کاراکتر       ۹۰۵٬۱۸۵
+  rows (آخرین بیانات table): 20
+  firstRow: "#62948  بیانات در مراسم قرائت خطبه عقد ازدواج  1401/12/19  ۲٬۵۱۰"
+    => record visible with date + size (text in DB; date+title+size on screen) PASS
+  status line: "📅 سال‌های در انتظار کراول (از crawl_queue): 1398 (۷۰) — دکمه
+    «ادامه سال‌های گذشته» لیست هر سال را در تب جدید باز می‌کند و اکستنشن
+    به‌صورت خودکار کراول می‌کند"
+screenshot:   saved evidence\pcm-ext07-m6-khamenei-tab.png  67056 bytes
+
+[M6-C] UI menu paths mapped from source (read-only)
+--------------------------------------------------------------------------------
+Dashboard (dashboard/index.html):
+  nav item  : line 129  <button ... onclick="switchTab('khamenei')">🎤 بیانات</button>
+  tab       : lines 204–233  h1 "🎤 بیانات khamenei.ir" + stat cards +
+              "⏭️ ادامه سال‌های گذشته (باز کردن لیست سال در مرورگر)" +
+              reset buttons + "📋 آخرین بیانات" table (id/عنوان/تاریخ/حجم)
+  loader    : loadKhamenei() lines 554–610 (stats + recent?limit=20 + crawl-status)
+  continue  : continueKhameneiYears() lines 615–627 — for each pending year opens
+              https://farsi.khamenei.ir/speech?nt=2&year=Y in a NEW tab; the
+              extension content script auto-seeds (phase1) each opened list page
+
+Extension popup (extension-staging/popup.html lines 97–139 — inside collapsed
+  <details> "ابزارهای قبلی — اصطلاح‌نامه و بیانات"):
+  site btn  : "🎤 بیانات" (data-site="khamenei")
+  phase 1   : "🌱 فاز ۱: کشف لیست"      (runPhase1 -> year walk, MIN_YEAR=1370)
+  phase 2   : "💾 فاز ۲: ذخیره کامل"    (runPhase2 -> /api/phase2/next-batch,
+                                            visits each speech-content?id= page)
+  both      : "🚀 هر دو فاز"            (runBoth)
+  stop      : "⏹ توقف"                   (crawlStop)
+  dashboard : "📊 داشبورد"               (opens /dashboard/)
+  stats box : لیست یکتا / مانده فاز۲ / ذخیره‌شده / آخرین
+  Finding F-M6-2: the khamenei tools are hidden inside a COLLAPSED "ابزارهای
+  قبلی" section below the new tafsir-project UI — discoverability gap for the
+  acceptance scenario. -> product backlog (a top-level "🎤 بیانات" entry).
+
+[M6-D] Extension start flow (background.js lines 92–225, read-only)
+--------------------------------------------------------------------------------
+runPhase1('khamenei'):
+  crawlState.khamenei = {nextYear:null, emptyStreak:0, MIN_YEAR:1370, ids:[],
+                         idx:0, delayMs:2000, errors:0}
+  -> opens unfiltered https://farsi.khamenei.ir/speech (seeds the LATEST year)
+  -> nextKhameneiYear(state, msg) after each list page:
+       first: nextYear = msg.maxYear || 1404
+       total === 0 -> emptyStreak++  else emptyStreak = 0
+       nextYear -= 1
+       stop: emptyStreak >= 2 -> {done, reason:'empty'}
+             nextYear < MIN_YEAR -> {done, reason:'floor'}
+       else navigate /speech?nt=2&year=nextYear
+runPhase2('khamenei'):
+  -> fetchPendingKhameneiIds() = GET /api/phase2/next-batch?site=khamenei&limit=500
+     (ids parsed from queued url .../speech-content?id=NNN)
+  -> navigateKhameneiDetail() visits each detail page; content script
+     extractAndSubmit() POSTs /api/phase2/complete; backend dedups
+     (server.py:458–504 _phase2_save_khamenei)
+  -> no pending ids: checks /api/pipeline/status?site=khamenei ->
+     "همه بیانات ذخیره شده‌اند" or "صف بیانات خالی است — اول فاز ۱ را بزنید"
+
+[M6] VERDICT (machine-verified part)
+--------------------------------------------------------------------------------
+PASS — the full human UI data path is proven over the real network in a real
+browser engine: login overlay -> auth login (200, pct_session cookie) ->
+logged-in dashboard -> "🎤 بیانات" tab rendering REAL staging data (245 total,
+245 with date, 0 without, 70 pending [all year 1398], last crawl
+2026-11-21 20:05:09, 905,185 chars, 20-row latest table with date+size, pending
+year status line). Real screenshot: evidence/pcm-ext07-m6-khamenei-tab.png.
+The human-in-the-loop steps (click "🚀 هر دو فاز", open 1400/1402 list pages,
+take own screenshots, verify no duplicates after re-run) are defined in
+docs/PCM-EXT-07-HUMAN-TEST-GUIDE.md for the project owner.
+Findings: F-M6-1 (open khamenei read endpoints — by design), F-M6-2 (khamenei
+popup section collapsed — product backlog).
