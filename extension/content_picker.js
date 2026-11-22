@@ -10,6 +10,12 @@
   let selected = null;
   let busy = false;
   let poll = null;
+  // PCM-EXT-08.1 (رفع «پرش» در روش صفحه بعد): تغییر کاربر روی قانون بلافاصله ذخیره
+  // می‌شود (autosave با debounce) و تا کامل‌شدن ذخیره، render() اجازه ندارد فرم را
+  // با مقدار قدیمی سرور (از poll هر ۴ ثانیه) روی‌نویسی کند.
+  let ruleDirty = false;
+  let ruleSaveGen = 0;
+  let ruleSaveTimer = null;
   let runState = null;
   // PCM-EXT-03: باید با RUN_LOCK_TTL بک‌اند یکی باشد (ثانیه).
   const RUN_LOCK_TTL_SEC = 180;
@@ -215,11 +221,15 @@
     if (!project) return;
     $('title').textContent = project.name || 'پروژه';
     const parsed = parseSpecField(project.next_param);
-    $('nextMode').value = parsed.mode;
-    $('nextDetailInput').value = parsed.detail || $('nextDetailInput').value;
-    $('nextStep').value = project.next_step || 1;
-    $('pace').value = project.pages_per_minute || 4;
-    $('stopNum').value = project.stop_number || '';
+    // PCM-EXT-08.1: تا تغییر کاربر ذخیره نشده (dirty)، poll نمی‌تواند فرم قانون را
+    // با مقدار قدیمی سرور برگرداند — این ریشهٔ باگ «پرش» بود.
+    if (!ruleDirty) {
+      $('nextMode').value = parsed.mode;
+      $('nextDetailInput').value = parsed.detail || $('nextDetailInput').value;
+      $('nextStep').value = project.next_step || 1;
+      $('pace').value = project.pages_per_minute || 4;
+      $('stopNum').value = project.stop_number || '';
+    }
     rebuildStopField();
     updateNextDetail();
     const count = (project.points || []).length;
@@ -265,7 +275,8 @@
   // PCM-EXT-04: گزینه‌های «مبنای تشخیص تکرار محتوا» از نقاط پروژه ساخته می‌شود
   function rebuildStopField() {
     const sel = $('stopField');
-    const current = String(project?.stop_field || '');
+    // PCM-EXT-08.1: در حالت dirty، انتخاب فعلی فرم را حفظ کن (نه مقدار قدیمی سرور).
+    const current = ruleDirty ? String(sel.value || '') : String(project?.stop_field || '');
     const tags = (project?.points || []).map((p) => String(p.tag || '').trim()).filter(Boolean);
     sel.innerHTML = '';
     const opt0 = document.createElement('option');
@@ -411,6 +422,26 @@
     if (!r.ok || data.ok === false) throw new Error(data.message || 'قانون ذخیره نشد');
     project = data.project;
     return project;
+  }
+
+  // PCM-EXT-08.1: هر تغییری در فیلدهای قانون → ذخیرهٔ خودکار (350ms debounce).
+  // قبل از این رفع، قانون فقط با «آزمایش و شروع» ذخیره می‌شد و poll ۴ ثانیه‌ای
+  // انتخاب منو را با مقدار قدیمی سرور روی‌نویسی می‌کرد (باگ «پرش»).
+  function scheduleRuleSave() {
+    if (!project?.id) return;
+    ruleDirty = true;
+    const gen = ++ruleSaveGen;
+    clearTimeout(ruleSaveTimer);
+    ruleSaveTimer = setTimeout(async () => {
+      ruleSaveTimer = null;
+      if (gen !== ruleSaveGen || !project?.id) return;
+      try {
+        const saved = await saveRule();
+        if (saved && gen === ruleSaveGen) ruleDirty = false;
+      } catch (e) {
+        if (gen === ruleSaveGen) report('ذخیرهٔ قانون: ' + (e.message || String(e)));
+      }
+    }, 350);
   }
 
   async function waitFor(points) {
@@ -599,6 +630,10 @@
     }
     try {
       await saveRule();
+      // PCM-EXT-08.1: قانون همین‌جا ذخیره شد؛ autosave معلق همان فرم را لغو کن.
+      clearTimeout(ruleSaveTimer);
+      ruleSaveTimer = null;
+      ruleDirty = false;
     } catch (e) {
       report(String(e));
       return { ok: false, message: String(e) };
@@ -670,10 +705,23 @@
     refreshRunState();
   });
   $('source').addEventListener('change', () => { picking = $('source').value === 'css' && $('form').style.display === 'block'; });
-  $('nextMode').addEventListener('change', updateNextDetail);
+  // PCM-EXT-08.1: هر تغییر در فیلدهای قانون → autosave (رفع باگ «پرش» انتخاب منو).
+  $('nextMode').addEventListener('change', () => { updateNextDetail(); scheduleRuleSave(); });
+  $('nextStep').addEventListener('change', () => scheduleRuleSave());
+  $('nextDetailInput').addEventListener('input', () => scheduleRuleSave());
+  $('pace').addEventListener('change', () => scheduleRuleSave());
+  $('stopNum').addEventListener('change', () => scheduleRuleSave());
+  $('stopField').addEventListener('change', () => scheduleRuleSave());
 
   // PCM-EXT-08: export فقط برای تست (extension/test_hash_next.js).
   window.__pctHashNext = hashNextUrl;
+  // PCM-EXT-08.1: export فقط برای تست (extension/test_next_mode_autosave.js).
+  window.__pctPickerTest = {
+    load,
+    render,
+    get project() { return project; },
+    el: (id) => $(id),
+  };
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === 'openProject') {
@@ -685,6 +733,7 @@
             $('nextMode').value = 'param';
             $('nextDetailInput').value = keys[0];
             updateNextDetail();
+            scheduleRuleSave();
           }
         }
         refreshRunState();
